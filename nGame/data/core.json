@@ -1,0 +1,319 @@
+[
+	{
+		"type": "SHADER",
+		"id": "color",
+		"shaders": [
+			"fs://data/shader/color.vert",
+			"fs://data/shader/color.frag"
+		]
+	},	
+	{
+		"type": "SHADER",
+		"id": "character",
+		"shaders": [
+			"fs://data/shader/character.vert",
+			"fs://data/shader/character.frag"
+		]
+	},
+	{
+		"type": "SHADER",
+		"id": "texture",
+		"shaders": [
+			"fs://data/shader/texture.vert",
+			"fs://data/shader/texture.frag"
+		]
+	},
+	{
+		"type": "SHADER",
+		"id": "font",
+		"shaders": [
+			"fs://data/shader/font.vert",
+			"fs://data/shader/font.frag"
+		]
+	},
+	{
+		"type": "SHADER",
+		"id": "gui",
+		"shaders": [
+			"fs://data/shader/gui.vert",
+			"fs://data/shader/gui.frag"
+		]
+	},
+	{
+		"type": "SHADER",
+		"id": "animation",
+		"shaders": [
+			"fs://data/shader/animation.vert",
+			"fs://data/shader/animation.frag"
+		]
+	},
+	{
+		"type": "SHADER",
+		"id": "particle",
+		"shaders": [
+			"fs://data/shader/particle.vert",
+			"fs://data/shader/particle.frag"
+		]
+	},
+	{
+		"type": "SHADER",
+		"id": "tile",
+		"shaders": [
+			"fs://data/shader/tile.vert",
+			"fs://data/shader/tile.frag"
+		]
+	},
+	{
+		"type": "FONT",
+		"face": "zip://data/test.zip/fonts/cour.ttf",
+		"fonts": [
+			{
+				"id": "mono8",
+				"height": 8
+			},
+			{
+				"id": "mono12",
+				"height": 12
+			}
+		]
+	},
+	{
+		"type": "OBJECT",
+		"id": "john",
+		"data": {
+			"maxHealth": 100,
+			"name": "John",
+			"wanderRadius": 5,
+			"movementSpeed": 600,
+			"wander": false,
+			"damageable": true,
+			
+			"animations": {
+				"move_0": {
+					"frames": 8,
+					"duration": 100,
+					"image": "zip://data/test.zip/img/john_walk_0.png"
+				},
+				
+				"move_2": {
+					"frames": 8,
+					"duration": 100,
+					"image": "zip://data/test.zip/img/john_walk_2.png"
+				},
+				
+				"move_4": {
+					"frames": 8,
+					"duration": 100,
+					"image": "zip://data/test.zip/img/john_walk_4.png"
+				},
+				
+				"move_6": {
+					"frames": 8,
+					"duration": 100,
+					"image": "zip://data/test.zip/img/john_walk_6.png"
+				},
+				
+				"idle": {
+					"frames": 8,
+					"duration": 100,
+					"image": "zip://data/test.zip/img/move_west.png"
+				}
+			}
+		}
+	},
+	{
+		"type": "OBJECT",
+		"id": "pete",
+		"data": {
+			"maxHealth": 100,
+			"name": "Pete",
+			"wanderRadius": 5,
+			"movementSpeed": 250,
+			"damageable": true,
+			"range": 4,
+			
+			"animations": {
+				"move_0": {
+					"frames": 3,
+					"duration": 150,
+					"image": "zip://data/test.zip/img/move_north.png"
+				},
+				
+				"move_2": {
+					"frames": 3,
+					"duration": 150,
+					"image": "zip://data/test.zip/img/move_east.png"
+				},
+				
+				"move_4": {
+					"frames": 3,
+					"duration": 150,
+					"image": "zip://data/test.zip/img/move_south.png"
+				},
+				
+				"move_6": {
+					"frames": 3,
+					"duration": 150,
+					"image": "zip://data/test.zip/img/move_west.png"
+				},
+				
+				"idle": {
+					"frames": 3,
+					"duration": 150,
+					"image": "zip://data/test.zip/img/move_west.png"
+				}
+			}
+		}
+	},
+	{
+		"type": "PARTICLE",
+		"id": "fire",
+		"data": {
+			"lifetime": 1000.0,
+			"lifetimeSpread": 300,
+			
+			"emitter": {"x": -15, "y": -5},
+			"emitterSpread": {"x": 20, "y": 20},
+			
+			"velocity": {"x": 0.2, "y": 2},
+			"velocitySpread": {"x": 1.0, "y": 1.0},
+			
+			"gravity": {"x": 0.1, "y": 0.1},
+				
+			"genPeriod": 0.1,
+			"genNumber": 2,
+			
+			"isTextured": true,
+			
+			"gradient": {
+				"0.0": {
+					"texture": "zip://data/test.zip/img/fire.png",
+					"color": {"r": 1.0, "g": 0.0, "b": 0.0},
+					"size": {"x": 20, "y": 20}
+				},
+				"0.3": {
+					"texture": "zip://data/test.zip/img/fire.png",
+					"color":{"r": 1.0, "g": 0.8, "b": 0.0},
+					"size": {"x": 15, "y": 15}
+				},
+				"0.6": {
+					"texture": "zip://data/test.zip/img/smoke.png",
+					"color": {"r": 0.6, "g": 0.6, "b": 0.6},
+					"size": {"x": 20, "y": 20}
+				},
+				"1.0": {
+					"texture": "zip://data/test.zip/img/smoke.png",
+					"color": {"r": 0.8, "g": 0.8, "b": 0.8, "a": 0.5},
+					"size": {"x": 25, "y": 25}
+				}
+			}
+		}
+	},
+	{
+		"type": "CHAT",
+		"id": "chat",
+		"data": {
+			"root": {
+				"type": "npc",
+				"who": "johnny",
+				"actions": [
+					{
+						"message": "Hello, how are you doing?",
+						"type": "next",
+						"action": "this:player_1"
+					}
+				]
+			},
+			"player_1": {
+				"type": "player",
+				"message": "I'm just fine, but...",
+				"actions": [
+					{
+						"message": "...I hate you!",
+						"type": "next",
+						"action": "this:npc_2"
+					},
+					{
+						"message": "...I want to call in Lua!",
+						"type": "lua",
+						"action": "Tutorial.chatOne"
+					}
+				]
+			},
+			"npc_2": {
+				"type": "npc",
+				"who": "johhny",
+				"actions": [
+					{
+						"message": "Me too!",
+						"type": "lua",
+						"action": "Tutorial.charTwo"
+					}
+				]
+			}
+		}
+	},
+	{
+		"type": "MAP",
+		"id": "tutorial",
+		"data": {
+			"script": [
+				"fs://data/lua/tutorial.lua"
+			],
+				
+			"namespace": "Tutorial",
+			
+			"fields": [
+				{
+					"image": "zip://data/test.zip/img/grass.png",
+					"name": "Grass",
+					"id": 0
+				},
+				{
+					"image": "zip://data/test.zip/img/wall.png",
+					"name": "Wall",
+					"id": 1
+				},
+				{
+					"image": "zip://data/test.zip/img/lever_up.png",
+					"name": "Lever Up",
+					"id": 2
+				},
+				{
+					"image": "zip://data/test.zip/img/lever_down.png",
+					"name": "Lever Down",
+					"id": 3
+				},
+				{
+					"image": "zip://data/test.zip/img/target.png",
+					"name": "Target",
+					"id": 4
+				},
+				{
+					"image": "zip://data/test.zip/img/tile.png",
+					"name": "Field",
+					"id": 5
+				},
+				{
+					"image": "zip://data/test.zip/img/X.png",
+					"name": "X",
+					"id": 6
+				},
+				{
+					"image": "zip://data/test.zip/img/O.png",
+					"name": "O",
+					"id": 7
+				},
+				{
+					"image": "zip://data/test.zip/img/fireplace.png",
+					"name": "Fireplace",
+					"id": 8
+				}
+			],
+			
+			"size": 32,
+				
+			"mapData": "fs://data/map/tutorial.map"
+		}
+	}
+]

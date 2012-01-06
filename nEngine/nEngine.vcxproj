@@ -1,0 +1,183 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9D872DAD-6965-4D25-A0A0-524C6EBD77EF}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>nEngine</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(VCInstallDir)include;C:\boost;../;$(VCInstallDir)atlmfc\includeC:\boost;C:\Program Files %28x86%29\Microsoft SDKs\Windows\v7.0A\Include\freetype;C:\Program Files %28x86%29\Microsoft SDKs\Windows\v7.0A\Include\freetype\freetype2;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;</IncludePath>
+    <LibraryPath>C:\boost\lib;$(LibraryPath);</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;NENGINE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeaderFile>nHeaders.hpp</PrecompiledHeaderFile>
+      <AdditionalOptions>-D_SCL_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>../Debug/minizip.lib;opengl32.lib;glu32.lib;glew32.lib;lua5.1.lib;zlib.lib;libpng15.lib;freetype.lib;gdi32.lib</AdditionalDependencies>
+      <ImportLibrary>
+      </ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;NENGINE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;lua5.1.lib;glew32.lib;freetype.lib</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="Animation.hpp" />
+    <ClInclude Include="Application.hpp" />
+    <ClInclude Include="Archive.hpp" />
+    <ClInclude Include="Camera.hpp" />
+    <ClInclude Include="Chat.hpp" />
+    <ClInclude Include="ChatAction.hpp" />
+    <ClInclude Include="ChatBox.hpp" />
+    <ClInclude Include="ChatMessage.hpp" />
+    <ClInclude Include="Color.hpp" />
+    <ClInclude Include="Console.hpp" />
+    <ClInclude Include="Error.hpp" />
+    <ClInclude Include="File.hpp" />
+    <ClInclude Include="Font.hpp" />
+    <ClInclude Include="GUI.hpp" />
+    <ClInclude Include="GUIButton.hpp" />
+    <ClInclude Include="GUIElement.hpp" />
+    <ClInclude Include="GUIEvent.hpp" />
+    <ClInclude Include="GUILabel.hpp" />
+    <ClInclude Include="GUIPanel.hpp" />
+    <ClInclude Include="GUISizer.hpp" />
+    <ClInclude Include="Image.hpp" />
+    <ClInclude Include="JSONObject.hpp" />
+    <ClInclude Include="Log.hpp" />
+    <ClInclude Include="Lua.hpp" />
+    <ClInclude Include="Map.hpp" />
+    <ClInclude Include="MapHelper.hpp" />
+    <ClInclude Include="nHeaders.hpp" />
+    <ClInclude Include="NPC.hpp" />
+    <ClInclude Include="Object.hpp" />
+    <ClInclude Include="ObjectScript.hpp" />
+    <ClInclude Include="Particles.hpp" />
+    <ClInclude Include="PathFinder.hpp" />
+    <ClInclude Include="Prop.hpp" />
+    <ClInclude Include="QuadTreeValue.hpp" />
+    <ClInclude Include="Resource.hpp" />
+    <ClInclude Include="Resources.hpp" />
+    <ClInclude Include="Scene.hpp" />
+    <ClInclude Include="SceneNode.hpp" />
+    <ClInclude Include="Shader.hpp" />
+    <ClInclude Include="Singleton.hpp" />
+    <ClInclude Include="Tile.hpp" />
+    <ClInclude Include="Timer.hpp" />
+    <ClInclude Include="types.hpp" />
+    <ClInclude Include="Util.hpp" />
+    <ClInclude Include="Vec2.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Archive.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Chat.cpp" />
+    <ClCompile Include="ChatAction.cpp" />
+    <ClCompile Include="ChatBox.cpp" />
+    <ClCompile Include="ChatMessage.cpp" />
+    <ClCompile Include="Color.cpp" />
+    <ClCompile Include="Console.cpp" />
+    <ClCompile Include="dllmain.cpp">
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Error.cpp" />
+    <ClCompile Include="File.cpp" />
+    <ClCompile Include="Font.cpp" />
+    <ClCompile Include="GUI.cpp" />
+    <ClCompile Include="GUIButton.cpp" />
+    <ClCompile Include="GUIElement.cpp" />
+    <ClCompile Include="GUIEvent.cpp" />
+    <ClCompile Include="GUILabel.cpp" />
+    <ClCompile Include="GUIPanel.cpp" />
+    <ClCompile Include="GUISizer.cpp" />
+    <ClCompile Include="Image.cpp" />
+    <ClCompile Include="JSONObject.cpp" />
+    <ClCompile Include="Log.cpp" />
+    <ClCompile Include="Lua.cpp" />
+    <ClCompile Include="Map.cpp" />
+    <ClCompile Include="MapHelper.cpp" />
+    <ClCompile Include="NPC.cpp" />
+    <ClCompile Include="Object.cpp" />
+    <ClCompile Include="ObjectScript.cpp" />
+    <ClCompile Include="Particles.cpp" />
+    <ClCompile Include="PathFinder.cpp" />
+    <ClCompile Include="Prop.cpp" />
+    <ClCompile Include="Resource.cpp" />
+    <ClCompile Include="Resources.cpp" />
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SceneNode.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Tile.cpp" />
+    <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="Util.cpp" />
+    <ClCompile Include="Vec2.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

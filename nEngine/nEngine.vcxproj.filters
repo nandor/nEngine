@@ -1,0 +1,287 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="DLL stuff">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{419718e3-fd26-42e2-9dcb-caa1a632d9ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Other">
+      <UniqueIdentifier>{ccbd4bc7-b2b9-45e4-8bbe-88fc045d36f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI">
+      <UniqueIdentifier>{dd74f257-e148-4703-93d8-a0ff4bc4b2f3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Animation.hpp">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Archive.hpp">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="File.hpp">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Font.hpp">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Image.hpp">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="JSONObject.hpp">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectScript.hpp">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.hpp">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources.hpp">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.hpp">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI.hpp">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIEvent.hpp">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIButton.hpp">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIElement.hpp">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUISizer.hpp">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUILabel.hpp">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIPanel.hpp">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Error.hpp">
+      <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="Color.hpp">
+      <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="Console.hpp">
+      <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="nHeaders.hpp">
+      <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneNode.hpp">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="QuadTreeValue.hpp">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Prop.hpp">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Particles.hpp">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="PathFinder.hpp">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Application.hpp">
+      <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="Log.hpp">
+      <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.hpp">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.hpp">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="NPC.hpp">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.hpp">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Lua.hpp">
+      <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="MapHelper.hpp">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatMessage.hpp">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Chat.hpp">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatAction.hpp">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatBox.hpp">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.hpp">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Singleton.hpp">
+      <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="Tile.hpp">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.hpp">
+      <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="types.hpp">
+      <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="Util.hpp">
+      <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="Vec2.hpp">
+      <Filter>Other</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>DLL stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Archive.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="File.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Font.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Image.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="JSONObject.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectScript.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIButton.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIElement.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIEvent.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUILabel.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIPanel.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUISizer.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Color.cpp">
+      <Filter>Other</Filter>
+    </ClCompile>
+    <ClCompile Include="Console.cpp">
+      <Filter>Other</Filter>
+    </ClCompile>
+    <ClCompile Include="Error.cpp">
+      <Filter>Other</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneNode.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Prop.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Particles.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="PathFinder.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>Other</Filter>
+    </ClCompile>
+    <ClCompile Include="Log.cpp">
+      <Filter>Other</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="NPC.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Map.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua.cpp">
+      <Filter>Other</Filter>
+    </ClCompile>
+    <ClCompile Include="MapHelper.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Chat.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="ChatAction.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="ChatBox.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="ChatMessage.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Tile.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Other</Filter>
+    </ClCompile>
+    <ClCompile Include="Util.cpp">
+      <Filter>Other</Filter>
+    </ClCompile>
+    <ClCompile Include="Vec2.cpp">
+      <Filter>Other</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
