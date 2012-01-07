@@ -11,21 +11,20 @@
 
 #include "Singleton.hpp"
 #include "GUIElement.hpp"
-#include "GUISizer.hpp"
 
 namespace nEngine {
 	class GUIButton : public GUIElement  {
 	public:
-		GUIButton(const std::string& id);
-		~GUIButton();
+		NAPI GUIButton(const std::string& id);
+		NAPI ~GUIButton();
 
-		void onDraw();
+		NAPI void onDraw();
 
 		/**
 			Get the caption of the button
 			@return caption
 		*/
-		std::string getCaption()
+		NAPI std::string getCaption()
 		{
 			return mCaption;
 		}
@@ -35,7 +34,7 @@ namespace nEngine {
 			Set the caption of the button
 			@param str		New caption
 		*/
-		void setCaption(const std::string& str)
+		NAPI void setCaption(const std::string& str)
 		{
 			mCaption = str;
 		}

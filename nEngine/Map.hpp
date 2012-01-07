@@ -53,6 +53,10 @@ namespace nEngine {
 		*/
 		NAPI ~Map();
 		
+		/**
+			Load data from the property tree
+			@param data			Ptree containing data
+		*/
 		NAPI void loadData(boost::property_tree::ptree& data);
 
         /**
@@ -113,9 +117,9 @@ namespace nEngine {
 		NAPI int getMemoryUsage();
 		
         NAPI Vec2 getSize ();
-        NAPI Vec2 getSpawn ();
 
         NAPI FieldType* getFieldType(int id);		
+
 		NAPI void callLuaMethod(const std::string& method);
 
         NAPI static void luaRegister (lua_State* L);
@@ -127,15 +131,14 @@ namespace nEngine {
 	private:
 		
 		int mSize;
-		int limitArea;
 	
-        Vec2 spawn;
+		Vec2 mTileSize;
+
         Tile** mData;
         std::map<int, FieldType> fields;
 		std::string mNamespace;
 
 	public:
-
 		static const ResourceType sType = RESOURCE_MAP;
 	};
 };

@@ -32,9 +32,9 @@ namespace nEngine {
 	
 	// ------------------------------------------------------------------
 	Map::Map(const std::string& id)
-		:Resource(id, RESOURCE_MAP),
-		 limitArea(50)
+		:Resource(id, RESOURCE_MAP)
 	{
+
 	}
 	
 
@@ -93,14 +93,12 @@ namespace nEngine {
 		
 		mData = new Tile* [mSize * mSize];
 
-		for (int i = 0; i < mSize; ++i) {
-			for (int j = 0; j < mSize; ++j) {
-				Tile* t = mData[i * mSize + j] = new Tile(Vec2(i, j));
+		for (int i = 0; i < mSize * mSize; ++i) {
+			Tile* t = mData[i] = new Tile(Vec2(i / mSize, i % mSize));
 
-				fdata* d = ((fdata*)file->getData()) + i * mSize + j;
-				t->setID(d->id);
-				t->setBlocked(d->blocked);
-			}
+			fdata* d = ((fdata*)file->getData()) + i;
+			t->setID(d->id);
+			t->setBlocked(d->blocked);
 		}
 	}
 	
@@ -110,39 +108,39 @@ namespace nEngine {
 		Shader::useProgram("tile");
 
 		Vec2 off = Scene::inst().getCameraOffset(), screenSize = getScreenSize(), tileSize(TILE_WIDTH, TILE_HEIGHT);
+	
+		int ybeg = max(0, min((off.getX() / 2 + off.getY()) / TILE_HEIGHT, mSize - 1));
+		int yend = max(0, min(((off.getX() + screenSize.getX()) / 2 + off.getY() + screenSize.getY()) / tileSize.getY(), mSize - 1));
+		
+		int xbeg = max(0, min((off.getX() / 2 - off.getY() - screenSize.getY()) / tileSize.getY(), mSize - 1));
+		int xend = max(0, min(((off.getX() + screenSize.getX()) / 2 - off.getY()) / tileSize.getY(), mSize - 1));
+		
+		glColor3f (1.0f, 1.0f, 1.0f);
 
-		for (int x = mSize - 1; x >= 0; --x) {
-			for (int y = 0; y < mSize; ++y) {
+		for (int x = xend; x >= xbeg; --x) {
+			for (int y = ybeg; y <= yend; ++y) {
 				int trans_x = ((x + y) * TILE_WIDTH) >> 1;
 				int trans_y = ((y - x - 1) * TILE_HEIGHT ) >> 1;
+				int trans_z = (mSize - x) * mSize + y;
 
-				if (off - tileSize < Vec2(trans_x, trans_y) && Vec2(trans_x, trans_y) < off + screenSize) {
-					Tile* t = mData[x * mSize + y];
+				Tile* t = mData[x * mSize + y];				
+				FieldType* f = getFieldType(t->getID());
+				Image* img =  Resources::inst().require<Image>(f->mImage);
 
-					int trans_z = (mSize - x) * mSize + y;
+				int isExplored = t->isVisible() ? 2 : (t->isExplored() ? 1 : 0);
+				int width = img->getWidth(), height = img->getHeight();
+
+				Shader::setUniformi("isExplored", 1, &isExplored);
+				Shader::setUniformi("tileWidth", 1, &width); 
+				Shader::setUniformi("tileHeight", 1, &height); 
 				
-					FieldType* f = getFieldType(t->getID());
-					Image* img =  Resources::inst().require<Image>(f->mImage);
-
-					glColor3f (1.0f, 1.0f, 1.0f);
-					glActiveTextureARB(GL_TEXTURE0_ARB); 
-					glBindTexture(GL_TEXTURE_2D, img->getTextureID());
-
-					int isExplored = t->isVisible() ? 2 : (t->isExplored() ? 1 : 0);
-
-					int width = img->getWidth(), height = img->getHeight();
-
-					Shader::setUniformi("isExplored", 1, &isExplored);
-					Shader::setUniformi("tileWidth", 1, &width); 
-					Shader::setUniformi("tileHeight", 1, &height); 
-
-					glBegin (GL_QUADS);
-						glTexCoord2f(0.0f, 0.0f); glVertex3i (trans_x, trans_y + 60 - height, trans_z);
-						glTexCoord2f(1.0f, 0.0f); glVertex3i (trans_x + width, trans_y + 60 - height, trans_z);
-						glTexCoord2f(1.0f, 1.0f); glVertex3i (trans_x + width, trans_y + 60, trans_z);
-						glTexCoord2f(0.0f, 1.0f); glVertex3i (trans_x, trans_y + 60, trans_z);
-					glEnd ();
-				}
+				img->bind();
+				glBegin (GL_QUADS);
+					glTexCoord2f(0.0f, 0.0f); glVertex3i (trans_x, trans_y + 60 - height, trans_z);
+					glTexCoord2f(1.0f, 0.0f); glVertex3i (trans_x + width, trans_y + 60 - height, trans_z);
+					glTexCoord2f(1.0f, 1.0f); glVertex3i (trans_x + width, trans_y + 60, trans_z);
+					glTexCoord2f(0.0f, 1.0f); glVertex3i (trans_x, trans_y + 60, trans_z);
+				glEnd ();
 			}
 		}
 	}
@@ -150,12 +148,8 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	void Map::shadow()
 	{
-		for (int i = 0; i < mSize; ++i) {
-			for (int j = 0; j < mSize; ++j) {
-				Tile* t = mData[i * mSize + j];
-				
-				t->setVisible(false);
-			}
+		for (int i = 0; i < mSize * mSize; ++i) {
+			mData[i]->setVisible(false);
 		}
 	}
 	
@@ -208,13 +202,7 @@ namespace nEngine {
 	{
 		return Vec2(mSize, mSize);
 	}
-	
-	// ------------------------------------------------------------------
-	Vec2 Map::getSpawn ()
-	{
-		return spawn;
-	}
-	
+		
 	// ------------------------------------------------------------------
 	Tile* Map::getTile (Vec2& v)
 	{
@@ -243,9 +231,8 @@ namespace nEngine {
 	void Map::callLuaMethod(const std::string& name)
 	{
 		lua_State* L = luaGlobalState();
-		
-		lua_pushcfunction(L, luaErrorCallback);
 
+		lua_pushcfunction(L, luaErrorCallback);
 		lua_getglobal(L, mNamespace.c_str());
 		
 		if (!lua_istable(L, -1)) {
@@ -285,6 +272,7 @@ namespace nEngine {
 	luaNewMethod(Map, getTile)
 	{
 		Map* v = *(Map**)luaGetInstance(L, 1, "Map");
+
 		int x = luaL_checknumber(L, 2);
 		int y = luaL_checknumber(L, 3);
 

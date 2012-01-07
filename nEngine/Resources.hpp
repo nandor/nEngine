@@ -11,15 +11,11 @@
 #ifndef RESOURCES_HPP
 #define RESOURCES_HPP
 
-// nEngine includes
+#include "types.hpp"
 #include "Lua.hpp"
 #include "Singleton.hpp"
 #include "Resource.hpp"
 #include "Timer.hpp"
-
-// Font types
-#define FONT_MONO_8     0
-#define FONT_MONO_12    1
 
 namespace nEngine {
     /**
@@ -32,11 +28,11 @@ namespace nEngine {
     */
     class Resources : public Singleton<Resources> {
         public:
-			Resources ();
+			NAPI Resources ();
             /**
                 Destructor
             */
-            ~Resources ();
+            NAPI ~Resources ();
 
             /**
                 Get a list of the resources which have a certain type
@@ -44,7 +40,7 @@ namespace nEngine {
 
                 @return             List of resources
             */
-            std::vector<Resource*> getResourceByType(ResourceType type);
+            NAPI std::vector<Resource*> getResourceByType(ResourceType type);
 
             /**
                 Check if a resource exists
@@ -52,7 +48,7 @@ namespace nEngine {
 
                 @return             True if resource exists, false otherwise
             */
-            bool hasResource(const std::string& id);
+            NAPI bool hasResource(const std::string& id);
 
             /**
                 Get a resouce by id. If it does not exist, it will be created. If it is of a wrong
@@ -111,44 +107,51 @@ namespace nEngine {
                 @param resource     Resource to add
                 @param id           Group name
             */
-            bool addResource(Resource* resource, const std::string& groupName = "tmp");
+            NAPI bool addResource(Resource* resource, const std::string& groupName = "tmp");
 
 			/**
 				Load a resource group from a file
 				@param groupName	Name of the resource group
 				@param fileName		Resource group descriptor file
 			*/
-			void loadResourceGroup(const std::string& groupName, const std::string& fileName);
+			NAPI void loadResourceGroup(const std::string& groupName, const std::string& fileName);
 
 			/**
 				Unload a resource group
 				@param groupName	Name of the resource group
 			*/
-			void unloadResourceGroup(const std::string& groupName);
+			NAPI void unloadResourceGroup(const std::string& groupName);
 			
             /**
                 Register the lua callbacks used by this module
                 @param L            Lua state
             */
-            static void luaRegister (lua_State* L);
+            NAPI static void luaRegister (lua_State* L);
 
 
 			/**
 				Get the memory used by the resources
 				@return				Used memory in bytes
 			*/
-			int getMemoryUsage();
+			NAPI int getMemoryUsage();
+
+			/**
+				Free a resource
+				@param id			ID of the resource
+				@param type			Type of the resource
+			*/
+			NAPI void free(const std::string& id, ResourceType type);
 
         private:
 			
 			/**
 				Get a resource by its id and type
-				@param id			ID of the resource
+				@param id			ID of the resource	
 				@param type			The type 
 
 				@return				Pointer to the resource
 			*/
-			Resource* findResource(const std::string& id, ResourceType type);
+			NAPI Resource* findResource(const std::string& id, ResourceType type);
 			
         private:
 			/// Max ammount of used garbage

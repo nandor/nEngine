@@ -8,6 +8,7 @@
 #include "nHeaders.hpp"
 #include "Console.hpp"
 #include "Timer.hpp"
+#include "GUI.hpp"
 
 namespace nEngine {
 	template<> Console* Console::Singleton<Console>::mInstance = NULL;
@@ -74,10 +75,13 @@ namespace nEngine {
 			glVertex2i(0, bHeight - 20);
 		glEnd ();
 		
+		Vec2 mousePos = GUI::inst().getMousePos();
+
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		glPrint(stats, 5, bHeight + 20, "FPS: " + boost::lexical_cast<std::string> ((int)Timer::inst().getFPS()));
 		glPrint(stats, 5, bHeight + 34, "Memory: " + boost::lexical_cast<std::string> ((int)Resources::inst().getMemoryUsage() / 1024) + " Kb");
-		glPrint (ft, 5, bHeight - 4, "> " + editBuffer);
+		glPrint(stats, 5, bHeight + 48, "Mouse: <" + boost::lexical_cast<std::string> (mousePos.getX()) + "|" + boost::lexical_cast<std::string> (mousePos.getY()) + ">");
+		glPrint(ft, 5, bHeight - 4, "> " + editBuffer);
 
 		int currentLine = max(0, (int)lines.size () - height), pos = 0;
 		for (line_iter iter = lines.begin() + currentLine; iter < lines.end (); ++iter)

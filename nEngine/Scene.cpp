@@ -16,10 +16,11 @@ namespace nEngine {
 
 	// ------------------------------------------------------------------
 	Scene::Scene()
-		:mCamera(NULL),
-		 mMapName("")
+		:mTileSize(120, 60),
+		 mActive(false)
 	{
-
+		mCamera = NULL;
+		mMap = NULL;
 	}
 	
 	
@@ -34,20 +35,27 @@ namespace nEngine {
 
 	// ------------------------------------------------------------------
 	void Scene::draw()
-	{		
-		if (!mCamera) {
-			throw Error ("Scene", "Scene does not have a camera!");
-		}
-		
-		mCamera->focus();
+	{	
+		if (mActive) {
+			glPushMatrix();
 
-		Map* map = getMap();
-		map->draw();
-
-		for (tNodeIter it = mNodes.begin(); it != mNodes.end(); ++it) {
-			if (map->isVisible(it->second->getTile())) {
-				it->second->draw();
+			if (mCamera) {
+				mCamera->focus();
+			} else {
+				glLoadIdentity();
 			}
+		
+			if (mMap) {				
+				mMap->draw();
+			}
+
+			for (tNodeIter it = mNodes.begin(); it != mNodes.end(); ++it) {
+				if (mMap->isVisible(it->second->getTile())) {
+					it->second->draw();
+				}
+			}
+
+			glPopMatrix();
 		}
 	}
 	
@@ -55,16 +63,18 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	void Scene::update()
 	{
-		Map* map = getMap();
+		if (mActive) {
+			Map* map = getMap();
 
-		map->shadow();
+			map->shadow();
 
-		for (tNodeIter it = mNodes.begin(); it != mNodes.end(); ++it) {
-			if (it->second) {
-				it->second->update();
+			for (tNodeIter it = mNodes.begin(); it != mNodes.end(); ++it) {
+				if (it->second) {
+					it->second->update();
 
-				if (it->second->isHighlighted()) {
-					map->highlight(it->second->getTile(), it->second->getHighlightRange());
+					if (it->second->isHighlighted()) {
+						map->highlight(it->second->getTile(), it->second->getHighlightRange());
+					}
 				}
 			}
 		}
@@ -105,29 +115,20 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	Map* Scene::getMap()
 	{
-		return Resources::inst().require<Map> (mMapName);
+		return mMap;
 	}
 
-	
-	// ------------------------------------------------------------------
-	void Scene::setMap(const std::string& mapName)
-	{
-		mMapName = mapName;
-		Map* map = Resources::inst().get<Map>(mMapName);
-		map->callLuaMethod("onSceneInit");
-	}
-
-	
+		
 	// ------------------------------------------------------------------
 	void Scene::setMap(Map* map)
 	{
-		if (map != NULL) {
+		if (map == NULL) {
 			throw Error("Scene", "Invalid map");
 		}
 
 		map->callLuaMethod("onSceneInit");
 
-		mMapName = map->getID();
+		mMap = map;
 	}
 
 
@@ -145,25 +146,31 @@ namespace nEngine {
 	
 
 	// ------------------------------------------------------------------
-	Vec2 Scene::getTileAt(int x, int y) {
-		if (mMapName == "" || mCamera == NULL) {
+	Vec2 Scene::getTileAt(int x, int y) 
+	{
+		if (mMap == NULL || mCamera == NULL) {
 			return Vec2();
 		}
 		
-		Vec2 absPos = Vec2(x, y) + mCamera->getOffset(), tileSize = getMap()->getTileSize();
+		Vec2 absPos = Vec2(x, y) + mCamera->getOffset();
 		
 		return Vec2 (
-			(int)((absPos.getX() / 2 - absPos.getY()) / tileSize.getY()),
-			(int)((absPos.getX() / 2 + absPos.getY()) / tileSize.getY())
+			(int)((absPos.getX() / 2 - absPos.getY()) / mTileSize.getY()),
+			(int)((absPos.getX() / 2 + absPos.getY()) / mTileSize.getY())
 		);
 	}
 	
 	// ------------------------------------------------------------------
 	Vec2 Scene::getCameraOffset()
 	{
+		if (!mCamera) {
+			return Vec2(0, 0);
+		}
+
 		return mCamera->getOffset();
 	}
 	
+	// ------------------------------------------------------------------
 	void Scene::destroyScene()
 	{
 
@@ -205,6 +212,21 @@ namespace nEngine {
 		return 1;
 	}
 
+	
+	// ------------------------------------------------------------------
+	luaNewMethod(Scene, start)
+	{
+		Scene::inst().start();
+		return 0;
+	}
+	
+	// ------------------------------------------------------------------
+	luaNewMethod(Scene, stop)
+	{
+		Scene::inst().stop();
+		return 0;
+	}
+
 	// ------------------------------------------------------------------
 	luaBeginMeta(Scene)
 	luaEndMeta()
@@ -214,6 +236,8 @@ namespace nEngine {
 	luaBeginMethods(Scene)
 		luaMethod(Scene, add)
 		luaMethod(Scene, get)
+		luaMethod(Scene, start)
+		luaMethod(Scene, stop)
 		luaMethod(Scene, setCamera)
 	luaEndMethods()
 	

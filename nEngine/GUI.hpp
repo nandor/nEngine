@@ -16,8 +16,6 @@
 
 // GUI elements
 #include "GUIElement.hpp"
-#include "GUIButton.hpp"
-#include "GUISizer.hpp"
 #include "GUIPanel.hpp"
 #include "GUILabel.hpp"
 
@@ -25,22 +23,53 @@
 namespace nEngine {
 	class GUI : public Singleton<GUI>, public GUIElement {
 	public:
-		GUI();
-		~GUI();
+		NAPI GUI();
+		NAPI ~GUI();
 
 		/**
 			Draw the entire GUI
 		*/
-		void draw();
+		NAPI void draw();
 
 		/**
 			Handle an event
 			@param evt		Event to be processed
 			@return			True if an element caught it, false if it did not affect anything
 		*/
-		bool handleEvent(GUIEvent& evt);
-	private:
+		NAPI bool handleEvent(GUIEvent& evt);
 
+		/**
+			Remove an element
+			@param id		ID of the element
+		*/
+		void remove(const std::string& id);
+
+		/**
+			Find an element
+			@param id		ID of the element
+		*/
+		NAPI GUIElement* get(const std::string& id);
+
+		/**
+			Mouse position
+			@return			Position of the mouse
+		*/
+		NAPI Vec2 getMousePos()
+		{
+			return mMousePos;
+		}
+	private:
+		/// Add an element to the global array
+		bool addToGlobal(GUIElement* elem);
+
+		/// Map containing pointer to all elements
+		std::map<std::string, GUIElement*> mGlobal;
+
+		/// Just a friend
+		friend class GUIElement;
+
+		/// Mouse position
+		Vec2 mMousePos;
 	};
 };
 #endif /*GUI_HPP*/

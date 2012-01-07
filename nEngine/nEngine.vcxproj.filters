@@ -62,9 +62,6 @@
     <ClInclude Include="GUIElement.hpp">
       <Filter>GUI</Filter>
     </ClInclude>
-    <ClInclude Include="GUISizer.hpp">
-      <Filter>GUI</Filter>
-    </ClInclude>
     <ClInclude Include="GUILabel.hpp">
       <Filter>GUI</Filter>
     </ClInclude>
@@ -84,9 +81,6 @@
       <Filter>Other</Filter>
     </ClInclude>
     <ClInclude Include="SceneNode.hpp">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="QuadTreeValue.hpp">
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="Prop.hpp">
@@ -155,6 +149,9 @@
     <ClInclude Include="Vec2.hpp">
       <Filter>Other</Filter>
     </ClInclude>
+    <ClInclude Include="GUICheckbox.hpp">
+      <Filter>GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -206,9 +203,6 @@
       <Filter>GUI</Filter>
     </ClCompile>
     <ClCompile Include="GUIPanel.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="GUISizer.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
     <ClCompile Include="Color.cpp">
@@ -282,6 +276,9 @@
     </ClCompile>
     <ClCompile Include="Vec2.cpp">
       <Filter>Other</Filter>
+    </ClCompile>
+    <ClCompile Include="GUICheckbox.cpp">
+      <Filter>GUI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

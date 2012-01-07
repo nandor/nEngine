@@ -128,4 +128,11 @@ namespace nEngine {
 	{
 
 	}
+
+	// -----------------------------------------------------------------
+	void Image::bind(int tex)
+	{
+		glActiveTextureARB(GL_TEXTURE0_ARB + tex); 
+		glBindTexture(GL_TEXTURE_2D, getTextureID());
+	}
 };

@@ -70,7 +70,17 @@ namespace nEngine {
 	{
 		return mMemoryUsage;
 	}
-	
+
+	// ------------------------------------------------------------------
+	void Resources::free(const std::string& id, ResourceType type)
+	{
+		Resource* r = findResource(id, type);
+
+		if (r != NULL) {
+			delete r;
+		}
+	}
+
 	// ------------------------------------------------------------------
 	void Resources::loadResourceGroup(const std::string& groupName, const std::string& fileName)
 	{

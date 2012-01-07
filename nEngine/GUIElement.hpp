@@ -13,10 +13,23 @@
 #include "Color.hpp"
 #include "Vec2.hpp"
 #include "GUIEvent.hpp"
-#include "GUISizer.hpp"
 #include "Util.hpp"
 
 namespace nEngine {
+	enum GUIAlign {
+		GUI_ALIGN_TOP,
+		GUI_ALIGN_BOTTOM,
+		GUI_ALIGN_CENTER,
+		GUI_ALIGN_LEFT,
+		GUI_ALIGN_RIGHT,
+		GUI_ALIGN_NONE
+	};
+
+	enum GUISize {
+		GUI_SIZE_PERCENT,
+		GUI_SIZE_PIXEL,
+	};
+
 	/**
 		Base class for the GUI
 	*/
@@ -26,18 +39,18 @@ namespace nEngine {
 			Constructor
 			@param id		ID of the element
 		*/
-		GUIElement (const std::string& id);
+		NAPI GUIElement (const std::string& id);
 
 		/**
 			Destructor
 		*/
-		virtual ~GUIElement ();
+		NAPI virtual ~GUIElement ();
 
 		/**
 			Get the id of the element
 			@return			ID of the element
 		*/
-		std::string getID()
+		NAPI std::string getID()
 		{
 			return mID;
 		}
@@ -46,7 +59,7 @@ namespace nEngine {
 			Get the font name
 			@return			Name of the font
 		*/
-		std::string getFont()
+		NAPI std::string getFont()
 		{
 			return mFontName;
 		}
@@ -55,7 +68,7 @@ namespace nEngine {
 			Set the font name
 			@param name		New font name
 		*/
-		void setFont(const std::string& name)
+		NAPI void setFont(const std::string& name)
 		{
 			mFontName = name;
 		}
@@ -63,24 +76,24 @@ namespace nEngine {
 		/**
 			Draw the element and its children
 		*/
-		virtual void draw();
+		NAPI virtual void draw();
 
 		/**
 			Draw callback
 		*/
-		virtual void onDraw();
+		NAPI virtual void onDraw();
 
 		/**
 			Handle the events for this element
 			@param evt		GUIEvent holding event data
 		*/
-		virtual bool handleEvent (GUIEvent& evt);
+		NAPI virtual bool handleEvent (GUIEvent& evt);
 		
 		/**
 			Set the background color
 			@param color		Color of the background
 		*/
-		void setBackgroundColor(const Color& color)
+		NAPI void setBackgroundColor(const Color& color)
 		{
 			mBackgroundColor = color;
 		}
@@ -89,7 +102,7 @@ namespace nEngine {
 			Set the text color
 			@param color		Color of the text
 		*/
-		void setTextColor(const Color& color)
+		NAPI void setTextColor(const Color& color)
 		{
 			mFontColor = color;
 		}
@@ -98,48 +111,33 @@ namespace nEngine {
 			Add a new child element
 			@param elem		Pointer to the element
 		*/
-		void add (GUIElement* elem);
+		NAPI void add (GUIElement* elem);
 
 		/**
 			Get the parent node
 			@return			Pointer to the parent node
 		*/
-		GUIElement* getParentNode()
+		NAPI GUIElement* getParentNode()
 		{
 			return mParent;
 		}
 		
 		/**
-			Set the sizer for the element
-			@param size		Pointer to a sizer
-		*/
-		void setSizer(GUISizer* sizer);
-
-		/**
-			Get the sizer of the element
-			@return			Pointer to the sizer
-		*/
-		GUISizer* getSizer()
-		{
-			return mSizer;
-		}
-
-		/**
 			Get the size of an element
 			@return			Vec2 containing size
 		*/
-		Vec2 getSize()
+		NAPI Vec2 getSize()
 		{
-			return mSize;
+			return mComputedSize;
 		}
 
 		/**
 			Get the computed position of an element
 			@return			Vec2 containing position
 		*/
-		Vec2 getPosition()
+		NAPI Vec2 getPosition()
 		{
-			return mPos;
+			return mComputedPos;
 		}
 
 		/**
@@ -147,13 +145,13 @@ namespace nEngine {
 			@param evt		Event type
 			@param func		Event handler
 		*/
-		void connect(GUIEventType type, boost::function<void(GUIEvent&)> func);
+		NAPI void connect(GUIEventType type, boost::function<void(GUIEvent&)> func);
 
 		/**
 			Check if the element is visible?
 			@return			True if it's visible
 		*/
-		bool isVisible()
+		NAPI bool isVisible()
 		{
 			return mIsVisible;
 		}
@@ -161,7 +159,7 @@ namespace nEngine {
 		/**
 			Hide the element
 		*/
-		void hide()
+		NAPI void hide()
 		{
 			mIsVisible = false;
 		}
@@ -169,10 +167,46 @@ namespace nEngine {
 		/**
 			Show the element
 		*/
-		void show()
+		NAPI void show()
 		{
 			mIsVisible = true;
 		}
+
+		NAPI void setAlignment(GUIAlign horz, GUIAlign vert)
+		{
+			mHorzAlign = horz;
+			mVertAlign = vert;
+		}
+
+		NAPI void setSize(Vec2 size, GUISize horzSize = GUI_SIZE_PIXEL, GUISize vertSize = GUI_SIZE_PIXEL)
+		{
+			mSize = size;
+			mWidthType = horzSize;
+			mHeightType = vertSize;
+		}
+
+		NAPI void applyTo(GUIElement* elem);
+		
+		/**
+			Set the position of the element
+			@param pos		Position
+		*/
+		NAPI void setPosition(Vec2 pos)
+		{
+			mPos = pos;
+		}
+
+		NAPI void enable()
+		{
+			mEnabled = true;
+		}
+
+		NAPI void disable()
+		{
+			mEnabled = false;
+		}
+
+
 	protected:
 		/**
 			Check if the mouse is over an element
@@ -185,6 +219,11 @@ namespace nEngine {
 			@param evt		An event
 		*/
 		void fireEvent(GUIEvent& evt);
+
+		/**
+			Compute the size of the element
+		*/
+		void computeSize();
 
 	protected:
 		/// ID of the element
@@ -214,12 +253,12 @@ namespace nEngine {
 		/// Is the element visible?
 		bool mIsVisible;
 
+		/// Is the elemnt active?
+		bool mEnabled;
+
 		/// The parent node
 		GUIElement* mParent;
-
-		/// The sizer
-		GUISizer* mSizer;
-
+		
 		/// Map containing children
 		std::map<std::string, GUIElement*> mChildren;
 
@@ -231,6 +270,24 @@ namespace nEngine {
 
 		/// Iterator to the events
 		typedef std::vector<boost::function<void(GUIEvent&)> >::iterator tEventIter;
+
+		/// Vertical alignment
+		GUIAlign mVertAlign;
+		
+		/// Horizontal alignment
+		GUIAlign mHorzAlign;
+		
+		/// Computed position
+		Vec2 mComputedPos;
+
+		/// Computed size
+		Vec2 mComputedSize;
+
+		/// Vertical size type
+		GUISize mWidthType;
+
+		/// Horizontal size type
+		GUISize mHeightType;
 	};
 };
 #endif /*GUIELEMENT_HPP*/

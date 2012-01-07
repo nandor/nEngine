@@ -32,7 +32,9 @@ namespace nEngine {
         NAPI ~Application();
 
         NAPI void start();
-		
+
+		NAPI void exit();
+
 		NAPI virtual void onSceneInit();
 		NAPI virtual void onSceneDestroy();
 
@@ -59,6 +61,7 @@ namespace nEngine {
 
 		bool		mFullScreen;
 		bool		mActive;
+		bool		mDone;
 
 		std::string mWindowTitle;
 

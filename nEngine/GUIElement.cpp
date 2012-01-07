@@ -7,6 +7,7 @@
 */
 #include "nHeaders.hpp"
 #include "GUIElement.hpp"
+#include "GUI.hpp"
 
 namespace nEngine {
 
@@ -19,8 +20,13 @@ namespace nEngine {
 		 mFontColor(0.0f, 0.0f, 0.0f),
 		 mMouseOver(false),
 		 mMousePressed(false),
-		 mSizer(NULL),
-		 mIsVisible(true)
+		 mIsVisible(true),
+		 mVertAlign(GUI_ALIGN_NONE),
+		 mHorzAlign(GUI_ALIGN_NONE),
+		 mComputedPos(0, 0),
+		 mComputedSize(0, 0),
+		 mWidthType(GUI_SIZE_PIXEL),
+		 mHeightType(GUI_SIZE_PIXEL)
 	{
 		mID = id;
 	}
@@ -28,9 +34,13 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	GUIElement::~GUIElement()
 	{
-		if (mSizer != NULL) {
-			delete mSizer;
+		tChildIter it = mParent->mChildren.find(this->getID());
+
+		if (it == mParent->mChildren.end()) {
+			throw Error("GUIElement", getID(), "Invalid parent!");
 		}
+		
+		mParent->mChildren.erase(it);
 
 		for (tChildIter it = mChildren.begin(); it != mChildren.end(); ++it) {
 			delete it->second;
@@ -44,9 +54,9 @@ namespace nEngine {
 		if (!child) {
 			throw Error("GUI", getID(), "Invalid child!");
 		}
-
-		if (!child->mSizer) {
-			throw Error("GUI", child->getID(), "Element needs a sizer!");
+		
+		if (!GUI::inst().addToGlobal(child)) {
+			throw Error ("GUI", getID(), "An element with that ID already exists!");
 		}
 
 		tChildIter it = mChildren.find(child->getID());
@@ -65,17 +75,14 @@ namespace nEngine {
 			return;
 
 		glPushMatrix();
-		glTranslatef(mPos.getX(), mPos.getY(), 0.0f);
+		glTranslatef(mComputedPos.getX(), mComputedPos.getY(), 0.0f);
 
 		onDraw();
 
 		glPopMatrix();
 
 		for (tChildIter it = mChildren.begin(); it != mChildren.end(); ++it) {
-			it->second->mSizer->applyTo(it->second);
-			it->second->mSize = it->second->mSizer->getSize();
-			it->second->mPos = it->second->mSizer->getPosition();
-
+			it->second->computeSize();
 			it->second->draw();
 		}
 
@@ -90,9 +97,64 @@ namespace nEngine {
 
 
 	// ------------------------------------------------------------------
+	void GUIElement::computeSize()
+	{
+		if (!this->getParentNode()) {
+			throw Error ("GUISizer", "An element with a parent is required!");
+		}
+
+		GUIElement* parent = this->getParentNode();
+
+		Vec2 parentSize = parent->getSize();
+		Vec2 parentPos = parent->getPosition();
+
+		mComputedSize = mSize;
+		if (mWidthType == GUI_SIZE_PERCENT) {
+			mComputedSize.setX(parentSize.getX() * mSize.getX() / 100.0f);
+		}
+
+		if (mHeightType == GUI_SIZE_PERCENT) {
+			mComputedSize.setY(parentSize.getY() * mSize.getY() / 100.0f);
+		}
+
+
+		mComputedPos = mPos;
+		switch (mHorzAlign) {
+		case GUI_ALIGN_LEFT:
+			mComputedPos.setX(parentPos.getX() + mPos.getX());
+			break;
+		case GUI_ALIGN_RIGHT:
+			mComputedPos.setX(parentSize.getX() - mComputedSize.getX() - mPos.getX());
+			break;
+		case GUI_ALIGN_CENTER:
+			mComputedPos.setX((parentSize.getX() - mComputedSize.getX()) / 2);
+			break;
+		default:
+			break;
+		}
+
+		switch (mVertAlign) {
+		case GUI_ALIGN_TOP:
+			mComputedPos.setY(parentPos.getY() + mPos.getY());
+			break;
+		case GUI_ALIGN_BOTTOM:
+			mComputedPos.setY(parentSize.getY() - mComputedSize.getY() - mPos.getY());
+			break;
+		case GUI_ALIGN_CENTER:
+			mComputedPos.setY((parentSize.getY() - mComputedSize.getY()) / 2);
+			break;
+		default:
+			break;
+		}
+
+		mComputedPos += parent->getPosition();
+	}
+	
+
+	// ------------------------------------------------------------------
 	bool GUIElement::handleEvent(GUIEvent& evt)
 	{
-		if (!mIsVisible)
+		if (!mIsVisible || !mEnabled)
 			return false;
 		
 		bool captured = true;
@@ -128,24 +190,13 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	bool GUIElement::isUnderMouse(Vec2 pos)
 	{
-		if (mPos < pos && pos < mPos + mSize) {
+		if (mComputedPos < pos && pos < mComputedPos + mSize) {
 			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	
-	// ------------------------------------------------------------------
-	void GUIElement::setSizer(GUISizer* sizer)
-	{
-		if (mSizer) {
-			delete mSizer;
 		}
 
-		mSizer = sizer;
+		return false;
 	}
-		
+	
 	// ------------------------------------------------------------------
 	void GUIElement::connect(GUIEventType type, boost::function<void(GUIEvent&)> func)
 	{
@@ -161,7 +212,9 @@ namespace nEngine {
 	void GUIElement::fireEvent(GUIEvent& evt)
 	{
 		for (tEventIter it = mEvents[evt.getType()].begin(); it != mEvents[evt.getType()].end(); ++it) {
-			(*it) (evt);
+			if (*it != NULL) {
+				(*it) (evt);
+			}
 		}
 	}
 };

@@ -32,17 +32,17 @@ namespace nEngine {
 
 	class GUIEvent {
 	public:
-		GUIEvent();
-		GUIEvent(GUIEventType, int mouseX, int mouseY);
-		GUIEvent(GUIEventType, Vec2 mouse);
+		NAPI GUIEvent();
+		NAPI GUIEvent(GUIEventType, int mouseX, int mouseY);
+		NAPI GUIEvent(GUIEventType, Vec2 mouse);
 
-		~GUIEvent();
+		NAPI ~GUIEvent();
 		
 		/**
 			Get the type of the element
 			@return			Type of the event
 		*/
-		GUIEventType getType()
+		NAPI GUIEventType getType()
 		{
 			return mType;
 		}
@@ -51,7 +51,7 @@ namespace nEngine {
 			Return the position of the mouse
 			@return			Vec2 containing mouse position
 		*/
-		Vec2 getMousePos()
+		NAPI Vec2 getMousePos()
 		{
 			return Vec2(mMouseX, mMouseY);
 		}
@@ -60,7 +60,7 @@ namespace nEngine {
 			Set the position of the mouse
 			@param pos		Mouse position
 		*/
-		void setMousePos (Vec2 pos)
+		NAPI void setMousePos (Vec2 pos)
 		{
 			mMouseX = pos.getX();
 			mMouseY = pos.getY();

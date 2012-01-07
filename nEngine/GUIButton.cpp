@@ -1,5 +1,5 @@
 /**
-	@file GUI.hpp
+	@file GUIButton.hpp
 	@author Licker Nandor
 
 	This file is part of nEngine.
@@ -45,12 +45,11 @@ namespace nEngine {
 		if (mFontName != "") {
 			Font* ft = Resources::inst().get<Font> (mFontName);
 			
-			mFontColor.glUse();
 			std::string string = mCaption;
 
 			unsigned textWidth = ft->getTextWidth(mCaption);
 			if (textWidth >= mSize.getX()) { 
-				unsigned len = 0, length = mSize.getX() - 4 * ft->getCharWidth('.');
+				unsigned len = 0, length = mComputedSize.getX() - 4 * ft->getCharWidth('.');
 				textWidth = 0;
 				while (textWidth < length && len < mCaption.length()) {
 					textWidth += ft->getCharWidth(mCaption[len++]);
@@ -60,8 +59,12 @@ namespace nEngine {
 				textWidth += 3 * ft->getCharWidth('.') - ft->getCharWidth(mCaption[len]);
 			}
 			
+			if (mEnabled) {
+				mFontColor.glUse();
+			} else {
+				glColor4f(0.6f, 0.6f, 0.6f, 1.0f);
+			}
 			glPrint(ft, (mSize.getX() - textWidth) / 2, (mSize.getY() + ft->getHeight()) / 2, string);
-
 		}
 	}
 };

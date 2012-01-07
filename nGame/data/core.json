@@ -78,6 +78,20 @@
 		]
 	},
 	{
+		"type": "FONT",
+		"face": "zip://data/test.zip/fonts/gui.ttf",
+		"fonts": [
+			{
+				"id": "gui12",
+				"height": 12
+			},
+			{
+				"id": "gui24",
+				"height": 24
+			}
+		]
+	},
+	{
 		"type": "OBJECT",
 		"id": "john",
 		"data": {

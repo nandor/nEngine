@@ -95,11 +95,11 @@
     <ClInclude Include="Font.hpp" />
     <ClInclude Include="GUI.hpp" />
     <ClInclude Include="GUIButton.hpp" />
+    <ClInclude Include="GUICheckbox.hpp" />
     <ClInclude Include="GUIElement.hpp" />
     <ClInclude Include="GUIEvent.hpp" />
     <ClInclude Include="GUILabel.hpp" />
     <ClInclude Include="GUIPanel.hpp" />
-    <ClInclude Include="GUISizer.hpp" />
     <ClInclude Include="Image.hpp" />
     <ClInclude Include="JSONObject.hpp" />
     <ClInclude Include="Log.hpp" />
@@ -113,7 +113,6 @@
     <ClInclude Include="Particles.hpp" />
     <ClInclude Include="PathFinder.hpp" />
     <ClInclude Include="Prop.hpp" />
-    <ClInclude Include="QuadTreeValue.hpp" />
     <ClInclude Include="Resource.hpp" />
     <ClInclude Include="Resources.hpp" />
     <ClInclude Include="Scene.hpp" />
@@ -150,11 +149,11 @@
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="GUIButton.cpp" />
+    <ClCompile Include="GUICheckbox.cpp" />
     <ClCompile Include="GUIElement.cpp" />
     <ClCompile Include="GUIEvent.cpp" />
     <ClCompile Include="GUILabel.cpp" />
     <ClCompile Include="GUIPanel.cpp" />
-    <ClCompile Include="GUISizer.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="JSONObject.cpp" />
     <ClCompile Include="Log.cpp" />

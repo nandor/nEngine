@@ -83,11 +83,10 @@ namespace nEngine {
 
 		FT_Bitmap& bitmap = bitmap_glyph->bitmap;
 
-		int width = nextP2 (mHeight);
+		int width = nextP2 (bitmap.width);
 		int height = nextP2 (bitmap.rows);
 
-
-		GLubyte* expanded_data = new GLubyte[ 2 * width * height];
+		GLubyte* expanded_data = new GLubyte[2 * width * height];
 		memset(expanded_data, 0, 2 * width * height);
 
 		for (int j = 0; j < bitmap.rows; j++) {
@@ -96,7 +95,6 @@ namespace nEngine {
 			}
 		}
 
-		
 		glActiveTextureARB(GL_TEXTURE0_ARB); 
 		glBindTexture( GL_TEXTURE_2D, mTextures[(int)ch]);
 
@@ -109,25 +107,27 @@ namespace nEngine {
 		delete [] expanded_data;
 
 		glNewList(mListBase + ch, GL_COMPILE);
-
+		
+		
+		glActiveTextureARB(GL_TEXTURE0_ARB); 
 		glBindTexture(GL_TEXTURE_2D, mTextures[(int)ch]);
 
 		glPushMatrix();
 		glTranslatef(bitmap_glyph->left, mHeight - bitmap_glyph->top, 0);
 
-		float x = (float)bitmap.width / (float)width;
-		float y = (float)bitmap.rows / (float)height;
+		float x = (float)bitmap.width / width;
+		float y = (float)bitmap.rows / height;
 
 		glBegin(GL_QUADS);
-			glTexCoord2d(0,0); glVertex2f(0, 0);
-			glTexCoord2d(x,0); glVertex2f(bitmap.width, 0);
-			glTexCoord2d(x,y); glVertex2f(bitmap.width, bitmap.rows);
-			glTexCoord2d(0,y); glVertex2f(0, bitmap.rows);
+			glTexCoord2d(0, 0); glVertex2f(0, 0);
+			glTexCoord2d(x, 0); glVertex2f(bitmap.width, 0);
+			glTexCoord2d(x, y); glVertex2f(bitmap.width, bitmap.rows);
+			glTexCoord2d(0, y); glVertex2f(0, bitmap.rows);
 		glEnd();
 
 
 		glPopMatrix();
-		glTranslatef(sFace->glyph->advance.x >> 6 ,0,0);
+		glTranslatef(sFace->glyph->advance.x >> 6, 0, 0);
 		glEndList();
 		
 		mCharWidth[(int)ch] = sFace->glyph->advance.x >> 6;

@@ -249,7 +249,13 @@ namespace nEngine {
 		// Resize the window
 		onResize (mWidth, mHeight);
 	}
-	
+
+	// ------------------------------------------------------------------
+	void Application::exit()
+	{
+		PostMessage(mWindowHandle, WM_QUIT, NULL, NULL);
+	}
+
 	// ------------------------------------------------------------------
 	void Application::start ()
 	{	
@@ -262,16 +268,16 @@ namespace nEngine {
 		onSceneInit();
 
 		float frameTime = 1000.0f / mMaxFPS;
-		bool done = false;
 		mActive = true;
+		mDone = false;
 		MSG msg;
 
-		while (!done) {
+		while (!mDone) {
 			float begTime = Timer::inst().getTime();
 
 			if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
 				if (msg.message == WM_QUIT) {
-					done = true;
+					mDone = true;
 				} else {
 					handleMessage(msg);
 					TranslateMessage(&msg);	

@@ -74,4 +74,6 @@ function Tutorial.onSceneInit (map)
 	end
 	
 	Tutorial.initField(map, Vec2.new(3, 3))	
+	
+	Scene.start()
 end

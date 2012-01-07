@@ -19,22 +19,22 @@
 namespace nEngine {
 	class Timer : public Singleton<Timer> {
 	public:
-		Timer();
-		~Timer();
+		NAPI Timer();
+		NAPI ~Timer();
 		
-        float getTime ();
+        NAPI float getTime ();
 
-		float getFrameTime()
+		NAPI float getFrameTime()
 		{
 			return getTime() - mLastFrameTime;
 		}
 
-		float getFPS() 
+		NAPI float getFPS() 
 		{
 			return 1000.0f * mNumFrames / (getTime() - mLastFrameTime);
 		}
 
-		void frameEnd()
+		NAPI void frameEnd()
 		{
 			if (mLastFrameTime >= 10000.0f) {
 				mLastFrameTime = getTime();

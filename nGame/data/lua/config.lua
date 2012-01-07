@@ -2,7 +2,8 @@
 	Configuration for nEngine
 ]]--
 
-displayWidth = 1366
+fullScreen = true
+
+displayWidth = 1024
 displayHeight = 768
-fullScreen = false
 maxFPS = 40

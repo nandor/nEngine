@@ -10,7 +10,8 @@
 
 #ifndef SCENE_HPP
 #define SCENE_HPP
-#include "nHeaders.hpp"
+
+#include "types.hpp"
 #include "Error.hpp"
 #include "Map.hpp"
 #include "Camera.hpp"
@@ -66,13 +67,7 @@ namespace nEngine {
 			@param map			Pointer to the map
 		*/
 		NAPI void setMap(Map* map);
-
-		/**
-			Set a new map to be used
-			@param mapName		Name of the map
-		*/
-		NAPI void setMap(const std::string& mapName);
-
+		
 		/**
 			Get a pointer to an object
 			@param id			Id of the object
@@ -116,13 +111,33 @@ namespace nEngine {
 			@return				offset
 		*/
 		NAPI Vec2 getCameraOffset();
+
+		/**
+			Activate the scene
+		*/
+		NAPI void stop() {
+			mActive = false;
+		}
+
+		/**
+			Deactivate the scene
+		*/
+		NAPI void start() {
+			mActive = true;
+		}
+
 	private:
+		/// Size of tiles
+		Vec2 mTileSize;
 
 		/// Main camera
 		Camera* mCamera;
 
 		/// Pointer to the map
-		std::string mMapName;
+		Map* mMap;
+
+		/// Scene activation flag
+		bool mActive;
 
 		/// Map containig the objects
 		std::map<std::string, SceneNode*> mNodes;

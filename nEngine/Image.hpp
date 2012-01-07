@@ -18,6 +18,8 @@ namespace nEngine {
         Image(const std::string& fileID);
         ~Image();
 
+		void bind(int tex = 0);
+
         int getWidth()
 		{
 			return mWidth;
