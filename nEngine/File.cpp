@@ -87,4 +87,24 @@ namespace nEngine {
 	
 		archive->readFile(this, fileName);
 	}
+
+	// ------------------------------------------------------------------
+	void File::write(const std::string& data)
+	{
+		delete[] mData;
+		mSize = data.length();
+		mData = new uint8[mSize + 1];
+		memcpy(mData, data.c_str(), mSize);
+		mData[mSize] = '\0';
+
+		if (!mFromArchive) {
+			FILE* fout; 
+			fopen_s(&fout, mFileName.c_str(), "wb");
+			fwrite(mData, sizeof(uint8), mSize, fout);
+			fclose(fout);
+		} else {
+			Archive* archive =  Resources::inst().require<Archive> (mArchiveName);
+			archive->writeFile(this, mFileName);
+		}
+	}
 };

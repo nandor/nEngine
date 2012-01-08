@@ -17,6 +17,7 @@ namespace nEngine {
 		 mCaption(""),
 		 mChecked(false)
 	{
+		mBackgroundColor = Color(0.9f, 0.9f, 0.9f, 1.0f);
 		connect(GUI_EVENT_CLICK, boost::bind(&GUICheckbox::onClick, this, _1));
 	}
 	
@@ -31,8 +32,6 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	void GUICheckbox::onDraw()
 	{
-		float colorDiff = (mMousePressed ? 0.9 : (mMouseOver ? 1.1 : 1.0));
-
 		if (mFontName != "") {
 			Font* ft = Resources::inst().get<Font> (mFontName);
 			
@@ -52,8 +51,11 @@ namespace nEngine {
 
 			glPushMatrix();
 			glTranslatef(mComputedSize.getX(), mComputedSize.getY() / 2, 0.0f);
+			
+			float colorDiff = (mMousePressed ? 0.9 : (mMouseOver ? 1.1 : 1.0));
+
 			// draw the checkbox
-			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+			(mBackgroundColor * colorDiff).glUse();
 			glBegin(GL_QUADS);
 				glVertex2i(-32, -15);
 				glVertex2i(-2, -15);
@@ -73,22 +75,16 @@ namespace nEngine {
 			if (mChecked) {
 				glColor4f(0.0f, 0.7f, 0.0, 1.0f);
 				glBegin(GL_QUADS);
-					glVertex2i(-24, -7);
-					glVertex2i(-10, -7);
+					glVertex2i(-25, -8);
+					glVertex2i(-10, -8);
 					glVertex2i(-10, 7);
-					glVertex2i(-24, 7);
+					glVertex2i(-25, 7);
 				glEnd();
 			}
 
 			
 			glPopMatrix();
-			if (mEnabled) {
-				float colorDiff = (mMousePressed ? 0.9 : (mMouseOver ? 1.1 : 1.0));
-
-				(mFontColor * colorDiff).glUse();		
-			} else {
-				glColor4f(0.6f, 0.6f, 0.6f, 1.0f);
-			}
+			(mEnabled ? mFontColor : Color(0.6f, 0.6f, 0.6f, 1.0f)).glUse();
 			glPrint(ft, 0, (mSize.getY() + ft->getHeight()) / 2, string);
 
 		}

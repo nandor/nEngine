@@ -13,6 +13,7 @@
 
 namespace nEngine 
 {
+	// ------------------------------------------------------------------
 	void glPrint(Font* ft, int x, int y, const std::string& fmt, ...)
 	{
 		if (ft == NULL) {
@@ -29,23 +30,42 @@ namespace nEngine
 		va_end(ap);
 
 		glPushMatrix();
-			glTranslatef(x, y - ft->getHeight(), 0);
-			for (int i = 0, len = strlen(text); i < len; ++i) {
-				switch (text[i]) {
-				case '\t':
-					glCallList(ft->getListBase() + (int)' ');
-					glCallList(ft->getListBase() + (int)' ');
-					break;
-				default:
-					glCallList(ft->getListBase() + text[i]);
-					break;
-				}
+		glTranslatef(x, y - ft->getHeight(), 0);
+		for (int i = 0, len = strlen(text); i < len; ++i) {
+			switch (text[i]) {
+			case '\t':
+				glCallList(ft->getListBase() + (int)' ');
+				glCallList(ft->getListBase() + (int)' ');
+				break;
+			default:
+				glCallList(ft->getListBase() + text[i]);
+				break;
 			}
+		}
 		glPopMatrix();
 
 		Shader::popProgram();
 	}
+	
+	// ------------------------------------------------------------------
+	void glPrint(Font* ft, int x, int y, unsigned maxl, const std::string& string)
+	{
+		std::string toPrint = string;
+		unsigned textWidth = ft->getTextWidth(string);
+		if (textWidth >= maxl) { 
+			unsigned len = 0, length = maxl - 4 * ft->getCharWidth('.');
+			textWidth = 0;
+			while (textWidth < length && len < string.length()) {
+				textWidth += ft->getCharWidth(string[len++]);
+			}
+				
+			toPrint = string.substr(0, len - 1) + "...";
+		}
 
+		glPrint(ft, x, y, toPrint);
+	}
+	
+	// ------------------------------------------------------------------
 	Vec2 getScreenSize()
 	{
 		int vp[4];
@@ -53,7 +73,8 @@ namespace nEngine
 
 		return Vec2(vp[2] - vp[0], vp[3] - vp[1]);
 	}
-
+	
+	// ------------------------------------------------------------------
 	std::string getWin32Error()
 	{
 		

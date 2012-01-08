@@ -71,5 +71,7 @@ namespace nEngine {
 		/// Mouse position
 		Vec2 mMousePos;
 	};
+
+	NAPI bool luaRegisterGUI(lua_State* L);
 };
 #endif /*GUI_HPP*/

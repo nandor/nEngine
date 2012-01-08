@@ -21,12 +21,14 @@ namespace nEngine
 {
     void glPrint(Font* ft, int x, int y, const std::string& fmt, ...);
 
+	void glPrint(Font* ft, int x, int y, unsigned length, const std::string& fmt);
+
 	Vec2 getScreenSize();
 
 	/**
 		Return a Win32 error message
 
-		@return			String containing the error message
+		@return			Staring containing the error message
 	*/
 	std::string getWin32Error();
 };

@@ -7,6 +7,7 @@
 */
 #include "nHeaders.hpp"
 #include "GUI.hpp"
+#include "GUIGLCanvas.hpp"
 
 namespace nEngine {
 	template<> GUI* GUI::Singleton<GUI>::mInstance = NULL;
@@ -32,19 +33,6 @@ namespace nEngine {
 		glPushMatrix();
 		glLoadIdentity();
 		glDisable(GL_DEPTH_TEST);
-		
-		Shader::useProgram("color");
-
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		glPushMatrix();
-		glTranslatef(mMousePos.getX(), mMousePos.getY(), 0.0f);
-		glBegin(GL_QUADS);
-		glVertex2i(0, 0);
-		glVertex2i(50, 0);
-		glVertex2i(50, 50);
-		glVertex2i(0, 50);
-		glEnd();
-		glPopMatrix();
 		
 		Shader::useProgram("gui");
 		GUIElement::draw();
@@ -93,5 +81,33 @@ namespace nEngine {
 		}
 
 		return it->second;
+	}
+	
+	// ------------------------------------------------------------------
+	luaNewMethod(GUI, add)
+	{
+		GUIElement* elem = *(GUIElement**)luaGetInstance(L, 1, "GUIElement");
+		GUI::inst().add(elem);
+		return 0;
+	}
+
+	// ------------------------------------------------------------------
+	luaBeginMeta(GUI)
+		
+	luaEndMeta()
+	
+	// ------------------------------------------------------------------
+	luaBeginMethods(GUI)
+		luaMethod(GUI, add)
+	luaEndMethods()
+	
+	// ------------------------------------------------------------------
+	bool luaRegisterGUI(lua_State* L)
+	{
+		luaClass(L, GUI);
+		
+		luaRegisterGUIElement(L);
+		luaRegisterGUIGLCanvas(L);
+		return true;
 	}
 };

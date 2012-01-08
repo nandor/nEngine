@@ -26,6 +26,8 @@ namespace nEngine {
 		GUI_EVENT_MOUSE,
 
 		GUI_EVENT_CLICK,
+
+		GUI_EVENT_SELECTION,
 		
 		GUI_NUM_EVENTS
 	};

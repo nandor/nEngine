@@ -135,12 +135,6 @@ namespace nEngine {
 			*/
 			NAPI int getMemoryUsage();
 
-			/**
-				Free a resource
-				@param id			ID of the resource
-				@param type			Type of the resource
-			*/
-			NAPI void free(const std::string& id, ResourceType type);
 
         private:
 			

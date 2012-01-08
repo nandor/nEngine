@@ -37,9 +37,9 @@ namespace nEngine {
 
 		glBegin(GL_QUADS);
 			glVertex2i(0, 0);
-			glVertex2i(mSize.getX(), 0);
-			glVertex2i(mSize.getX(), mSize.getY());
-			glVertex2i(0, mSize.getY());
+			glVertex2i(mComputedSize.getX(), 0);
+			glVertex2i(mComputedSize.getX(), mComputedSize.getY());
+			glVertex2i(0, mComputedSize.getY());
 		glEnd();
 
 		if (mFontName != "") {
@@ -64,6 +64,7 @@ namespace nEngine {
 			} else {
 				glColor4f(0.6f, 0.6f, 0.6f, 1.0f);
 			}
+
 			glPrint(ft, (mSize.getX() - textWidth) / 2, (mSize.getY() + ft->getHeight()) / 2, string);
 		}
 	}

@@ -26,7 +26,8 @@ namespace nEngine {
 		 mComputedPos(0, 0),
 		 mComputedSize(0, 0),
 		 mWidthType(GUI_SIZE_PIXEL),
-		 mHeightType(GUI_SIZE_PIXEL)
+		 mHeightType(GUI_SIZE_PIXEL),
+		 mEnabled(true)
 	{
 		mID = id;
 	}
@@ -34,6 +35,10 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	GUIElement::~GUIElement()
 	{
+		if (!mParent || mParent == this) {
+			return;
+		}
+		
 		tChildIter it = mParent->mChildren.find(this->getID());
 
 		if (it == mParent->mChildren.end()) {
@@ -121,7 +126,7 @@ namespace nEngine {
 		mComputedPos = mPos;
 		switch (mHorzAlign) {
 		case GUI_ALIGN_LEFT:
-			mComputedPos.setX(parentPos.getX() + mPos.getX());
+			mComputedPos.setX(mPos.getX());
 			break;
 		case GUI_ALIGN_RIGHT:
 			mComputedPos.setX(parentSize.getX() - mComputedSize.getX() - mPos.getX());
@@ -154,26 +159,34 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	bool GUIElement::handleEvent(GUIEvent& evt)
 	{
-		if (!mIsVisible || !mEnabled)
+		if (!mIsVisible)
 			return false;
 		
+		if (!mEnabled) {
+			return isUnderMouse(evt.getMousePos());
+		}
+
 		bool captured = true;
 		if (!isUnderMouse(evt.getMousePos())) {
 			if (evt.getType() != GUI_EVENT_MOUSEUP) {
 				mMouseOver = false;
 				mMousePressed = false;
 			}
+			fireEvent(GUIEvent(GUI_EVENT_MOUSELEAVE, evt.getMousePos()));
 			captured = false;
 		} else {
 			switch (evt.getType()) {
 			case GUI_EVENT_MOUSEMOVE:
+				fireEvent(GUIEvent(GUI_EVENT_MOUSEMOVE, evt.getMousePos()));
 				mMouseOver = true;
 				break;
 			case GUI_EVENT_MOUSEDOWN:
+				fireEvent(GUIEvent(GUI_EVENT_MOUSEDOWN, evt.getMousePos()));
 				mMousePressed = true;
 				break;
 			case GUI_EVENT_MOUSEUP:
 				mMousePressed = false;
+				fireEvent(GUIEvent(GUI_EVENT_MOUSEUP, evt.getMousePos()));
 				fireEvent(GUIEvent(GUI_EVENT_CLICK, evt.getMousePos()));
 				break;
 			}
@@ -216,5 +229,12 @@ namespace nEngine {
 				(*it) (evt);
 			}
 		}
+	}
+	
+	
+	// ------------------------------------------------------------------
+	bool luaRegisterGUIElement(lua_State* L)
+	{
+		return true;
 	}
 };

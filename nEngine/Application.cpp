@@ -28,34 +28,8 @@ namespace nEngine {
 		mDeviceContext = NULL;
 		mInstance = NULL;
 		mWindowHandle = NULL;
-				
-		lua_State* L = initLua();
-
-		Vec2::luaRegister(L);
-		Console::luaRegister(L);
-		Tile::luaRegister(L);
-		Map::luaRegister(L);
-		Font::luaRegister(L);
-		Shader::luaRegister(L);
-		Resources::luaRegister(L);
-		Scene::luaRegister(L);
-		Chat::luaRegister(L);
-		 
-		luaRegisterSceneNode(L);
-		luaRegisterObject(L);
-		luaRegisterNPC(L);
-		luaRegisterParticles(L);
-		luaRegisterCamera(L);
 		
-		luaReadFile("fs://data/lua/config.lua");
-		
-		mWidth = luaGetGlobalInt("displayWidth");
-		mHeight = luaGetGlobalInt("displayHeight");
-		mMaxFPS = luaGetGlobalInt("maxFPS");
-
-		mBpp = 32;
-		mFullScreen = luaGetGlobalBoolean("fullScreen");
-		mWindowTitle = "nEngine";
+		loadConfig();
 
 		srand(time(NULL));
 	}
@@ -71,42 +45,25 @@ namespace nEngine {
 		delete GUI::instPtr();
 		delete Timer::instPtr();
 
-		bool shutdownOkay = true;
-
-		if (mFullScreen) {
-			ChangeDisplaySettings(NULL, 0);       
-		}
-
-		if (mGlContext) {
-			if (!wglMakeCurrent(NULL, NULL)) {
-				shutdownOkay = false;
-			}
-			
-			if (!wglDeleteContext(mGlContext)) {
-				shutdownOkay = false;
-			}
-
-			mGlContext = NULL;
-		}
-		
-		if (mDeviceContext && !ReleaseDC(mWindowHandle, mDeviceContext)) {
-			mDeviceContext = NULL;
-			shutdownOkay = false;
-		}
-		
-		if (mWindowHandle && !DestroyWindow(mWindowHandle)) {
-			mWindowHandle = NULL;
-			shutdownOkay = false;
-		}
-
-		if (!UnregisterClass("nEngine", mInstance)) {
-			mInstance = NULL;
-			shutdownOkay = false;
-		}
+		closeWindow();
 
 		if (luaGlobalState()) {
 			closeLua();
 		}
+	}
+	
+	// ------------------------------------------------------------------
+	void Application::loadConfig()
+	{
+		luaReadFile("fs://data/lua/config.lua");
+		
+		mWidth = luaGetGlobalInt("displayWidth");
+		mHeight = luaGetGlobalInt("displayHeight");
+		mMaxFPS = luaGetGlobalInt("maxFPS");
+
+		mBpp = 32;
+		mFullScreen = luaGetGlobalBoolean("fullScreen");
+		mWindowTitle = "nEngine";
 	}
 
 	// ------------------------------------------------------------------
@@ -218,6 +175,47 @@ namespace nEngine {
 		SetFocus(mWindowHandle);      
 	}
 	
+	// ------------------------------------------------------------------
+	void Application::closeWindow()
+	{
+		bool shutdownOkay = true;
+
+		if (mFullScreen) {
+			ChangeDisplaySettings(NULL, 0);       
+		}
+
+		if (mGlContext) {
+			if (!wglMakeCurrent(NULL, NULL)) {
+				shutdownOkay = false;
+			}
+			
+			if (!wglDeleteContext(mGlContext)) {
+				shutdownOkay = false;
+			}
+
+			mGlContext = NULL;
+		}
+		
+		if (mDeviceContext && !ReleaseDC(mWindowHandle, mDeviceContext)) {
+			mDeviceContext = NULL;
+			shutdownOkay = false;
+		}
+		
+		if (mWindowHandle && !DestroyWindow(mWindowHandle)) {
+			mWindowHandle = NULL;
+			shutdownOkay = false;
+		}
+
+		if (!UnregisterClass("nEngine", mInstance)) {
+			mInstance = NULL;
+			shutdownOkay = false;
+		}
+
+		if (!shutdownOkay) {
+			throw Error("Application", "Shutdown error!");
+		}
+	}
+
 	// ------------------------------------------------------------------
 	void Application::initOpenGL()
 	{
@@ -401,5 +399,54 @@ namespace nEngine {
 		if (keyCode) {
 			Console::inst().specialKeyPressed(keyCode);
 		}
+	}
+	
+	// -----------------------------------------------------------------
+	std::vector<std::pair<int, int> > Application::getDisplayModes()
+	{
+		std::vector<std::pair<int, int> > displays;
+
+		DEVMODE dm;
+		memset(&dm, 0, sizeof(dm));
+		dm.dmSize = sizeof(dm);
+		for(int iModeNum = 0; EnumDisplaySettings(NULL, iModeNum, &dm); iModeNum++) {
+			bool found = false;
+			for (unsigned i = 0; i < displays.size(); ++i) {
+				if (displays[i].first == dm.dmPelsWidth && displays[i].second == dm.dmPelsHeight) {
+					found = true;
+				}
+			}
+
+			if (!found) {
+				displays.push_back(std::make_pair(dm.dmPelsWidth, dm.dmPelsHeight));
+			}
+		}
+
+		return displays;
+	}
+	// -----------------------------------------------------------------
+	lua_State* luaRegisterEngine()
+	{	
+		lua_State* L = initLua();
+
+		Vec2::luaRegister(L);
+		Console::luaRegister(L);
+		Tile::luaRegister(L);
+		Map::luaRegister(L);
+		Font::luaRegister(L);
+		Shader::luaRegister(L);
+		Resources::luaRegister(L);
+		Scene::luaRegister(L);
+		Chat::luaRegister(L);
+		 
+		luaRegisterSceneNode(L);
+		luaRegisterObject(L);
+		luaRegisterNPC(L);
+		luaRegisterParticles(L);
+		luaRegisterCamera(L);
+		luaRegisterGUI(L);
+		luaRegisterTimer(L);
+
+		return L;
 	}
 };

@@ -29,7 +29,7 @@ namespace nEngine {
     public:
 		
 		NAPI Application();
-        NAPI ~Application();
+        NAPI virtual ~Application();
 
         NAPI void start();
 
@@ -45,12 +45,14 @@ namespace nEngine {
         NAPI virtual void onMouseMove (int x, int y);
 
 		NAPI virtual void onKeyUp (int keyCode, char charCode);
+		NAPI std::vector<std::pair<int, int> > getDisplayModes();
 
-    private:
+    protected:
 
         NAPI void initOpenGL();
 		NAPI void initWindow();
-
+		NAPI void closeWindow();
+		NAPI void loadConfig();
         NAPI void draw();
 		NAPI void handleMessage(MSG message);
 		
@@ -70,6 +72,8 @@ namespace nEngine {
 		HWND		mWindowHandle;
 		HINSTANCE	mInstance;
     };
+
+	NAPI lua_State* luaRegisterEngine();
 };
 
 #endif /*APPLICATION_HPP*/

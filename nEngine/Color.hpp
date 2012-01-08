@@ -9,20 +9,22 @@
 #ifndef COLOR_HPP
 #define COLOR_HPP
 
+#include "types.hpp"
+
 namespace nEngine {
 	class Color {
 	public:
-		Color();
-		Color(float l);
-		Color(float l, float a);
-		Color(float r, float g, float b);
-		Color(float r, float g, float b, float a);
+		NAPI Color();
+		NAPI Color(float l);
+		NAPI Color(float l, float a);
+		NAPI Color(float r, float g, float b);
+		NAPI Color(float r, float g, float b, float a);
 
-		Color operator * (float f);
-		Color operator / (float f);
+		NAPI Color operator * (float f);
+		NAPI Color operator / (float f);
 
-		void glUse();
-		float* getVec();
+		NAPI void glUse();
+		NAPI float* getVec();
 	private:
 		float mV[4];
 	};

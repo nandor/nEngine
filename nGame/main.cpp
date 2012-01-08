@@ -7,9 +7,11 @@
 	(c) 2011 Licker Nandor
 */
 
+#include "nEngine/nHeaders.hpp"
 #include "nEngine/Application.hpp"
 #include "nEngine/GUIButton.hpp"
 #include "nEngine/GUICheckbox.hpp"
+#include "nEngine/GUIComboBox.hpp"
 #include "nEngine/GUI.hpp"
 #include "Character.hpp"
 using namespace nEngine;
@@ -32,8 +34,12 @@ public:
 	void onSceneInit()
 	{
 		Scene::inst().setMap(Resources::inst().get<Map>("tutorial"));
-		
-
+		initUI();
+	}
+	
+	// ------------------------------------------------------------------
+	void initUI()
+	{
 		GUIButton* newButton = new GUIButton("newButton");
 		newButton->setAlignment(GUI_ALIGN_LEFT, GUI_ALIGN_BOTTOM);
 		newButton->setPosition(Vec2(50, 220));
@@ -72,36 +78,79 @@ public:
 			Application::exit();
 			return true;
 		});
+
 		GUI::inst().add(exitButton);
+
+		GUIPanel* optionsPanel = new GUIPanel("optionsPanel");
+		optionsPanel->setAlignment(GUI_ALIGN_LEFT, GUI_ALIGN_BOTTOM);
+		optionsPanel->setBackgroundColor(Color(0.9f, 0.9f, 0.9f, 0.5f));
+		optionsPanel->setPosition(Vec2(240, 45));
+		optionsPanel->setSize(Vec2(340, 270));
+		optionsPanel->hide();
+		GUI::inst().add(optionsPanel);
 
 		GUIButton* saveButton = new GUIButton("saveButton");
 		saveButton->setAlignment(GUI_ALIGN_LEFT, GUI_ALIGN_BOTTOM);
-		saveButton->setPosition(Vec2(210, 40));
+		saveButton->setPosition(Vec2(5, 5));
 		saveButton->setSize(Vec2(150, 45));
 		saveButton->setFont("gui24");
 		saveButton->setCaption("Save");
-		saveButton->hide();
 		saveButton->connect(GUI_EVENT_CLICK, boost::bind(&nGame::onSaveClick, this, _1));
-		GUI::inst().add(saveButton);	
+		optionsPanel->add(saveButton);	
 
 		GUIButton* cancelButton = new GUIButton("cancelButton");
 		cancelButton->setAlignment(GUI_ALIGN_LEFT, GUI_ALIGN_BOTTOM);
-		cancelButton->setPosition(Vec2(370, 40));
+		cancelButton->setPosition(Vec2(185, 5));
 		cancelButton->setSize(Vec2(150, 45));
 		cancelButton->setFont("gui24");
 		cancelButton->setCaption("Cancel");
 		cancelButton->connect(GUI_EVENT_CLICK, boost::bind(&nGame::onCancelClick, this, _1));
-		cancelButton->hide();
-		GUI::inst().add(cancelButton);	
+		optionsPanel->add(cancelButton);	
 
 		GUICheckbox* fullscreenFlag = new GUICheckbox("fullscreenFlag");
 		fullscreenFlag->setAlignment(GUI_ALIGN_LEFT, GUI_ALIGN_BOTTOM);
-		fullscreenFlag->setPosition(Vec2(250, 220));
+		fullscreenFlag->setPosition(Vec2(5, 220));
 		fullscreenFlag->setSize(Vec2(180, 45));
 		fullscreenFlag->setFont("gui24");
 		fullscreenFlag->setCaption("Fullscreen");
-		fullscreenFlag->hide();
-		GUI::inst().add(fullscreenFlag);
+		fullscreenFlag->setChecked(luaGetGlobalBoolean("fullScreen"));
+		optionsPanel->add(fullscreenFlag);
+
+		GUILabel* saveLabel = new GUILabel("saveLabel");
+		saveLabel->setAlignment(GUI_ALIGN_LEFT, GUI_ALIGN_BOTTOM);
+		saveLabel->setPosition(Vec2(5, 70));
+		saveLabel->setSize(Vec2(300, 45));
+		saveLabel->setTextColor(Color(1.0, 0.0, 0.0, 1.0));
+		saveLabel->setFont("gui24");
+		saveLabel->setText("Save successful!");
+		saveLabel->hide();
+		optionsPanel->add(saveLabel);
+
+		GUILabel* resLabel = new GUILabel("resLabel");
+		resLabel->setAlignment(GUI_ALIGN_LEFT, GUI_ALIGN_BOTTOM);
+		resLabel->setPosition(Vec2(5, 160));
+		resLabel->setSize(Vec2(180, 45));
+		resLabel->setFont("gui24");
+		resLabel->setText("Resolution");
+		optionsPanel->add(resLabel);
+
+		GUIComboBox* resBox = new GUIComboBox("resBox");
+		resBox->setAlignment(GUI_ALIGN_LEFT, GUI_ALIGN_BOTTOM);
+		resBox->setPosition(Vec2(150, 165));
+		resBox->setSize(Vec2(180, 45));
+		resBox->setFont("gui16");
+
+		std::vector<std::pair<int, int> > displayModes = Application::getDisplayModes();
+
+		for (unsigned i = 0; i < displayModes.size(); ++i) {
+			resBox->addItem(
+				0, 
+				boost::lexical_cast<std::string> (displayModes[i].first) + " x " +
+				boost::lexical_cast<std::string> (displayModes[i].second)
+			);
+		}
+
+		optionsPanel->add(resBox);
 	}
 	
 	// ------------------------------------------------------------------
@@ -110,10 +159,9 @@ public:
 		GUI::inst().get("newButton")->disable();
 		GUI::inst().get("loadButton")->disable();
 		GUI::inst().get("settingsButton")->disable();
-
-		GUI::inst().get("saveButton")->show();
-		GUI::inst().get("cancelButton")->show();
-		GUI::inst().get("fullscreenFlag")->show();
+		
+		
+		GUI::inst().get("optionsPanel")->show();
 	}
 	
 	// ------------------------------------------------------------------
@@ -123,15 +171,39 @@ public:
 		GUI::inst().get("loadButton")->enable();
 		GUI::inst().get("settingsButton")->enable();
 		
-		GUI::inst().get("saveButton")->hide();
-		GUI::inst().get("cancelButton")->hide();
-		GUI::inst().get("fullscreenFlag")->hide();
+		GUI::inst().get("optionsPanel")->hide();
+		GUI::inst().get("saveLabel")->hide();
 	}
 	
 	// ------------------------------------------------------------------
 	void onSaveClick(GUIEvent& evt)
-	{
-		Resources::inst().free("fs://data/lua/config.lua", RESOURCE_FILE);
+	{		
+		GUICheckbox* box = (GUICheckbox*)GUI::inst().get("fullscreenFlag");
+		GUIComboBox* resBox = (GUIComboBox*)GUI::inst().get("resBox");
+		
+		std::vector<std::pair<int, int> > displayModes = Application::getDisplayModes();
+		std::pair<int, int> resolution = displayModes[resBox->getSelection()];
+
+		File* file = Resources::inst().require<File> ("fs://data/lua/config.lua");
+
+		std::stringstream ss;
+
+		ss << "--[[\n"
+		   << "    Configuration for nEngine\n"
+		   << "]]--\n"
+		   << "\n"
+		   << "fullScreen = " << ((mFullScreen = box->getChecked()) ? "true" : "false") << "\n"
+		   << "displayWidth = " << (mWidth = resolution.first) << "\n"
+		   << "displayHeight = " << (mHeight = resolution.second) << "\n"
+		   << "maxFPS = 40";
+
+		file->write(ss.str());
+
+		GUI::inst().get("saveLabel")->show();
+
+		Timer::inst().queueAction([] (float time) {
+			GUI::inst().get("saveLabel")->hide();
+		}, 1500.0f);
 	}
 
 	// ------------------------------------------------------------------
@@ -198,19 +270,20 @@ luaEndMethods()
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,LPSTR lpCmdLine, int nCmdShow)
 {
     try {
-		game = new nGame();
-		
-		lua_State* L = luaGlobalState();
+		lua_State* L = luaRegisterEngine();
 		luaClass(L, nGame);
+
+		game = new nGame();	
 		
 		game->start();
-		
+	
     } catch (Error error) {
 		MessageBox(NULL, error.getMessage().c_str(), "Error", MB_ICONERROR);
-		if (game) {
-			delete game;
-		} 
     }
+
+	if (game) {
+		delete game;
+	} 
 
     return 0;
 }

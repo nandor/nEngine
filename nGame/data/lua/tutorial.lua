@@ -40,12 +40,12 @@ function Tutorial.checkWin()
 end
 
 function Tutorial.onSceneInit (map)			
+	nGame.initCharacter()
+	
 	local john = NPC.new('john1', 'john')		
 	john:setSpawn(Vec2.new(2, 3))
 	Scene.add(john)
-	
-	nGame.initCharacter()
-	
+		
 	Scene.get('character').tile = Vec2.new(9, 9)
 	
 	local cam = Camera.new('cam')

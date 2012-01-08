@@ -15,19 +15,19 @@
 namespace nEngine {
 	class GUILabel : public GUIElement {
 	public:
-		GUILabel(const std::string& id);
-		~GUILabel();
+		NAPI GUILabel(const std::string& id);
+		NAPI ~GUILabel();
 	
 		/**
 			Draw event
 		*/
-		void onDraw();
+		NAPI void onDraw();
 
 		/**
 			Set the text of the label
 			@param text			New text
 		*/
-		void setText(const std::string& text)
+		NAPI void setText(const std::string& text)
 		{
 			mText = text;
 		}
@@ -36,7 +36,7 @@ namespace nEngine {
 			Get the text of the label
 			@return				Text
 		*/
-		std::string getText()
+		NAPI std::string getText()
 		{
 			return mText;
 		}

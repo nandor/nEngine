@@ -15,12 +15,12 @@
 namespace nEngine {
 	class GUIPanel : public GUIElement {
 	public:
-		GUIPanel(const std::string& id);
-		~GUIPanel();
+		NAPI GUIPanel(const std::string& id);
+		NAPI ~GUIPanel();
 
-		void onDraw();
+	protected:
 
-	private:
+		NAPI void onDraw();
 
 	};
 };

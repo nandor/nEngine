@@ -74,4 +74,10 @@ namespace nEngine {
 
 		unzCloseCurrentFile(mArchive);
 	}
+	
+	// ------------------------------------------------------------------
+	void Archive::writeFile(File* file, const std::string& fileName)
+	{
+		throw Error("Archive", getID(), "Unimplemented method: 'writeFile'");
+	}
 };

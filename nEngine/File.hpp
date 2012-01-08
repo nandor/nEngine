@@ -9,6 +9,7 @@
 #ifndef FILE_HPP
 #define FILE_HPP
 
+#include "types.hpp"
 #include "Error.hpp"
 #include "Resource.hpp"
 #include "Resources.hpp"
@@ -16,29 +17,31 @@
 namespace nEngine {
     class File : public Resource {
     public:
-        File(const std::string& id);
-        ~File();
+        NAPI File(const std::string& id);
+        NAPI ~File();
 
-        void setData(uint8* data, unsigned size)
+        NAPI void setData(uint8* data, unsigned size)
         {
             mData = data;
             mSize = size;
         }
 
-        uint8* getData()
+        NAPI uint8* getData()
         {
             return mData;
         }
 
-        unsigned getSize ()
+        NAPI unsigned getSize ()
         {
             return mSize;
         }
 
-		int getMemoryUsage()
+		NAPI int getMemoryUsage()
 		{
 			return mSize + sizeof(*this);
 		}
+
+		NAPI void write(const std::string& data);
 
     private:
         void loadFromFile(const std::string& fileName);

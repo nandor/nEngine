@@ -86,6 +86,10 @@
 				"height": 12
 			},
 			{
+				"id": "gui16",
+				"height": 16
+			},
+			{
 				"id": "gui24",
 				"height": 24
 			}

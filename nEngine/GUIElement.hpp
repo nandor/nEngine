@@ -212,7 +212,7 @@ namespace nEngine {
 			Check if the mouse is over an element
 			@param pos		Mouse position
 		*/		
-		bool isUnderMouse(Vec2 pos);
+		virtual bool isUnderMouse(Vec2 pos);
 
 		/**
 			Fire an event!
@@ -289,5 +289,7 @@ namespace nEngine {
 		/// Horizontal size type
 		GUISize mHeightType;
 	};
+
+	bool luaRegisterGUIElement(lua_State* L);
 };
 #endif /*GUIELEMENT_HPP*/

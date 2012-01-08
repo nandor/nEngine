@@ -70,17 +70,7 @@ namespace nEngine {
 	{
 		return mMemoryUsage;
 	}
-
-	// ------------------------------------------------------------------
-	void Resources::free(const std::string& id, ResourceType type)
-	{
-		Resource* r = findResource(id, type);
-
-		if (r != NULL) {
-			delete r;
-		}
-	}
-
+	
 	// ------------------------------------------------------------------
 	void Resources::loadResourceGroup(const std::string& groupName, const std::string& fileName)
 	{
@@ -159,7 +149,6 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	void Resources::unloadResourceGroup(const std::string& groupName)
 	{
-		ConsoleLog("Unloading resource group '" + groupName + "'");
 		std::vector<tResourceIter>::iterator it;
 
 		for (it = mResourceGroups[groupName].begin(); it != mResourceGroups[groupName].end(); ++it) {
