@@ -9,7 +9,7 @@
 #include "Archive.hpp"
 
 namespace nEngine {
-	boost::regex dirRegex("[a-zA-Z0-9_/]+/");
+	std::regex dirRegex("[a-zA-Z0-9_/]+/");
 
 	// ------------------------------------------------------------------
 	Archive::Archive(const std::string& id)

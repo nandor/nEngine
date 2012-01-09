@@ -14,8 +14,8 @@ namespace nEngine {
 	std::vector<unsigned> Shader::shaderStack;
 	const ResourceType Shader::sType = RESOURCE_SHADER;
 
-	boost::regex fragRegex(".+.frag$");
-	boost::regex vertRegex(".+.vert$");
+	std::regex fragRegex(".+.frag$");
+	std::regex vertRegex(".+.vert$");
 
 	// ------------------------------------------------------------------
 	Shader::Shader(const std::string& id)
@@ -41,11 +41,11 @@ namespace nEngine {
 	void Shader::load(const std::string& fileName)
 	{
 		GLhandleARB id = NULL;
-		if (boost::regex_match(fileName, fragRegex)) {
+		if (std::regex_match(fileName, fragRegex)) {
 			id = glCreateShaderObjectARB(GL_FRAGMENT_SHADER);
 		}
 
-		if (boost::regex_match(fileName, vertRegex)) {
+		if (std::regex_match(fileName, vertRegex)) {
 			id = glCreateShaderObjectARB(GL_VERTEX_SHADER);
 		}
 		

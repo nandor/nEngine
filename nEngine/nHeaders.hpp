@@ -23,17 +23,19 @@
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/ptr_container/ptr_list.hpp>
 
+// C++ includes
+#include <regex>
+
 // Boost Includes
 #include <boost/bind.hpp>
-#include <boost/regex.hpp>
 #include <boost/foreach.hpp> 
 #include <boost/function.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/exceptions.hpp>
 #include <boost/property_tree/json_parser.hpp>
-#include <boost/filesystem.hpp>
 
 // OpenGL Includes
 #include <GL/glew.h>

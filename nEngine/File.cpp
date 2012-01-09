@@ -13,25 +13,23 @@
 
 namespace nEngine {
 
-
-
 	// ------------------------------------------------------------------
 	File::File(const std::string& id)
 		:Resource(id, RESOURCE_FILE), mSize(0), mData(NULL), mOkay(true)
 	{
-		boost::regex fileRegex("^fs://[a-zA-Z0-9_/]+\\.[a-zA-Z0-9_]+$");
-		boost::regex zipRegex("^zip://[a-zA-Z0-9_/]+\\.zip/[a-zA-Z0-9_/]+\\.[a-zA-Z0-9_]+$");
+		std::regex fileRegex("^fs://[a-zA-Z0-9_/]+\\.[a-zA-Z0-9_]+$");
+		std::regex zipRegex("^zip://[a-zA-Z0-9_/]+\\.zip/[a-zA-Z0-9_/]+\\.[a-zA-Z0-9_]+$");
 
-		if (boost::regex_match(id.c_str(), fileRegex)) {
+		if (std::regex_match(id.c_str(), fileRegex)) {
 			mFromArchive = false;
 			mFileName = id.substr(5, id.length() - 5);
 
 			loadFromFile(mFileName);
-		} else if (boost::regex_match(id.c_str(), zipRegex)) {
-			boost::regex packageRegex("[a-zA-Z0-9_][a-zA-Z0-9_/]+\\.zip");
-			boost::match_results<std::string::const_iterator> what;
+		} else if (std::regex_match(id.c_str(), zipRegex)) {
+			std::regex packageRegex("[a-zA-Z0-9_][a-zA-Z0-9_/]+\\.zip");
+			std::match_results<std::string::const_iterator> what;
 			
-			if (boost::regex_search(id, what, packageRegex, boost::match_partial)) {
+			if (std::regex_search(id, what, packageRegex)) {
 				if (what[0].matched) {
 					mArchiveName = what[0].str();
 					mFromArchive = true;

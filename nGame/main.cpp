@@ -276,14 +276,11 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,LPSTR lpCmdLin
 		game = new nGame();	
 		
 		game->start();
-	
+
+		delete game;
     } catch (Error error) {
 		MessageBox(NULL, error.getMessage().c_str(), "Error", MB_ICONERROR);
     }
-
-	if (game) {
-		delete game;
-	} 
 
     return 0;
 }

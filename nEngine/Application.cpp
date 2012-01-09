@@ -12,11 +12,11 @@
 namespace nEngine {
 	// ------------------------------------------------------------------
 	LRESULT CALLBACK WndProc(HWND handle, UINT msg, WPARAM wParam, LPARAM lParam)
-	{
-		if (msg == WM_CLOSE) {
-			PostQuitMessage(0);
+	{		
+		if (msg == WM_CLOSE) {			
+			PostMessage(handle, WM_QUIT, NULL, NULL);
+			return 0;
 		}
-		
 
 		return DefWindowProc(handle, msg, wParam, lParam);
 	}
@@ -212,7 +212,7 @@ namespace nEngine {
 		}
 
 		if (!shutdownOkay) {
-			throw Error("Application", "Shutdown error!");
+			throw Error("Application", "Shutdown error");
 		}
 	}
 
