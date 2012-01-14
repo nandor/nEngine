@@ -19,15 +19,12 @@
 using namespace boost::property_tree;
 
 namespace nEngine {
-	template<> Resources* Resources::Singleton<Resources>::mInstance = 0;
+	template<> Resources* Resources::Singleton<Resources>::__inst = NULL;
 
 	// ------------------------------------------------------------------
 	Resources::Resources()
 	{
 		mMemoryUsage = 0;
-		mNotUnloadable = 0;
-		mGarbageTreshold = 1024 * 1024 * 10;	// 10 Megabytes
-
 		Font::initLibrary();
 	}
 
@@ -40,29 +37,33 @@ namespace nEngine {
 	}
 
 	// ------------------------------------------------------------------
-	bool Resources::addResource(Resource* resource, const std::string& groupName)
+	Resources& Resources::addResource(Resource* resource, const std::string& groupName)
 	{
 		if (resource == NULL) {
-			return false;
+			return *this;
 		}
-	
-		tResourceIter it = mResources.insert(resource->getID(), resource);
-		mResourceGroups[groupName].push_back(it);
-		return true;
+
+		if (resource->getType() == RESOURCE_MAP) {
+			ResourceType y = resource->getType();
+		}
+
+		std::pair<std::string, ResourceType> id(resource->getID(), resource->getType());
+
+		mResources.insert(id, resource);
+		mResourceGroups[groupName].push_back(id);
+		return *this;
 	}
 	
 	// ------------------------------------------------------------------
 	Resource* Resources::findResource(const std::string& id, ResourceType type)
 	{
-		boost::iterator_range<tResourceIter> range = mResources.equal_range(id);
-	
-		for (tResourceIter it = range.begin(); it != range.end(); ++it) {
-			if (it->second->getType() == type) {
-				return it->second;
-			}
-		}
+		tResourceIter it = mResources.find(std::make_pair(id, type));
 
-		return NULL;
+		if (it == mResources.end()) {
+			return NULL;
+		} 
+
+		return it->second;
 	}
 		
 	// ------------------------------------------------------------------
@@ -72,11 +73,11 @@ namespace nEngine {
 	}
 	
 	// ------------------------------------------------------------------
-	void Resources::loadResourceGroup(const std::string& groupName, const std::string& fileName)
+	Resources& Resources::loadResourceGroup(const std::string& groupName, const std::string& fileName)
 	{
 		ConsoleLog("Loading resource group '" + groupName + "'");
 		try {
-			JSONObject* json = Resources::require<JSONObject>(fileName);
+			JSONObject* json = require<JSONObject>(fileName);
 			boost::property_tree::ptree& data = json->getRoot();
 
 			BOOST_FOREACH(ptree::value_type& node, data) {
@@ -144,17 +145,50 @@ namespace nEngine {
 		} catch (std::exception except) {
 			throw Error("Resources", std::string(except.what()));
 		}
+		return *this;
 	}
 	
 	// ------------------------------------------------------------------
-	void Resources::unloadResourceGroup(const std::string& groupName)
+	Resources& Resources::unloadResourceGroup(const std::string& groupName)
 	{
-		std::vector<tResourceIter>::iterator it;
+		std::vector<std::pair<std::string, ResourceType> >::iterator it;
 
 		for (it = mResourceGroups[groupName].begin(); it != mResourceGroups[groupName].end(); ++it) {
-			mMemoryUsage -= (*it)->second->getMemoryUsage();
-			mResources.erase(*(it));
+			tResourceIter resIt = mResources.find(*it);
+			mMemoryUsage -= resIt->second->getMemoryUsage();
+			mResources.erase(resIt);
 		}
+
+		mResourceGroups.erase(groupName);
+		return *this;
+	}
+
+	// ------------------------------------------------------------------
+	std::vector<std::string> Resources::getResourceGroupNames()
+	{
+		std::vector<std::string> res;
+
+		std::map<std::string, std::vector<tResId> >::iterator it;
+		for (it = mResourceGroups.begin(); it != mResourceGroups.end(); ++it) {
+			if (it->first != "tmp") {
+				res.push_back(it->first);
+			}
+		}
+
+		return res;
+	}
+	
+	// ------------------------------------------------------------------
+	std::vector<std::pair<std::string, ResourceType> > Resources::getResourcesInGroup(const std::string& groupName)
+	{
+		std::vector<std::pair<std::string, ResourceType> > lst;		
+		std::vector<std::pair<std::string, ResourceType> >::iterator it;
+
+		for (it = mResourceGroups[groupName].begin(); it != mResourceGroups[groupName].end(); ++it) {
+			lst.push_back(std::make_pair(it->first, it->second));
+		}
+
+		return lst;
 	}
 
 	// ------------------------------------------------------------------
@@ -186,8 +220,9 @@ namespace nEngine {
 	luaEndMethods()
 
 	// ------------------------------------------------------------------
-	void Resources::luaRegister(lua_State* L)
+	bool luaRegisterResources(lua_State* L)
 	{
-		luaClass(L, Resources)
+		luaClass(L, Resources);
+		return true;
 	}
 };

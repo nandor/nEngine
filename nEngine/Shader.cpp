@@ -28,9 +28,9 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	Shader::~Shader()
 	{
-		for (std::vector<GLhandleARB>::iterator it = mShaders.begin(); it != mShaders.end(); ++it) {
-			glDetachObjectARB(mProgramId, *it);
-			glDeleteObjectARB(*it);
+		for (std::vector<std::pair<std::string, unsigned> >::iterator it = mShaders.begin(); it != mShaders.end(); ++it) {
+			glDetachObjectARB(mProgramId, it->second);
+			glDeleteObjectARB(it->second);
 		}
 
 		glDeleteObjectARB(mProgramId);
@@ -49,7 +49,7 @@ namespace nEngine {
 			id = glCreateShaderObjectARB(GL_VERTEX_SHADER);
 		}
 		
-		mShaders.push_back(id);
+		mShaders.push_back(std::make_pair(fileName, id));
 
 		if (!id) {
 		    throw Error ("Shader", getID(), "Cannod create a shader object");
@@ -112,6 +112,16 @@ namespace nEngine {
 				delete[] infoLog;
 			}
 		}
+	}
+	
+	// ------------------------------------------------------------------
+	std::vector<std::string> Shader::getShaderNames()
+	{
+		std::vector<std::string> shaders;
+		for (std::vector<std::pair<std::string, unsigned> >::iterator it = mShaders.begin(); it != mShaders.end(); ++it) {
+			shaders.push_back(it->first);
+		}
+		return shaders;
 	}
 
 	// ------------------------------------------------------------------

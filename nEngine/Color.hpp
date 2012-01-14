@@ -19,13 +19,37 @@ namespace nEngine {
 		NAPI Color(float l, float a);
 		NAPI Color(float r, float g, float b);
 		NAPI Color(float r, float g, float b, float a);
+		NAPI Color(const std::string& str);
 
 		NAPI Color operator * (float f);
 		NAPI Color operator / (float f);
-
+	
 		NAPI void glUse();
 		NAPI float* getVec();
+
+		NAPI float getR() 
+		{
+			return mV[0];
+		}
+
+		NAPI float getG()
+		{
+			return mV[1];
+		}
+
+		NAPI float getB()
+		{
+			return mV[2];
+		}
+
+		NAPI float getA()
+		{
+			return mV[3];
+		}
 	private:
+
+		NAPI void HSVtoRGB();
+
 		float mV[4];
 	};
 };

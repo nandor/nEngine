@@ -149,6 +149,7 @@ namespace nEngine {
 		return true;
 	}
 
+
 	// ------------------------------------------------------------------
 	bool Font::closeLibrary()
 	{

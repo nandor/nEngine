@@ -12,12 +12,14 @@
 #include "Scene.hpp"
 
 namespace nEngine {
-	template<> Scene* Scene::Singleton<Scene>::mInstance = NULL;
+	template<> Scene* Scene::Singleton<Scene>::__inst = NULL;
 
 	// ------------------------------------------------------------------
 	Scene::Scene()
 		:mTileSize(120, 60),
-		 mActive(false)
+		 mActive(false),
+		 mNextHandle(0),
+		 mDrawMode(SCENE_DRAW_OBJECTS)
 	{
 		mCamera = NULL;
 		mMap = NULL;
@@ -41,10 +43,8 @@ namespace nEngine {
 
 			if (mCamera) {
 				mCamera->focus();
-			} else {
-				glLoadIdentity();
 			}
-		
+
 			if (mMap) {				
 				mMap->draw();
 			}
@@ -81,15 +81,19 @@ namespace nEngine {
 	}
 	
 	// ------------------------------------------------------------------
-	void Scene::addNode(SceneNode* c)
+	Scene& Scene::addNode(SceneNode* c)
 	{
 		tNodeIter it = mNodes.find(c->getID());
 
 		if (it != mNodes.end()) {
 			throw Error("Scene", "Node '" + c->getID() + "' already exists!");
 		}
-
+		
+		unsigned handle = mNextHandle++;
+		c->setHandle(handle);
+		mHandleToId[handle] = c->getID();
 		mNodes.insert(make_pair(c->getID(), c));
+		return *this;
 	}
 
 	
@@ -120,7 +124,7 @@ namespace nEngine {
 
 		
 	// ------------------------------------------------------------------
-	void Scene::setMap(Map* map)
+	Scene& Scene::setMap(Map* map)
 	{
 		if (map == NULL) {
 			throw Error("Scene", "Invalid map");
@@ -129,11 +133,12 @@ namespace nEngine {
 		map->callLuaMethod("onSceneInit");
 
 		mMap = map;
+		return *this;
 	}
 
 
 	// ------------------------------------------------------------------
-	void Scene::setCamera(const std::string& cameraName)
+	Scene& Scene::setCamera(const std::string& cameraName)
 	{
 		tNodeIter it = mNodes.find(cameraName);
 
@@ -142,8 +147,21 @@ namespace nEngine {
 		}
 
 		mCamera = dynamic_cast<Camera*>(it->second);
+		return *this;
 	}
 	
+	// ------------------------------------------------------------------
+	Scene& Scene::setCamera(Camera* cam)
+	{
+		tNodeIter it = mNodes.find(cam->getID());
+
+		if (it == mNodes.end()) {
+			mNodes.insert(std::make_pair(cam->getID(), (SceneNode*)cam));
+		}
+
+		mCamera = cam;
+		return *this;
+	}
 
 	// ------------------------------------------------------------------
 	Vec2 Scene::getTileAt(int x, int y) 
@@ -171,9 +189,9 @@ namespace nEngine {
 	}
 	
 	// ------------------------------------------------------------------
-	void Scene::destroyScene()
+	Scene& Scene::destroyScene()
 	{
-
+		return *this;
 	}
 
 	// ------------------------------------------------------------------
@@ -186,8 +204,28 @@ namespace nEngine {
 		}
 
 		return NULL;
+	} 
+
+	// ------------------------------------------------------------------
+	Scene& Scene::stop()
+	{
+		mActive = false;
+		return *this;
+	}
+
+	// ------------------------------------------------------------------
+	Scene& Scene::start() 
+	{
+		mActive = true;
+		return *this;
 	}
 	
+	// ------------------------------------------------------------------
+	Scene& Scene::setDrawMode(int drawMode)
+	{
+		mDrawMode = drawMode;
+		return *this;
+	}
 
 	// ------------------------------------------------------------------
 	luaNewMethod(Scene, add)
@@ -212,7 +250,6 @@ namespace nEngine {
 		return 1;
 	}
 
-	
 	// ------------------------------------------------------------------
 	luaNewMethod(Scene, start)
 	{
@@ -243,8 +280,9 @@ namespace nEngine {
 	
 
 	// ------------------------------------------------------------------
-	void Scene::luaRegister(lua_State* L)
+	bool luaRegisterScene(lua_State* L)
 	{
-		luaClass(L, Scene)
+		luaClass(L, Scene);
+		return true;
 	}
 };

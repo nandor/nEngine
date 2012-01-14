@@ -23,7 +23,9 @@ namespace nEngine {
         RESOURCE_ARCHIVE,
 		RESOURCE_OBJECT,
 		RESOURCE_NPC,
-		RESOURCE_JSON
+		RESOURCE_JSON,
+
+		RESOURCE_NUM
     };
 
     class Resource {
@@ -63,17 +65,7 @@ namespace nEngine {
         void setID (const std::string& _id) {
             mId = _id;
         }
-
-		float getTimeUsed()
-		{
-			return mTimeUsed;
-		}
-
-		void setTimeUsed(float f)
-		{
-			mTimeUsed = f;
-		}
-
+		
 		virtual int getMemoryUsage() 
 		{
 			return sizeof(*this);

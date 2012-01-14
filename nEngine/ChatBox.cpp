@@ -11,8 +11,7 @@
 #include "GUIButton.hpp"
 
 namespace nEngine {
-	template<> ChatBox* ChatBox::Singleton<ChatBox>::mInstance = NULL;
-
+	template<> ChatBox* ChatBox::Singleton<ChatBox>::__inst = NULL;
 
 	// ------------------------------------------------------------------
 	ChatBox::ChatBox()

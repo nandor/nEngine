@@ -39,7 +39,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>../;$(VCInstallDir)include;C:\Program Files (x86)\boost\boost_1_47;$(VCInstallDir)atlmfc\includeC:\boost;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Include\freetype2;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
+    <IncludePath>../;$(VCInstallDir)include;C:\Program Files (x86)\boost\boost_1_47;$(VCInstallDir)atlmfc\include;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Include\freetype2;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
     <LibraryPath>C:\Program Files (x86)\boost\boost_1_47\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

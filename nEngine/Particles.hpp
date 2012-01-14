@@ -36,6 +36,12 @@ namespace nEngine {
 		void draw();
 		
 		/**
+			Draw a marker to represent the emitter
+		*/
+		void drawMarker();
+
+
+		/**
 			Update the particles
 		*/
 		void update();

@@ -20,16 +20,21 @@ namespace nEngine {
 
 	protected:
 		Singleton() {}
-		NAPI static T* mInstance;
+		NAPI static T* __inst;
 
 	public:
 		static T& inst() {
-			return *(mInstance ? mInstance : (mInstance = new T()));
+			return *((__inst == NULL) ? (__inst = new T()) : (__inst));
 		}
-		
-		static T* instPtr()
-		{
-			return mInstance ? mInstance : (mInstance = new T());
+
+		static T* instPtr() {
+			return (__inst == NULL) ? (__inst = new T()) : (__inst);
+		}
+
+		static void kill() {
+			if (__inst != NULL) {
+				delete __inst;
+			}
 		}
 	};
 };

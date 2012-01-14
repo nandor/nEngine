@@ -149,6 +149,13 @@ namespace nEngine {
 	}
 
 	// ------------------------------------------------------------------
+	void Particles::drawMarker()
+	{
+
+	}
+
+
+	// ------------------------------------------------------------------
 	void Particles::update()
 	{
 		float time = Timer::inst().getTime();

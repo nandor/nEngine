@@ -16,6 +16,7 @@ public:
 	~Character();
 
 	void draw ();
+	void drawMarker();
 	void update ();
 };
 

@@ -68,6 +68,28 @@ namespace nEngine {
 	}
 	
 	// ------------------------------------------------------------------
+	Vec2 Camera::getPosition()
+	{
+		if (mToFollow != NULL) {
+			return mToFollow->getPosition(); 
+		}
+
+		return mCenter;
+	}
+
+	// ------------------------------------------------------------------
+	void Camera::setPosition(const Vec2& pos)
+	{
+		mCenter = pos;
+	}
+
+	// ------------------------------------------------------------------
+	void Camera::drawMarker()
+	{
+
+	}
+	
+	// ------------------------------------------------------------------
 	luaNewMethod(Camera, new)
 	{
 		Camera* c = new Camera(luaL_checkstring(L, 1));

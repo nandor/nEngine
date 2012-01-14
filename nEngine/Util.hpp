@@ -16,6 +16,7 @@
 #include "Vec2.hpp"
 #include "Font.hpp"
 #include "Shader.hpp"
+#include "Image.hpp"
 
 namespace nEngine 
 {
@@ -31,6 +32,11 @@ namespace nEngine
 		@return			Staring containing the error message
 	*/
 	std::string getWin32Error();
+
+	/**
+		Convert a hexadecimal character to an integer
+	*/
+	int charToInt(char c);
 };
 
 #endif /* UTIL_HPP */

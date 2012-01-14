@@ -84,6 +84,10 @@ namespace nEngine {
 		glPopMatrix();
 	}
 	
+	void NPC::drawMarker()
+	{
+
+	}
 	luaNewMethod(NPC, new)
 	{
 		NPC* npc = new NPC(std::string(luaL_checkstring(L, 1)), std::string(luaL_checkstring(L, 2)));

@@ -35,18 +35,6 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	GUIElement::~GUIElement()
 	{
-		if (!mParent || mParent == this) {
-			return;
-		}
-		
-		tChildIter it = mParent->mChildren.find(this->getID());
-
-		if (it == mParent->mChildren.end()) {
-			throw Error("GUIElement", getID(), "Invalid parent!");
-		}
-		
-		mParent->mChildren.erase(it);
-
 		for (tChildIter it = mChildren.begin(); it != mChildren.end(); ++it) {
 			delete it->second;
 		}
@@ -230,7 +218,21 @@ namespace nEngine {
 			}
 		}
 	}
+
 	
+	// ------------------------------------------------------------------
+	void GUIElement::remove()
+	{
+		if (mParent && mParent != this) {
+			tChildIter it = mParent->mChildren.find(this->getID());
+
+			if (it == mParent->mChildren.end()) {
+				throw Error("GUIElement", getID(), "Invalid parent!");
+			}
+		
+			mParent->mChildren.erase(it);
+		}
+	}	
 	
 	// ------------------------------------------------------------------
 	bool luaRegisterGUIElement(lua_State* L)

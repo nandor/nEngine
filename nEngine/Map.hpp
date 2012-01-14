@@ -111,36 +111,98 @@ namespace nEngine {
 		*/
 		NAPI void highlight(Vec2 pos, int range);
 
+		/**
+			Check if a tile is visible
+			@param i		X coordinate
+			@param j		Y coordinate
+			@return			True if fairies are walking on the tile
+		*/
 		NAPI bool isVisible(int i, int j);
+		
+		/**
+			Check if a tile is visible
+			@param pos		Position o f the tile
+			@return			True if fairies are walking on the tile
+		*/
 		NAPI bool isVisible(Vec2& pos);
 
+		/**
+			Get the ammount of memory used by the map
+			@return			Memory in bytes
+		*/
 		NAPI int getMemoryUsage();
 		
+		/**
+			Get the size of the map
+			@return			Vec2 containing size (Vec2(mSize, mSize))
+		*/
         NAPI Vec2 getSize ();
 
-        NAPI FieldType* getFieldType(int id);		
+		/**
+			Get a reference to a certain field type
+			@param id		ID of the field
+			@return			The required reference
+		*/
+        NAPI FieldType& getFieldType(int id);		
 
+		/**
+			Return the map containing the filed types
+			@return				THE map
+		*/
+		NAPI std::map<int, FieldType>& getFieldTypes()
+		{
+			return mFields;
+		}
+
+		/**
+			Call a lua method from the map's namespace
+			@param method		Name of the method
+		*/
 		NAPI void callLuaMethod(const std::string& method);
 
-        NAPI static void luaRegister (lua_State* L);
+		/**
+			Enable / disable map shadows (aoe explore map like)
+			@param shadow		True / False
+		*/
+		NAPI void setShadows(bool shadow)
+		{
+			mShadow = shadow;
+		}
 
 	private:
 
+		/**
+			Load map data
+			@param fileName				source file
+		*/
 		void loadMapData (const std::string& fileName);
 
 	private:
 		
+		/// Size of the map (must be a power of two)
 		int mSize;
 	
+		/// Size of a tile (120 x 60 by default)
 		Vec2 mTileSize;
 
+		/// Map data
         Tile** mData;
-        std::map<int, FieldType> fields;
+
+		/// Map containing field types
+        std::map<int, FieldType> mFields;
+		
+		/// Lua namespace name
 		std::string mNamespace;
 
+		/// Is the map shadowed?
+		bool mShadow;
+
 	public:
+		
 		static const ResourceType sType = RESOURCE_MAP;
 	};
+
+    NAPI bool luaRegisterMap (lua_State* L);
 };
 
 #endif /*MAP_HPP*/

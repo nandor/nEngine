@@ -11,7 +11,7 @@
 #include "GUI.hpp"
 
 namespace nEngine {
-	template<> Console* Console::Singleton<Console>::mInstance = NULL;
+	template<> Console* Console::Singleton<Console>::__inst = NULL;
 
 	// ------------------------------------------------------------------
 	void errorCallback(const std::string& msg)

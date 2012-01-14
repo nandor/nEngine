@@ -9,9 +9,9 @@
 #include "GUI.hpp"
 #include "GUIGLCanvas.hpp"
 
-namespace nEngine {
-	template<> GUI* GUI::Singleton<GUI>::mInstance = NULL;
-		
+namespace nEngine {		
+	template<> GUI* GUI::Singleton<GUI>::__inst = NULL;
+
 	// ------------------------------------------------------------------
 	GUI::GUI()
 		:GUIElement("")

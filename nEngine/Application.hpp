@@ -16,13 +16,6 @@
 #include "Util.hpp"
 #include "Scene.hpp"
 #include "Timer.hpp"
-#include "Chat.hpp"
-#include "Console.hpp"
-#include "GUI.hpp"
-#include "Object.hpp"
-#include "NPC.hpp"
-#include "ChatBox.hpp"
-#include "Particles.hpp"
 
 namespace nEngine {
     class Application {
@@ -47,6 +40,7 @@ namespace nEngine {
 		NAPI virtual void onKeyUp (int keyCode, char charCode);
 		NAPI std::vector<std::pair<int, int> > getDisplayModes();
 
+		NAPI static void killSingletons();
     protected:
 
         NAPI void initOpenGL();
@@ -72,8 +66,6 @@ namespace nEngine {
 		HWND		mWindowHandle;
 		HINSTANCE	mInstance;
     };
-
-	NAPI lua_State* luaRegisterEngine();
 };
 
 #endif /*APPLICATION_HPP*/

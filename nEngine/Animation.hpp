@@ -8,6 +8,7 @@
 
 #ifndef ANIMATION_HPP
 #define ANIMATION_HPP
+
 #include "nHeaders.hpp"
 #include "types.hpp"
 #include "Timer.hpp"

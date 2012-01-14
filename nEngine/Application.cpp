@@ -8,6 +8,9 @@
 
 #include "nHeaders.hpp"
 #include "Application.hpp"
+#include "Console.hpp"
+#include "ChatBox.hpp"
+#include "GUI.hpp"
 
 namespace nEngine {
 	// ------------------------------------------------------------------
@@ -37,21 +40,26 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	Application::~Application()
 	{
-		// delete the singletons
-		delete Scene::instPtr();
-		delete Resources::instPtr();
-		delete Console::instPtr();
-		delete ChatBox::instPtr();
-		delete GUI::instPtr();
-		delete Timer::instPtr();
-
 		closeWindow();
+
+		killSingletons();
 
 		if (luaGlobalState()) {
 			closeLua();
 		}
 	}
 	
+	// ------------------------------------------------------------------
+	void Application::killSingletons()
+	{
+		Resources::kill();
+		Timer::kill();
+		Scene::kill();
+		Console::kill();
+		GUI::kill();
+		ChatBox::kill();
+	}
+
 	// ------------------------------------------------------------------
 	void Application::loadConfig()
 	{
@@ -423,30 +431,5 @@ namespace nEngine {
 		}
 
 		return displays;
-	}
-	// -----------------------------------------------------------------
-	lua_State* luaRegisterEngine()
-	{	
-		lua_State* L = initLua();
-
-		Vec2::luaRegister(L);
-		Console::luaRegister(L);
-		Tile::luaRegister(L);
-		Map::luaRegister(L);
-		Font::luaRegister(L);
-		Shader::luaRegister(L);
-		Resources::luaRegister(L);
-		Scene::luaRegister(L);
-		Chat::luaRegister(L);
-		 
-		luaRegisterSceneNode(L);
-		luaRegisterObject(L);
-		luaRegisterNPC(L);
-		luaRegisterParticles(L);
-		luaRegisterCamera(L);
-		luaRegisterGUI(L);
-		luaRegisterTimer(L);
-
-		return L;
 	}
 };

@@ -61,24 +61,16 @@ namespace nEngine {
             */
             template<class T> T* require(const std::string& id)
             {
-				float time = Timer::inst().getTime();
 				Resource* res = findResource(id, T::sType);
 
 				if (res != NULL) {
-					res->setTimeUsed(time);
 					return (T*)res;
 				}
 
 				res = new T(id);
 				
-				res->setTimeUsed(time);
 				mMemoryUsage += res->getMemoryUsage();
-
-				if (!res->isUnloadable()) {
-					mNotUnloadable += res->getMemoryUsage();
-					mGarbageTreshold = min(mGarbageTreshold, mNotUnloadable);
-				}
-
+				
 				addResource(res, "tmp");
 				return (T*)res;
             };
@@ -91,11 +83,9 @@ namespace nEngine {
             */
             template<class T> T* get(const std::string& id)
             {
-				float time = Timer::inst().getTime();
 				Resource* res = findResource(id, T::sType);
 
 				if (res != NULL) {
-					res->setTimeUsed(time);
 					return (T*)res;
 				}
 				
@@ -107,34 +97,38 @@ namespace nEngine {
                 @param resource     Resource to add
                 @param id           Group name
             */
-            NAPI bool addResource(Resource* resource, const std::string& groupName = "tmp");
+            NAPI Resources& addResource(Resource* resource, const std::string& groupName = "tmp");
 
 			/**
 				Load a resource group from a file
 				@param groupName	Name of the resource group
 				@param fileName		Resource group descriptor file
 			*/
-			NAPI void loadResourceGroup(const std::string& groupName, const std::string& fileName);
+			NAPI Resources& loadResourceGroup(const std::string& groupName, const std::string& fileName);
 
 			/**
 				Unload a resource group
 				@param groupName	Name of the resource group
 			*/
-			NAPI void unloadResourceGroup(const std::string& groupName);
+			NAPI Resources& unloadResourceGroup(const std::string& groupName);
 			
-            /**
-                Register the lua callbacks used by this module
-                @param L            Lua state
-            */
-            NAPI static void luaRegister (lua_State* L);
-
-
 			/**
 				Get the memory used by the resources
 				@return				Used memory in bytes
 			*/
 			NAPI int getMemoryUsage();
 
+			/**
+				Get the names of resource groups
+				@return				std::vector
+			*/
+			NAPI std::vector<std::string> getResourceGroupNames();
+
+			/**
+				Return all resources in a group
+				@param name			Group Name
+			*/
+			NAPI std::vector<std::pair<std::string, ResourceType> > Resources::getResourcesInGroup(const std::string& name);
 
         private:
 			
@@ -148,24 +142,27 @@ namespace nEngine {
 			NAPI Resource* findResource(const std::string& id, ResourceType type);
 			
         private:
-			/// Max ammount of used garbage
-			int mGarbageTreshold;
-
 			/// Memory usage
 			int mMemoryUsage;
 
-			/// Ammount of memory that can't be unloaded
-			int mNotUnloadable;
+			/// resource id
+			typedef std::pair<std::string, ResourceType> tResId;
 
             /// iterator for the resources
-            typedef boost::ptr_multimap<std::string, Resource>::iterator tResourceIter;
+            typedef boost::ptr_map<tResId, Resource>::iterator tResourceIter;
 			
             /// map contatining resource data
-            boost::ptr_multimap<std::string, Resource> mResources;
+            boost::ptr_map<tResId, Resource> mResources;
 			
 			/// map for resource groups
-			std::map<std::string, std::vector<tResourceIter>> mResourceGroups;
+			std::map<std::string, std::vector<tResId> > mResourceGroups;
     };
+
+    /**
+        Register the lua callbacks used by this module
+        @param L            Lua state
+    */
+    NAPI bool luaRegisterResources (lua_State* L);
 };
 
 #endif /*RESOURCES_HPP*/

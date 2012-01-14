@@ -158,6 +158,9 @@
     <ClInclude Include="GUIGLCanvas.hpp">
       <Filter>GUI</Filter>
     </ClInclude>
+    <ClInclude Include="..\nEditor\ResourceView.hpp">
+      <Filter>DLL stuff</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

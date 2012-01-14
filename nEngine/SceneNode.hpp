@@ -17,24 +17,29 @@
 namespace nEngine {
 	class SceneNode {
 	public:
-		SceneNode(const std::string& id, const std::string& type);
-		virtual ~SceneNode();
+		NAPI SceneNode(const std::string& id, const std::string& type);
+		NAPI virtual ~SceneNode();
 		
 		/**
 			Draw the object
 		*/
-        virtual void draw() = 0;
+        NAPI virtual void draw() = 0;
+
+		/**
+			Draw a marker
+		*/
+		NAPI virtual void drawMarker() = 0;
 
 		/**
 			Update the object
 		*/
-		virtual void update() = 0;
+		NAPI virtual void update() = 0;
 		
 		/**
 			Set the id of the object
 			@param id				ID of the object
 		*/
-		void setID(const std::string& id)
+		NAPI void setID(const std::string& id)
 		{
 			mID = id;
 		}
@@ -43,7 +48,7 @@ namespace nEngine {
 			Get the id of the object
 			@return				ID of the object
 		*/
-		std::string getID()
+		NAPI std::string getID()
 		{
 			return mID;
 		}
@@ -52,7 +57,7 @@ namespace nEngine {
 			Set the tile
 			@param tile			New tile
 		*/
-		virtual void setTile(Vec2 tile)
+		NAPI virtual void setTile(Vec2 tile)
 		{
 			mTile = tile;
 		}
@@ -61,7 +66,7 @@ namespace nEngine {
 			Get the tile
 			@return				Tile
 		*/
-		Vec2 getTile()
+		NAPI Vec2 getTile()
 		{
 			return mTile;
 		}
@@ -70,32 +75,42 @@ namespace nEngine {
 			Get the type
 			@return type
 		*/
-		std::string getType()
+		NAPI std::string getType()
 		{
 			return mType;
 		}
 
-		void setHightlighted(bool highlight)
+		NAPI void setHightlighted(bool highlight)
 		{
 			mHighlighted =  highlight;
 		}
 
-		bool isHighlighted()
+		NAPI bool isHighlighted()
 		{
 			return mHighlighted;
 		}
 
-		void setHighlightRange(int range)
+		NAPI void setHighlightRange(int range)
 		{
 			mHighlightRange = range;
 		}
 
-		int getHighlightRange()
+		NAPI int getHighlightRange()
 		{
 			return mHighlightRange;
 		}
 
-		virtual Vec2 getPosition();
+		NAPI virtual Vec2 getPosition();
+
+		void setMarker(bool v)
+		{
+			mShowMarker = v;
+		}
+
+		void setHandle(unsigned handle)
+		{
+			mHandle = handle;
+		}
 	protected:		
 		/// ID of the object
 		std::string mID;
@@ -111,6 +126,12 @@ namespace nEngine {
 
 		/// Highlight range
 		int mHighlightRange;
+
+		/// Show a marker for the element
+		bool mShowMarker;
+
+		/// OpenGL handle
+		unsigned mHandle; 
 	};
 
 	bool luaRegisterSceneNode(lua_State* L);

@@ -11,7 +11,8 @@
 #include "Console.hpp"
 
 namespace nEngine {
-	template<> Timer* Timer::Singleton<Timer>::mInstance = NULL;
+	template<> Timer* Timer::Singleton<Timer>::__inst = NULL;
+
 	// ------------------------------------------------------------------
 	Timer::Timer()
 		:mNumFrames(0),

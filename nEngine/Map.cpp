@@ -32,7 +32,8 @@ namespace nEngine {
 	
 	// ------------------------------------------------------------------
 	Map::Map(const std::string& id)
-		:Resource(id, RESOURCE_MAP)
+		:Resource(id, RESOURCE_MAP),
+		 mShadow(true)
 	{
 
 	}
@@ -41,11 +42,11 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	Map::~Map ()
 	{
-		fields.clear();
+		mFields.clear();
 		for (int i = 0; i < mSize * mSize; ++i) {
 			delete mData[i];
 		}
-		delete mData;
+		delete[] mData;
 	}
 
 	#pragma pack(push, 1)
@@ -69,7 +70,7 @@ namespace nEngine {
 			}
 
 			BOOST_FOREACH (ptree::value_type& v, data.get_child("fields")) {
-				FieldType& f = fields[v.second.get<int> ("id")];
+				FieldType& f = mFields[v.second.get<int> ("id")];
 				f.mID = v.second.get<int> ("id");
 				f.mImage = v.second.get<std::string> ("image");
 				f.mName =v.second.get<std::string> ("name");
@@ -124,10 +125,10 @@ namespace nEngine {
 				int trans_z = (mSize - x) * mSize + y;
 
 				Tile* t = mData[x * mSize + y];				
-				FieldType* f = getFieldType(t->getID());
-				Image* img =  Resources::inst().require<Image>(f->mImage);
+				FieldType& f = getFieldType(t->getID());
+				Image* img =  Resources::inst().require<Image>(f.mImage);
 
-				int isExplored = t->isVisible() ? 2 : (t->isExplored() ? 1 : 0);
+				int isExplored = mShadow ? (t->isVisible() ? 2 : (t->isExplored() ? 1 : 0)) : 2;
 				int width = img->getWidth(), height = img->getHeight();
 
 				Shader::setUniformi("isExplored", 1, &isExplored);
@@ -148,24 +149,28 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	void Map::shadow()
 	{
-		for (int i = 0; i < mSize * mSize; ++i) {
-			mData[i]->setVisible(false);
+		if (mShadow) {
+			for (int i = 0; i < mSize * mSize; ++i) {
+				mData[i]->setVisible(false);
+			}
 		}
 	}
 	
 	// ------------------------------------------------------------------
 	void Map::highlight(Vec2 pos, int range)
 	{
-		for (int i = pos.getX() - range; i <= pos.getX() + range; ++i) {
-			for (int j = pos.getY() - range; j <= pos.getY() + range; ++j) {
-				int dx = abs(i - pos.getX());
-				int dy = abs(j - pos.getY());
+		if (mShadow) {
+			for (int i = pos.getX() - range; i <= pos.getX() + range; ++i) {
+				for (int j = pos.getY() - range; j <= pos.getY() + range; ++j) {
+					int dx = abs(i - pos.getX());
+					int dy = abs(j - pos.getY());
 
-				if (hasTile(i, j) && dx * dx + dy * dy <= range * range) {
-					Tile* t = mData[i * mSize + j];
+					if (hasTile(i, j) && dx * dx + dy * dy <= range * range) {
+						Tile* t = mData[i * mSize + j];
 
-					t->setExplored(true);
-					t->setVisible(true);
+						t->setExplored(true);
+						t->setVisible(true);
+					}
 				}
 			}
 		}
@@ -216,9 +221,9 @@ namespace nEngine {
 	}
 	
 	// ------------------------------------------------------------------
-	FieldType* Map::getFieldType(int id)
+	FieldType& Map::getFieldType(int id)
 	{
-		return &fields[id];
+		return mFields[id];
 	}
 		
 	// ------------------------------------------------------------------
@@ -254,7 +259,7 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	int Map::getMemoryUsage()
 	{
-		return sizeof(*this) + sizeof(Tile) * mSize * mSize + sizeof(fields) + sizeof(FieldType) * fields.size();
+		return sizeof(*this) + sizeof(Tile) * mSize * mSize + sizeof(mFields) + sizeof(FieldType) * mFields.size();
 	}
 
 
@@ -293,8 +298,9 @@ namespace nEngine {
 	luaEndMethods()
 	
 	// ------------------------------------------------------------------
-	void Map::luaRegister (lua_State* L)
+	bool luaRegisterMap (lua_State* L)
 	{
 		luaClass(L, Map);
+		return true;
 	}
 };

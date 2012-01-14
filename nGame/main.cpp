@@ -13,6 +13,7 @@
 #include "nEngine/GUICheckbox.hpp"
 #include "nEngine/GUIComboBox.hpp"
 #include "nEngine/GUI.hpp"
+#include "nEngine/ChatBox.hpp"
 #include "Character.hpp"
 using namespace nEngine;
 

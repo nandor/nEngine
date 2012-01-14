@@ -6,9 +6,12 @@
     (c) 2011 Licker Nandor
 */
 #include "nHeaders.hpp"
+#include "Util.hpp"
+#include "Error.hpp"
 #include "Color.hpp"
 
 namespace nEngine {
+	// ------------------------------------------------------------------
 	Color::Color()
 	{
 		mV[0] = mV[1] = mV[2] = mV[3] = 0.0f;
@@ -46,6 +49,114 @@ namespace nEngine {
 		mV[3] = a;
 	}
 	
+	
+	// ------------------------------------------------------------------
+	Color::Color(const std::string& str)
+	{
+		mV[0] = mV[1] = mV[2] = mV[3] = 0.0f;
+
+		bool isHSV;
+		if (str[0] == '#') {
+			isHSV = false;
+		} else if (str[0] == '%') {
+			isHSV = true;
+		} else {
+			if (boost::algorithm::to_lower_copy(str) != "none") {
+				throw Error("Color", "Invalid value: '" + str + "'");
+			}
+			return;
+		}
+		
+		// remove the @ or %
+		std::string value = str.substr(1, str.length());
+		boost::algorithm::to_lower(value);
+
+		if (value.find_first_of("01234567890abcdef") == std::string::npos) {
+			throw Error("Color", "Invalid value: '" + str + "'");
+		}
+		
+		switch (value.length()) {
+		case 3:
+			// XYZ
+			mV[0] = charToInt(value[0]) / 15.0f;
+			mV[1] = charToInt(value[1]) / 15.0f;
+			mV[2] = charToInt(value[2]) / 15.0f;
+			mV[3] = 1.0f;
+			break;
+		case 4:
+			// XYZA
+			mV[0] = charToInt(value[0]) / 15.0f;
+			mV[1] = charToInt(value[1]) / 15.0f;
+			mV[2] = charToInt(value[2]) / 15.0f;
+			mV[3] = charToInt(value[4]) / 15.0f;
+			break;
+		case 6:
+			// #XXYYZZ
+			mV[0] = ((charToInt(value[0]) << 4) + charToInt(value[1])) / 255.0f;
+			mV[1] = ((charToInt(value[2]) << 4) + charToInt(value[3])) / 255.0f;
+			mV[2] = ((charToInt(value[4]) << 4) + charToInt(value[5])) / 255.0f;
+			mV[3] = 1.0f;
+			break;
+		case 8:
+			// #XXYYZZAA
+			mV[0] = ((charToInt(value[0]) << 4) + charToInt(value[1])) / 255.0f;
+			mV[1] = ((charToInt(value[2]) << 4) + charToInt(value[3])) / 255.0f;
+			mV[2] = ((charToInt(value[4]) << 4) + charToInt(value[5])) / 255.0f;
+			mV[3] = ((charToInt(value[6]) << 4) + charToInt(value[7])) / 255.0f;
+			break;
+		default:
+			throw Error("Color", "Invalid value: '" + str + "'");
+		}
+
+		if (isHSV) {
+			HSVtoRGB();
+		}
+	}
+	
+	// ------------------------------------------------------------------
+	void Color::HSVtoRGB()
+	{
+		// HR SG VB
+		float chroma = mV[1] / mV[2];
+		float hdash = mV[0] / 60.0f;
+		float x = chroma * (1.0 - abs((hdash - (((int)(hdash / 2.0)) << 1)) - 1));
+		float min = mV[2] - chroma;
+ 
+		if(hdash < 1.0)
+		{
+			mV[0] = chroma;
+			mV[1] = x;
+		}
+		else if(hdash < 2.0)
+		{
+			mV[0] = x;
+			mV[1] = chroma;
+		}
+		else if(hdash < 3.0)
+		{
+			mV[1] = chroma;
+			mV[2] = x;
+		}
+		else if(hdash < 4.0)
+		{
+			mV[1] = x;
+			mV[2] = chroma;
+		}
+		else if(hdash < 5.0)
+		{
+			mV[0] = x;
+			mV[2] = chroma;
+		}
+		else if(hdash < 6.0)
+		{
+			mV[0] = chroma;
+			mV[2] = x;
+		}
+ 
+		mV[0] += min;
+		mV[1] += min;
+		mV[2] += min;
+	}
 	
 	// ------------------------------------------------------------------
 	Color Color::operator* (float f)

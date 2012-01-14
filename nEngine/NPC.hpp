@@ -21,6 +21,7 @@ namespace nEngine {
 		~NPC();
 
 		void draw();
+		void drawMarker();
 		void update();
 
 		/**

@@ -8,6 +8,13 @@
 
 #include "nHeaders.hpp"
 #include "Lua.hpp"
+#include "Chat.hpp"
+#include "Console.hpp"
+#include "GUI.hpp"
+#include "Object.hpp"
+#include "NPC.hpp"
+#include "ChatBox.hpp"
+#include "Particles.hpp"
 
 namespace nEngine {
 	lua_State* L = NULL;
@@ -222,5 +229,31 @@ namespace nEngine {
 		}
 
 		return 0;
+	}
+	
+	// -----------------------------------------------------------------
+	lua_State* luaRegisterEngine()
+	{	
+		lua_State* L = initLua();
+
+		Vec2::luaRegister(L);
+		Console::luaRegister(L);
+		Tile::luaRegister(L);
+		Font::luaRegister(L);
+		Shader::luaRegister(L);
+		Chat::luaRegister(L);
+		 
+		luaRegisterMap(L);
+		luaRegisterResources(L);
+		luaRegisterScene(L);
+		luaRegisterSceneNode(L);
+		luaRegisterObject(L);
+		luaRegisterNPC(L);
+		luaRegisterParticles(L);
+		luaRegisterCamera(L);
+		luaRegisterGUI(L);
+		luaRegisterTimer(L);
+
+		return L;
 	}
 };

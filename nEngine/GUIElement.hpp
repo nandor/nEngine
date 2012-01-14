@@ -206,6 +206,7 @@ namespace nEngine {
 			mEnabled = false;
 		}
 
+		NAPI void remove();
 
 	protected:
 		/**

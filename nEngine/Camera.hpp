@@ -8,8 +8,9 @@
 
 #ifndef CAMERA_HPP
 #define CAMERA_HPP
-#include "nHeaders.hpp"
+
 #include "types.hpp"
+#include "nHeaders.hpp"
 #include "Util.hpp"
 #include "Object.hpp"
 
@@ -19,46 +20,57 @@ namespace nEngine {
 	*/
 	class Camera : public SceneNode {
 	public:
-		Camera (const std::string& camera);
-		~Camera ();
+		NAPI Camera (const std::string& camera);
+		NAPI ~Camera ();
 	
 		/**
 			Activate this camera
 		*/
-		void focus();
+		NAPI void focus();
 
 		/**
 			Draw the camera
 		*/
-		void draw();
+		NAPI void draw();
+		
+		/**
+			Draw a marker
+		*/
+		NAPI void drawMarker();
 
 		/**
 			Update the camera
 		*/
-		void update();
+		NAPI void update();
 
 		/**
 			Start following an object
 			@param id			ID of the object to follow
 		*/
-		void follow (const std::string& id);
+		NAPI void follow (const std::string& id);
 
 		/**
 			Start following an object
 			@param obj			Pointer to the object to follow
 		*/
-		void follow (SceneNode* obj);
+		NAPI void follow (SceneNode* obj);
 
 		/**
 			Set the position of the camera
 			@param pos			Position
 		*/
-		void setPosition(const Vec2& p);
+		NAPI void setPosition(const Vec2& p);
 		
+		/**
+			Get the position of the camera
+			@return				Position
+		*/
+		NAPI Vec2 getPosition();
+
 		/**
 			Get the offset of the camera
 		*/
-		Vec2 getOffset();
+		NAPI Vec2 getOffset();
 
 	private:
 		
@@ -69,7 +81,7 @@ namespace nEngine {
 		SceneNode* mToFollow;
 	};
 
-	bool luaRegisterCamera(lua_State* L);
+	NAPI bool luaRegisterCamera(lua_State* L);
 };
 
 #endif /*CAMERA_HPP*/

@@ -19,6 +19,11 @@
 #include "Singleton.hpp"
 
 namespace nEngine {
+	enum SceneRenderMode {
+		SCENE_DRAW_OBJECTS = 1,
+		SCENE_DRAW_MARKERS = 2
+	};
+
 	/**
 		Scene manager
 	*/
@@ -60,13 +65,19 @@ namespace nEngine {
 			Set the name of the camera to be used
 			@param camera		Name of the camera
 		*/
-		NAPI void setCamera(const std::string& camera);
+		NAPI Scene& setCamera(const std::string& camera);
+
+		/**
+			Set the camera to be used
+			@param camera		Pointer to the camera
+		*/
+		NAPI Scene& setCamera(Camera* cam);
 
 		/**
 			Set a new map to be used
 			@param map			Pointer to the map
 		*/
-		NAPI void setMap(Map* map);
+		NAPI Scene& setMap(Map* map);
 		
 		/**
 			Get a pointer to an object
@@ -79,13 +90,7 @@ namespace nEngine {
 			Add a new objec to the scene manager
 			@param obj			Pointer to the object
 		*/
-		NAPI void addNode(SceneNode* obj);
-
-		/**
-			Register the lua objects associated with the scene
-			@param L			Lua state
-		*/
-        NAPI static void luaRegister (lua_State* L);
+		NAPI Scene& addNode(SceneNode* obj);
 
 		/**
 			Get the coordinate of a tile at a certain position
@@ -98,7 +103,7 @@ namespace nEngine {
 		/**
 			Destroy the scene
 		*/
-		NAPI void destroyScene();
+		NAPI Scene& destroyScene();
 
 		/**
 			Check if an object is on a certain tile
@@ -115,17 +120,18 @@ namespace nEngine {
 		/**
 			Activate the scene
 		*/
-		NAPI void stop() {
-			mActive = false;
-		}
+		NAPI Scene& stop();
 
 		/**
 			Deactivate the scene
 		*/
-		NAPI void start() {
-			mActive = true;
-		}
+		NAPI Scene& start();
 
+		/**
+			Set the way the renderer draws the scene
+			@param drawMode				OR-d SceneRenderModes
+		*/
+		NAPI Scene& setDrawMode(int drawMode);
 	private:
 		/// Size of tiles
 		Vec2 mTileSize;
@@ -144,7 +150,22 @@ namespace nEngine {
 		
 		/// Iterator for the map containing the objects
 		typedef std::map<std::string, SceneNode*>::iterator tNodeIter;
+
+		/// Used for generating OpenGL item ids
+		unsigned mNextHandle;
+	
+		/// Rendering mode
+		unsigned mDrawMode;
+
+		/// Map to convert OpenGL id to a std::string in O(log N) time
+		std::map<unsigned, std::string> mHandleToId;
 	};
+
+	/**
+		Register the lua objects associated with the scene
+		@param L			Lua state
+	*/
+    NAPI bool luaRegisterScene (lua_State* L);
 };
 
 #endif /*SCENE_HPP*/

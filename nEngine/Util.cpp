@@ -95,4 +95,48 @@ namespace nEngine
 		LocalFree(lpMsgBuf);
 		return str;
 	}
+	
+	// ------------------------------------------------------------------
+	int charToInt(char c)
+	{
+		char result = 0;
+		__asm {
+			push eax		
+			mov al, c
+
+			cmp al, '0'				; c < '0'
+			jl end
+
+			cmp al, '9'				; c <= '9'
+			jg notDigit
+			sub al, '0'
+			mov result, al
+			jl end
+
+			notDigit:
+			cmp al, 'A'				; c < 'A'
+			jl end
+
+			cmp al, 'F'				; c <= 'F'
+			jg notUpperChar
+			sub al, 55				; 55 = 'A' - 10
+			mov result, al
+			jl end
+
+			notUpperChar:
+			cmp al, 'a'				; c < 'a'
+			jl end
+
+			cmp al, 'f'				; c <= 'f'
+			jg end
+
+			sub al, 87				; 87 = 'a' - 10
+			mov result, al
+
+			end:
+			pop eax
+		}
+
+		return result;
+	}
 }

@@ -42,12 +42,12 @@ namespace nEngine {
         /**
             Create a new shader
         */
-        Shader(const std::string& id);
+        NAPI Shader(const std::string& id);
 
         /**
             Destroy the shader
         */
-        ~Shader();
+        NAPI ~Shader();
 
         /**
             Load a shader from a file
@@ -56,19 +56,19 @@ namespace nEngine {
 
             @return                 True on success
         */
-        void load(const std::string& fileName);
+        NAPI void load(const std::string& fileName);
 
         /**
             Compile the shader
             @return                 True on success
         */
-        void compile();
+        NAPI void compile();
 
         /**
             Return the program id
             @return                 Program id
         */
-        unsigned getProgramId()
+        NAPI unsigned getProgramId()
         {
             return mProgramId;
         }
@@ -76,14 +76,19 @@ namespace nEngine {
 		/**
 			Register the 'Shader' lua class
 		*/
-		static bool luaRegister(lua_State* L);
+		NAPI static bool luaRegister(lua_State* L);
+
+		/**
+			Get the names of shader sources
+		*/
+		NAPI std::vector<std::string> getShaderNames();
     private:
 
-        std::vector<unsigned> mShaders;
+        std::vector<std::pair<std::string, unsigned> > mShaders;
         unsigned mProgramId;
 
     public:
-        static const ResourceType sType;
+        NAPI static const ResourceType sType;
 
         static void useProgram(const std::string& str);
         static void popProgram();
