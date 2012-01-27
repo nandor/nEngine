@@ -7,22 +7,29 @@
 	(c) 2011 Licker Nandor
 */
 
-#include "nEngine/nHeaders.hpp"
-#include "nEngine/Application.hpp"
 #include "nEngine/GUIButton.hpp"
 #include "nEngine/GUICheckbox.hpp"
 #include "nEngine/GUIComboBox.hpp"
+#include "nEngine/GUISlider.hpp"
+#include "nEngine/GUILabel.hpp"
 #include "nEngine/GUI.hpp"
+
+#include "nEngine/nHeaders.hpp"
+#include "nEngine/Application.hpp"
 #include "nEngine/ChatBox.hpp"
+#include "nEngine/SoundManager.hpp"
+
 #include "Character.hpp"
 using namespace nEngine;
+
+#include <direct.h>
 
 class nGame : public Application {
 public:
 	// ------------------------------------------------------------------
-	nGame() : Application()
+	nGame() 
+		:Application()
 	{
-
 	}
 	
 	// ------------------------------------------------------------------
@@ -34,8 +41,12 @@ public:
 	// ------------------------------------------------------------------
 	void onSceneInit()
 	{
-		Scene::inst().setMap(Resources::inst().get<Map>("tutorial"));
+		initCharacter();
 		initUI();
+
+		Scene::inst().setMap(Resources::inst().get<Map>("tutorial"));
+		SoundManager::inst()
+			.setMusic(new Music("zip://data/tutorial.zip/sound/background.ogg"));
 	}
 	
 	// ------------------------------------------------------------------
@@ -49,7 +60,6 @@ public:
 		newButton->setCaption("New Game");
 		GUI::inst().add(newButton);
 
-		
 		GUIButton* loadButton = new GUIButton("loadButton");
 		loadButton->setAlignment(GUI_ALIGN_LEFT, GUI_ALIGN_BOTTOM);
 		loadButton->setPosition(Vec2(50, 160));
@@ -67,8 +77,7 @@ public:
 		settingsButton->setCaption("Settings");
 		settingsButton->connect(GUI_EVENT_CLICK, boost::bind(&nGame::onSettingsClick, this, _1));
 		GUI::inst().add(settingsButton);
-		
-		
+
 		GUIButton* exitButton = new GUIButton("exitButton");
 		exitButton->setAlignment(GUI_ALIGN_LEFT, GUI_ALIGN_BOTTOM);
 		exitButton->setPosition(Vec2(50, 40));
@@ -116,25 +125,35 @@ public:
 		fullscreenFlag->setCaption("Fullscreen");
 		fullscreenFlag->setChecked(luaGetGlobalBoolean("fullScreen"));
 		optionsPanel->add(fullscreenFlag);
-
-		GUILabel* saveLabel = new GUILabel("saveLabel");
-		saveLabel->setAlignment(GUI_ALIGN_LEFT, GUI_ALIGN_BOTTOM);
-		saveLabel->setPosition(Vec2(5, 70));
-		saveLabel->setSize(Vec2(300, 45));
-		saveLabel->setTextColor(Color(1.0, 0.0, 0.0, 1.0));
-		saveLabel->setFont("gui24");
-		saveLabel->setText("Save successful!");
-		saveLabel->hide();
-		optionsPanel->add(saveLabel);
-
-		GUILabel* resLabel = new GUILabel("resLabel");
+		
+		GUILabel* resLabel = new GUILabel("resLabel") ;
 		resLabel->setAlignment(GUI_ALIGN_LEFT, GUI_ALIGN_BOTTOM);
 		resLabel->setPosition(Vec2(5, 160));
 		resLabel->setSize(Vec2(180, 45));
 		resLabel->setFont("gui24");
 		resLabel->setText("Resolution");
 		optionsPanel->add(resLabel);
+		
+		GUILabel* musicLabel = new GUILabel("musicLabel") ;
+		musicLabel->setAlignment(GUI_ALIGN_LEFT, GUI_ALIGN_BOTTOM);
+		musicLabel->setPosition(Vec2(5, 110));
+		musicLabel->setSize(Vec2(180, 45));
+		musicLabel->setFont("gui24");
+		musicLabel->setText("Music");
+		optionsPanel->add(musicLabel);
+		
+		GUISlider* musicSlider = new GUISlider("musicSlider");
+		musicSlider->setAlignment(GUI_ALIGN_LEFT, GUI_ALIGN_BOTTOM);
+		musicSlider->setPosition(Vec2(150, 110));
+		musicSlider->setSize(Vec2(180, 45));
+		musicSlider->setValue(SoundManager::inst().getVolume());
+		musicSlider->connect(GUI_EVENT_CHANGED, [musicSlider] (GUIEvent& evt) {
+			SoundManager::inst().setVolume(musicSlider->getValue());
+		});
 
+		optionsPanel->add(musicSlider);
+		
+		
 		GUIComboBox* resBox = new GUIComboBox("resBox");
 		resBox->setAlignment(GUI_ALIGN_LEFT, GUI_ALIGN_BOTTOM);
 		resBox->setPosition(Vec2(150, 165));
@@ -160,8 +179,10 @@ public:
 		GUI::inst().get("newButton")->disable();
 		GUI::inst().get("loadButton")->disable();
 		GUI::inst().get("settingsButton")->disable();
-		
-		
+
+		Sound* snd = new Sound("zip://data/core.zip/sound/shot.ogg");
+		snd->play();
+
 		GUI::inst().get("optionsPanel")->show();
 	}
 	
@@ -171,9 +192,8 @@ public:
 		GUI::inst().get("newButton")->enable();
 		GUI::inst().get("loadButton")->enable();
 		GUI::inst().get("settingsButton")->enable();
-		
+			
 		GUI::inst().get("optionsPanel")->hide();
-		GUI::inst().get("saveLabel")->hide();
 	}
 	
 	// ------------------------------------------------------------------
@@ -193,18 +213,14 @@ public:
 		   << "    Configuration for nEngine\n"
 		   << "]]--\n"
 		   << "\n"
-		   << "fullScreen = " << ((mFullScreen = box->getChecked()) ? "true" : "false") << "\n"
-		   << "displayWidth = " << (mWidth = resolution.first) << "\n"
-		   << "displayHeight = " << (mHeight = resolution.second) << "\n"
+		   << "fullScreen = " << (box->getChecked() ? "true" : "false") << "\n"
+		   << "displayWidth = " << resolution.first << "\n"
+		   << "displayHeight = " << resolution.second << "\n"
+		   << "masterVolume = " << SoundManager::inst().getVolume() << "\n"
 		   << "maxFPS = 40";
-
-		file->write(ss.str());
-
-		GUI::inst().get("saveLabel")->show();
-
-		Timer::inst().queueAction([] (float time) {
-			GUI::inst().get("saveLabel")->hide();
-		}, 1500.0f);
+		
+		file->copyData((void*)ss.str().c_str(), ss.str().size());
+		file->write();
 	}
 
 	// ------------------------------------------------------------------
@@ -253,34 +269,15 @@ private:
 	Character* mCharacter;
 };
 
-nGame* game = NULL;
-
-luaNewMethod(nGame, initCharacter)
-{
-	game->initCharacter();
-	return 0;
-}
-
-luaBeginMeta(nGame)
-luaEndMeta()
-
-luaBeginMethods(nGame)
-	luaMethod(nGame, initCharacter)
-luaEndMethods()
-
-int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,LPSTR lpCmdLine, int nCmdShow)
+int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     try {
-		lua_State* L = luaRegisterEngine();
-		luaClass(L, nGame);
+		nGame myGame;
+		myGame.start();
 
-		game = new nGame();	
+	} catch (Error error) {
 		
-		game->start();
-
-		delete game;
-    } catch (Error error) {
-		MessageBox(NULL, error.getMessage().c_str(), "Error", MB_ICONERROR);
+		MessageBox(NULL, error.getMessage().c_str(), "Unhandled Exception", MB_ICONERROR);
     }
 
     return 0;

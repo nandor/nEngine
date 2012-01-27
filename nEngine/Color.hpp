@@ -46,6 +46,12 @@ namespace nEngine {
 		{
 			return mV[3];
 		}
+
+		NAPI Color& setA(float a)
+		{
+			mV[3] = a;
+			return *this;
+		}
 	private:
 
 		NAPI void HSVtoRGB();

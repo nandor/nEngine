@@ -20,12 +20,12 @@ public:
 
 	void setResourceJSON(const std::string& id);
 	void setResourceShader(const std::string& id);
+	void setResourceMap(const std::string& id);
 
 private:
 	
 	wxWindow* mRoot;
 	wxPropertyGrid* mGrid;
-	wxPanel* mToolbar;
 };
 
 #endif /*PROPERTYEDIT_HPP*/

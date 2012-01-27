@@ -18,6 +18,9 @@
     <Filter Include="GUI">
       <UniqueIdentifier>{dd74f257-e148-4703-93d8-a0ff4bc4b2f3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SoundManager">
+      <UniqueIdentifier>{3200121c-ced4-48ba-932b-3e6e225af64b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.hpp">
@@ -75,9 +78,6 @@
       <Filter>Other</Filter>
     </ClInclude>
     <ClInclude Include="Console.hpp">
-      <Filter>Other</Filter>
-    </ClInclude>
-    <ClInclude Include="nHeaders.hpp">
       <Filter>Other</Filter>
     </ClInclude>
     <ClInclude Include="SceneNode.hpp">
@@ -158,8 +158,29 @@
     <ClInclude Include="GUIGLCanvas.hpp">
       <Filter>GUI</Filter>
     </ClInclude>
-    <ClInclude Include="..\nEditor\ResourceView.hpp">
-      <Filter>DLL stuff</Filter>
+    <ClInclude Include="ResourceGroup.hpp">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundManager.hpp">
+      <Filter>SoundManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Sound.hpp">
+      <Filter>SoundManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Music.hpp">
+      <Filter>SoundManager</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundSource.hpp">
+      <Filter>SoundManager</Filter>
+    </ClInclude>
+    <ClInclude Include="oggCallbacks.hpp">
+      <Filter>SoundManager</Filter>
+    </ClInclude>
+    <ClInclude Include="GUISlider.hpp">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="nHeaders.hpp">
+      <Filter>Other</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -293,6 +314,27 @@
       <Filter>GUI</Filter>
     </ClCompile>
     <ClCompile Include="GUIGLCanvas.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceGroup.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Sound.cpp">
+      <Filter>SoundManager</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundManager.cpp">
+      <Filter>SoundManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Music.cpp">
+      <Filter>SoundManager</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundSource.cpp">
+      <Filter>SoundManager</Filter>
+    </ClCompile>
+    <ClCompile Include="oggCallbacks.cpp">
+      <Filter>SoundManager</Filter>
+    </ClCompile>
+    <ClCompile Include="GUISlider.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
   </ItemGroup>

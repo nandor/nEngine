@@ -33,7 +33,6 @@ namespace nEngine {
 	Font::Font(const std::string& _id, unsigned _height)
 		:Resource(_id, RESOURCE_FONT)
 	{
-		setUnloadable(false);
 		mTextures = new GLuint[128];
 		mCharWidth = new unsigned[128];
 		
@@ -74,7 +73,7 @@ namespace nEngine {
 		}
 
 		FT_Glyph glyph;
-		if(FT_Get_Glyph(sFace->glyph, &glyph )) {
+		if (FT_Get_Glyph(sFace->glyph, &glyph )) {
 			return false;
 		}
 
@@ -168,7 +167,7 @@ namespace nEngine {
 
 		File* file =  Resources::inst().require<File> (name);
     
-		FT_New_Memory_Face(sLibrary, file->getData(), file->getSize(), 0, &sFace);
+		FT_New_Memory_Face(sLibrary, (FT_Byte*)file->getData(), file->getSize(), 0, &sFace);
 		sHasFace = true;
 
 		return true;

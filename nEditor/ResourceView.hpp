@@ -9,6 +9,7 @@
 #ifndef RESOURCEVIEW_HPP
 #define RESOURCEVIEW_HPP
 
+
 #include <wx/treectrl.h>
 #include <wx/imaglist.h>
 #include <wx/wx.h>
@@ -28,8 +29,9 @@ private:
 
 	DECLARE_EVENT_TABLE();
 
-	void OnItemActivate(wxTreeEvent& evt);
+	void OnItemSelect(wxTreeEvent& evt);
 	void OnItemMenu(wxTreeEvent& evt);
+	void OnItemActivate(wxTreeEvent& evt);
 
 private:
 	int mIconSize;

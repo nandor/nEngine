@@ -11,8 +11,14 @@
 #include "Console.hpp"
 #include "ChatBox.hpp"
 #include "GUI.hpp"
+#include "SoundManager.hpp"
+
+#define NENGINE_DRAW_WAIT (WM_USER + 0x0001)
+#define NENGINE_RELOAD (WM_USER + 0x0002)
 
 namespace nEngine {
+	namespace po = boost::program_options;
+
 	// ------------------------------------------------------------------
 	LRESULT CALLBACK WndProc(HWND handle, UINT msg, WPARAM wParam, LPARAM lParam)
 	{		
@@ -20,19 +26,31 @@ namespace nEngine {
 			PostMessage(handle, WM_QUIT, NULL, NULL);
 			return 0;
 		}
-
+		if (msg == WM_PAINT) {
+			PostMessage(handle, NENGINE_RELOAD, NULL, NULL);
+			return 0;
+		}
+		
 		return DefWindowProc(handle, msg, wParam, lParam);
 	}
 
 	// ------------------------------------------------------------------
 	Application::Application()
+		:mInitFile("")
 	{
 		mGlContext = NULL;
 		mDeviceContext = NULL;
 		mInstance = NULL;
 		mWindowHandle = NULL;
-		
-		loadConfig();
+	
+		luaRegisterEngine();
+		luaReadFile("fs://data/lua/lib.lua");
+
+		try {
+			parseCmdLine();
+		} catch (std::exception err) {
+			throw Error("Application", "Invalid command line: " + std::string(err.what()));
+		}
 
 		srand(time(NULL));
 	}
@@ -49,6 +67,57 @@ namespace nEngine {
 		}
 	}
 	
+	
+	// ------------------------------------------------------------------
+	void Application::parseCmdLine()
+	{
+		po::options_description desc ("Options");
+
+		desc.add_options()
+			("help", "Display command line options")
+			("width", po::value<int>(), "Window width")
+			("height", po::value<int>(), "Window height")
+			("fullscreen", "Start in fullscreen mode")
+			("config", po::value<std::string>()->default_value("fs://data/lua/config.lua"), "Configuration script")
+			("init", po::value<std::string>()->default_value("fs://data/lua/init.lua"), "Initialisation script");
+
+
+		po::variables_map vm;	
+		po::basic_parsed_options<char> opt = po::parse_command_line(__argc, __argv, desc);
+		po::store(opt, vm);
+
+		if (vm.count("help")) {
+			std::stringstream ss;
+			desc.print(ss);
+
+			MessageBox(NULL, ss.str().c_str(), "Options", MB_ICONINFORMATION);
+		}
+		
+		mWindowTitle = "nEngine";
+		mFullScreen = false;
+		mBpp = 32;
+		mMaxFPS = 40;
+		mVolume = 20;
+
+		if (vm.count("config") && vm["config"].as<std::string>() != "none") {			
+			luaReadFile(vm["config"].as<std::string>());
+		
+			mWidth = luaGetGlobalInt("displayWidth");
+			mHeight = luaGetGlobalInt("displayHeight");
+			mFullScreen = luaGetGlobalBoolean("fullScreen");
+
+			mMaxFPS = luaGetGlobalInt("maxFPS");
+		}
+
+		if (vm.count("init") && vm["init"].as<std::string>() != "none") {			
+			mInitFile = vm["init"].as<std::string>();
+		}
+		
+		mWidth = vm.count("width") ? vm["width"].as<int>() : mWidth;
+		mHeight = vm.count("height") ? vm["height"].as<int>() : mHeight;
+		mFullScreen = vm.count("fullscreen") ? true : mFullScreen;
+	}
+
 	// ------------------------------------------------------------------
 	void Application::killSingletons()
 	{
@@ -58,20 +127,7 @@ namespace nEngine {
 		Console::kill();
 		GUI::kill();
 		ChatBox::kill();
-	}
-
-	// ------------------------------------------------------------------
-	void Application::loadConfig()
-	{
-		luaReadFile("fs://data/lua/config.lua");
-		
-		mWidth = luaGetGlobalInt("displayWidth");
-		mHeight = luaGetGlobalInt("displayHeight");
-		mMaxFPS = luaGetGlobalInt("maxFPS");
-
-		mBpp = 32;
-		mFullScreen = luaGetGlobalBoolean("fullScreen");
-		mWindowTitle = "nEngine";
+		SoundManager::kill();
 	}
 
 	// ------------------------------------------------------------------
@@ -108,7 +164,7 @@ namespace nEngine {
 		wc.hInstance        = mInstance;
 		wc.hIcon			= LoadIcon(NULL, IDI_WINLOGO);    
 		wc.hCursor			= LoadCursor(NULL, IDC_ARROW);  
-		wc.hbrBackground    = NULL;  
+		wc.hbrBackground    = (HBRUSH)GetStockObject(BLACK_BRUSH);  
 		wc.lpszMenuName     = NULL; 
 		wc.lpszClassName    = "nEngine"; 
 		
@@ -255,11 +311,40 @@ namespace nEngine {
 		// Resize the window
 		onResize (mWidth, mHeight);
 	}
-
+	
 	// ------------------------------------------------------------------
 	void Application::exit()
 	{
 		PostMessage(mWindowHandle, WM_QUIT, NULL, NULL);
+	}
+	
+	// ------------------------------------------------------------------
+	void Application::drawWaitScreen()
+	{
+		int boxWidth = 120, boxHeight = 60;
+		
+		PAINTSTRUCT ps;
+		HDC hDC = BeginPaint(mWindowHandle, &ps);
+
+
+		LOGFONT fontDef;
+		memset(&fontDef, 0, sizeof(fontDef));
+		fontDef.lfHeight = 25;
+		fontDef.lfPitchAndFamily = FF_SCRIPT;
+		HFONT font = CreateFontIndirect(&fontDef);
+		SelectObject(hDC, font);
+
+
+		RECT rect;
+		rect.top = (mHeight - boxHeight) >> 1;
+		rect.left = (mWidth - boxWidth) >> 1;
+		rect.bottom = rect.top + boxHeight;
+		rect.right = rect.left + boxWidth;
+
+		FillRect(hDC, &rect, WHITE_BRUSH);
+		TextOut(hDC, rect.left + 15, rect.top + (boxHeight - fontDef.lfHeight) / 2, "Loading...", 10);
+
+		EndPaint(mWindowHandle, &ps);
 	}
 
 	// ------------------------------------------------------------------
@@ -267,16 +352,19 @@ namespace nEngine {
 	{	
 		initWindow();
 		initOpenGL();
+		
+		if (mInitFile != "") {
+			luaReadFile(mInitFile);
+		}
 
-		luaReadFile("fs://data/lua/lib.lua");
-		luaReadFile("fs://data/lua/init.lua");	
-
-		onSceneInit();
-
+		SoundManager::inst().start(mVolume);
+	
 		float frameTime = 1000.0f / mMaxFPS;
 		mActive = true;
 		mDone = false;
 		MSG msg;
+		
+		onSceneInit();
 
 		while (!mDone) {
 			float begTime = Timer::inst().getTime();
@@ -284,6 +372,8 @@ namespace nEngine {
 			if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
 				if (msg.message == WM_QUIT) {
 					mDone = true;
+				} else if (msg.message == NENGINE_RELOAD) {
+					drawWaitScreen();
 				} else {
 					handleMessage(msg);
 					TranslateMessage(&msg);	
@@ -315,6 +405,8 @@ namespace nEngine {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glLoadIdentity ();
 		
+		SoundManager::inst().update();
+
 		Scene::inst().update();
 		Scene::inst().draw();
 		

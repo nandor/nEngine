@@ -20,7 +20,6 @@ namespace nEngine {
 			throw Error ("Archive", id, "Cannot open archive");
 		}
 
-
 		if (unzGoToFirstFile (mArchive) != UNZ_OK) {
 			throw Error ("Archive", id, "Cannot read archive");
 		}
@@ -29,11 +28,13 @@ namespace nEngine {
 
 		char buffer[1024];
 		do {
+			
 			mNumFiles++;
 			unz_file_info info;
 			unzGetCurrentFileInfo(mArchive, &info, buffer, sizeof(buffer), NULL, NULL, NULL, NULL);
 			std::string fileName(buffer);
 			mFiles.insert(make_pair(fileName, info.uncompressed_size));
+
 		} while (unzGoToNextFile(mArchive) != UNZ_END_OF_LIST_OF_FILE);
 	}
 
@@ -73,11 +74,5 @@ namespace nEngine {
 		file->setData(buf, info.uncompressed_size);
 
 		unzCloseCurrentFile(mArchive);
-	}
-	
-	// ------------------------------------------------------------------
-	void Archive::writeFile(File* file, const std::string& fileName)
-	{
-		throw Error("Archive", getID(), "Unimplemented method: 'writeFile'");
 	}
 };

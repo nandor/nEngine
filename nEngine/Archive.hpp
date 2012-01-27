@@ -23,9 +23,10 @@ namespace nEngine {
 
         std::vector<std::string> getFileList();
         void readFile(File* file, const std::string& fileName);
-        void writeFile(File* file, const std::string& fileName);
+
     public:
-        static const ResourceType sType = RESOURCE_ARCHIVE;
+        
+		static const ResourceType sType = RESOURCE_ARCHIVE;
 
     private:
         unzFile mArchive;

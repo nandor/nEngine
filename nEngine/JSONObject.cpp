@@ -39,6 +39,7 @@ namespace nEngine {
 	{
 		mData = data;
 	}
+
 	// ------------------------------------------------------------------
 	JSONObject::~JSONObject()
 	{

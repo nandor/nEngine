@@ -170,6 +170,17 @@ namespace nEngine {
 		return lua_toboolean(L, -1);
 	}
 		
+	// ------------------------------------------------------------------
+	std::string luaGetGlobalString(const std::string& id)
+	{
+		lua_State* L = luaGlobalState();
+
+		lua_getglobal(L, id.c_str());
+		
+		return std::string(luaL_checkstring(L, -1));
+	}
+		
+		
 		
 	// ------------------------------------------------------------------
 	int luaClassIndex(lua_State* L)

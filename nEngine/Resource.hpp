@@ -8,6 +8,7 @@
 
 #ifndef RESOURCE_HPP
 #define RESOURCE_HPP
+
 #include "nHeaders.hpp"
 #include "types.hpp"
 
@@ -24,6 +25,7 @@ namespace nEngine {
 		RESOURCE_OBJECT,
 		RESOURCE_NPC,
 		RESOURCE_JSON,
+		RESOURCE_SOUND,
 
 		RESOURCE_NUM
     };
@@ -46,7 +48,8 @@ namespace nEngine {
 			Return the id of the resource
 			@return				Id
 		*/
-        std::string getID () {
+        std::string getID () 
+		{
             return mId;
         }
 
@@ -54,34 +57,40 @@ namespace nEngine {
 			Return the type of the resource
 			@return				Type
 		*/
-        ResourceType getType () {
+        ResourceType getType () 
+		{
             return mType;
         }
 
-        void setType (ResourceType _type) {
-            mType = _type;
-        }
-
-        void setID (const std::string& _id) {
-            mId = _id;
-        }
-		
+		/**
+			Return the ammount of used memory
+			@return				Memory in bytes
+		*/
 		virtual int getMemoryUsage() 
 		{
 			return sizeof(*this);
 		}
 
-		void setUnloadable(bool unloadable)
+		/**
+			Return the name of the resource group
+			@return				Group name
+		*/
+		std::string getGroupName()
 		{
-			mIsUnloadable = unloadable;
+			return mGroupName;
 		}
 
-		bool isUnloadable()
+		/**
+			Set the name of the resource group
+			@param groupName	Name of the group
+		*/
+		void setGroupName(std::string groupName)
 		{
-			return mIsUnloadable;
+			mGroupName = groupName;
 		}
 
     private:
+
 		/// ID of the resource
 		std::string         mId;
 
@@ -91,8 +100,8 @@ namespace nEngine {
 		/// Time last used
 		float				mTimeUsed;
 
-		/// Is the resource unloadable?
-		bool				mIsUnloadable;
+		/// The group of this resource
+		std::string			mGroupName;
     };
 };
 

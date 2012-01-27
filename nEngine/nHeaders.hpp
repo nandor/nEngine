@@ -17,28 +17,39 @@
 #include <utility>
 #include <iterator>
 #include <algorithm>
+#include <stdexcept>
+#include <exception>
 
-// Pointer container
-#include <boost/ptr_container/ptr_map.hpp>
-#include <boost/ptr_container/ptr_vector.hpp>
-#include <boost/ptr_container/ptr_list.hpp>
 
-// C++ includes
-#include <regex>
-
-// Boost Includes
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp> 
 #include <boost/function.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/property_tree/ptree.hpp>
+#include <boost/ptr_container/ptr_map.hpp>
+#include <boost/ptr_container/ptr_list.hpp>
+#include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/property_tree/exceptions.hpp>
 #include <boost/property_tree/json_parser.hpp>
 
+
+// C++ includes
+#include <regex>
+
 // OpenGL Includes
 #include <GL/glew.h>
+
+// Sound
+#include <al/al.h>
+#include <al/alc.h>
+#include <ogg/ogg.h>
+#include <vorbis/codec.h>
+#include <vorbis/vorbisenc.h>
+#include <vorbis/vorbisfile.h>
 
 // C Includes
 extern "C" {

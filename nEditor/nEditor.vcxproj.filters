@@ -28,6 +28,21 @@
     <ClCompile Include="TileList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="nProj.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FileEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MainNotebook.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceCompiler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Runner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainWindow.hpp">
@@ -46,6 +61,21 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="TileList.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="nProj.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FileEditor.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MainNotebook.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceCompiler.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Runner.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -69,6 +99,24 @@
       <Filter>Icons</Filter>
     </None>
     <None Include="Icons\camera.xpm">
+      <Filter>Icons</Filter>
+    </None>
+    <None Include="Icons\blend.xpm">
+      <Filter>Icons</Filter>
+    </None>
+    <None Include="Icons\delete.xpm">
+      <Filter>Icons</Filter>
+    </None>
+    <None Include="Icons\error.xpm">
+      <Filter>Icons</Filter>
+    </None>
+    <None Include="Icons\json.xpm">
+      <Filter>Icons</Filter>
+    </None>
+    <None Include="Icons\particles.xpm">
+      <Filter>Icons</Filter>
+    </None>
+    <None Include="Icons\sound.xpm">
       <Filter>Icons</Filter>
     </None>
   </ItemGroup>

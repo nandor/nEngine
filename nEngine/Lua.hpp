@@ -110,6 +110,13 @@ namespace nEngine {
 	NAPI bool luaGetGlobalBoolean(const std::string& id);
 
 	/**
+		Get a global lua string
+		@param 
+		@return				Value of the integer
+	*/
+	NAPI std::string luaGetGlobalString(const std::string& id);
+
+	/**
 		Default lua __index metamethod
 		@param L			Lua state
 		@return				Number of return values

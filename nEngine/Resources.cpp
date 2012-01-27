@@ -31,15 +31,16 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	Resources::~Resources()
 	{
-		Font::closeLibrary();
-
 		mResources.clear();
+		mResourceGroups.clear();
+
+		Font::closeLibrary();
 	}
 
 	// ------------------------------------------------------------------
 	Resources& Resources::addResource(Resource* resource, const std::string& groupName)
 	{
-		if (resource == NULL) {
+		if (resource == NULL || resource->getID().length() == 0) {
 			return *this;
 		}
 
@@ -49,8 +50,15 @@ namespace nEngine {
 
 		std::pair<std::string, ResourceType> id(resource->getID(), resource->getType());
 
+		ResourceGroup* mGroup = getGroup(groupName);
+
+		if (mResources.find(id) != mResources.end()) {
+			throw Error ("Resources", "Resource already exists: '" + resource->getID() + "'");
+		}
+
 		mResources.insert(id, resource);
-		mResourceGroups[groupName].push_back(id);
+		getGroup(groupName)->addResource(resource);
+
 		return *this;
 	}
 	
@@ -73,34 +81,49 @@ namespace nEngine {
 	}
 	
 	// ------------------------------------------------------------------
-	Resources& Resources::loadResourceGroup(const std::string& groupName, const std::string& fileName)
+	Resources& Resources::loadGroup(const std::string& package)
 	{
-		ConsoleLog("Loading resource group '" + groupName + "'");
 		try {
-			JSONObject* json = require<JSONObject>(fileName);
-			boost::property_tree::ptree& data = json->getRoot();
+			std::string packageLocation = "zip://" + File::getRawName(package);
 
-			BOOST_FOREACH(ptree::value_type& node, data) {
-				ptree& item = node.second;
+			JSONObject* json = require<JSONObject>(packageLocation + "/header");
+			std::string packageName = json->getValue<std::string> ("packageName");
+			File::setenv(packageName, packageLocation);
 			
-				std::string type(item.get<std::string>("type"));
 
-				if (type == "SHADER") {
-					std::string id(item.get<std::string>("id"));
-					Shader* s = new Shader(id);
+			// lua
+			boost::optional<ptree&> luas = json->getRoot().get_child_optional("lua");
+			if (luas.is_initialized()) {
+				BOOST_FOREACH(ptree::value_type& node, luas.get()) {
+					luaReadFile(node.second.get_value<std::string>());
+				}
+			}
 
-					BOOST_FOREACH(ptree::value_type& shader, item.get_child("shaders")) {
+
+			// shaders
+			boost::optional<ptree&> shaders = json->getRoot().get_child_optional("shader");
+			
+			if (shaders.is_initialized()) {
+				BOOST_FOREACH(ptree::value_type& node, shaders.get()) {
+					ptree& item = node.second;
+
+					Shader* s = new Shader(node.first);
+
+					BOOST_FOREACH(ptree::value_type& shader, item.get_child("source")) {
 						s->load(shader.second.get_value<std::string>());
 					}
 				
 					s->compile();
-					Resources::inst().addResource(s, groupName);
-
-					ConsoleLog("\tshader: " + id);
-					continue;
+					Resources::inst().addResource(s, packageName);
 				}
+			}
 
-				if (type == "FONT") {
+			// fonts
+			boost::optional<ptree&> fonts = json->getRoot().get_child_optional("font");
+			if (fonts.is_initialized()) {
+				BOOST_FOREACH(ptree::value_type& node, fonts.get()) {
+					ptree& item = node.second;
+
 					std::string face (item.get<std::string> ("face"));
 
 					Font::loadFace(face);
@@ -109,66 +132,51 @@ namespace nEngine {
 						std::string id(font.second.get<std::string>("id"));
 
 						Font* ft = new Font(id, font.second.get<int>("height"));
-						Resources::inst().addResource(ft, groupName);
-
-						ConsoleLog("\tfont: " + id);
+						Resources::inst().addResource(ft, packageName);
 					}
+
 					Font::unloadFace();
 				}
+			}
 
-				if (type == "MAP") {
-					std::string id(item.get<std::string> ("id"));
-
-					Map* mp = new Map(id);
-					mp->loadData(item.get_child("data"));
-					Resources::inst().addResource(mp, groupName);
-
-					ConsoleLog("\tmap: " + id);
+			// object
+			boost::optional<ptree&> objects = json->getRoot().get_child_optional("object");
+			if (objects.is_initialized()) {
+				BOOST_FOREACH(ptree::value_type& node, objects.get()) {
+					Resources::inst().addResource(new ObjectScript(node.first, node.second), packageName);
 				}
-
-				if (type == "OBJECT") {
-					std::string id(item.get<std::string> ("id"));
-
-					Resources::inst().addResource(new ObjectScript(id, item.get_child("data")), groupName);
-
-					ConsoleLog("\tobject: " + id);
+			}
+			
+			// particle
+			boost::optional<ptree&> particles = json->getRoot().get_child_optional("particle");
+			if (particles.is_initialized()) {
+				BOOST_FOREACH(ptree::value_type& node, particles.get()) {
+					Resources::inst().addResource(new JSONObject(node.first, node.second), packageName);
 				}
+			}
 
-				if (type == "PARTICLE") {
-					std::string id(item.get<std::string> ("id"));
-
-					Resources::inst().addResource(new JSONObject(id, item.get_child("data")), groupName);
-
-					ConsoleLog("\tparticles: " + id);
+			// map
+			boost::optional<ptree&> maps = json->getRoot().get_child_optional("map");
+			if (maps.is_initialized()) {
+				BOOST_FOREACH(ptree::value_type& node, maps.get()) {
+					Map* mp = new Map(node.first);
+					mp->loadData(node.second);
+					Resources::inst().addResource(mp, packageName);
 				}
 			}
 		} catch (std::exception except) {
 			throw Error("Resources", std::string(except.what()));
 		}
+
 		return *this;
 	}
 	
-	// ------------------------------------------------------------------
-	Resources& Resources::unloadResourceGroup(const std::string& groupName)
-	{
-		std::vector<std::pair<std::string, ResourceType> >::iterator it;
-
-		for (it = mResourceGroups[groupName].begin(); it != mResourceGroups[groupName].end(); ++it) {
-			tResourceIter resIt = mResources.find(*it);
-			mMemoryUsage -= resIt->second->getMemoryUsage();
-			mResources.erase(resIt);
-		}
-
-		mResourceGroups.erase(groupName);
-		return *this;
-	}
-
 	// ------------------------------------------------------------------
 	std::vector<std::string> Resources::getResourceGroupNames()
 	{
 		std::vector<std::string> res;
 
-		std::map<std::string, std::vector<tResId> >::iterator it;
+		boost::ptr_map<std::string, ResourceGroup*>::iterator it;
 		for (it = mResourceGroups.begin(); it != mResourceGroups.end(); ++it) {
 			if (it->first != "tmp") {
 				res.push_back(it->first);
@@ -179,25 +187,66 @@ namespace nEngine {
 	}
 	
 	// ------------------------------------------------------------------
-	std::vector<std::pair<std::string, ResourceType> > Resources::getResourcesInGroup(const std::string& groupName)
+	Resources& Resources::clearResources()
 	{
-		std::vector<std::pair<std::string, ResourceType> > lst;		
-		std::vector<std::pair<std::string, ResourceType> >::iterator it;
+		mResourceGroups.clear();
+		mResources.clear();
+		return *this;
+	}
+	
+	// ------------------------------------------------------------------
+	ResourceGroup* Resources::getGroup(const std::string& name)
+	{
+		boost::ptr_map<std::string, ResourceGroup>::iterator it = mResourceGroups.find(name);
 
-		for (it = mResourceGroups[groupName].begin(); it != mResourceGroups[groupName].end(); ++it) {
-			lst.push_back(std::make_pair(it->first, it->second));
+		if (it == mResourceGroups.end()) {
+			ResourceGroup* grp = new ResourceGroup(name);
+			mResourceGroups.insert(grp->getName(), grp);
+			return grp;
 		}
 
-		return lst;
+		return it->second;
+	}
+	
+	// ------------------------------------------------------------------
+	ResourceGroup* Resources::createGroup(const std::string& name)
+	{
+		
+		boost::ptr_map<std::string, ResourceGroup>::iterator it = mResourceGroups.find(name);
+
+		if (it != mResourceGroups.end()) {
+			throw Error ("Resources", "Group already exists: '" + name + "'");
+		}
+		
+		ResourceGroup* grp = new ResourceGroup(name);
+		mResourceGroups.insert(grp->getName(), grp);
+		return grp;
 	}
 
 	// ------------------------------------------------------------------
-	luaNewMethod(Resources, loadGroup)
+	Resources& Resources::unloadGroup(const std::string& name)
+	{
+		boost::ptr_map<std::string, ResourceGroup>::iterator grpIter = mResourceGroups.find(name);
+		std::vector<tResId> resources = grpIter->second->getResources();
+
+		for (std::vector<tResId>::iterator it = resources.begin(); it != resources.end(); ++it) {
+			tResourceIter resIter = mResources.find(*it);
+			
+			if (resIter != mResources.end()) {
+				mResources.erase(resIter);
+			}
+		}
+
+		mResourceGroups.erase(grpIter);
+		return *this;
+	}
+	
+	// ------------------------------------------------------------------
+	luaNewMethod(Resources, loadPackage)
 	{
 		std::string groupName(luaL_checkstring(L, 1));
-		std::string fileName(luaL_checkstring(L, 2));
 
-		Resources::inst().loadResourceGroup(groupName, fileName);
+		Resources::inst().loadGroup(groupName);
 		return 0;
 	}
 
@@ -206,7 +255,7 @@ namespace nEngine {
 	{
 		std::string groupName(luaL_checkstring(L, 1));
 
-		Resources::inst().unloadResourceGroup(groupName);
+		Resources::inst().unloadGroup(groupName);
 		return 0;
 	}
 
@@ -215,7 +264,7 @@ namespace nEngine {
 	luaEndMeta()
 
 	luaBeginMethods(Resources)
-		luaMethod(Resources, loadGroup)
+		luaMethod(Resources, loadPackage)
 		luaMethod(Resources, unloadGroup)
 	luaEndMethods()
 

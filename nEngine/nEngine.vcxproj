@@ -54,12 +54,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;NENGINE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>nHeaders.hpp</PrecompiledHeaderFile>
-      <AdditionalOptions>-D_SCL_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>-D_SCL_SECURE_NO_WARNINGS /Zm1024 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>../Debug/minizip.lib;opengl32.lib;glu32.lib;glew32.lib;lua5.1.lib;zlib.lib;libpng15.lib;freetype.lib;gdi32.lib;user32.lib</AdditionalDependencies>
+      <AdditionalDependencies>../Debug/minizip.lib;libogg_staticd.lib;libvorbis_staticd.lib;libvorbisfile_staticd.lib;openal32.lib;opengl32.lib;glu32.lib;glew32.lib;lua5.1.lib;zlib.lib;libpng15.lib;freetype.lib;gdi32.lib;user32.lib</AdditionalDependencies>
       <ImportLibrary>
       </ImportLibrary>
     </Link>
@@ -80,11 +80,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>../Release/minizip.lib;opengl32.lib;glu32.lib;glew32.lib;lua5.1.lib;zlib.lib;libpng15.lib;freetype.lib;gdi32.lib;user32.lib</AdditionalDependencies>
+      <AdditionalDependencies>../Release/minizip.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;openal32.lib;opengl32.lib;glu32.lib;glew32.lib;lua5.1.lib;zlib.lib;libpng15.lib;freetype.lib;gdi32.lib;user32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\nEditor\ResourceView.hpp" />
     <ClInclude Include="Animation.hpp" />
     <ClInclude Include="Application.hpp" />
     <ClInclude Include="Archive.hpp" />
@@ -107,25 +106,32 @@
     <ClInclude Include="GUIGLCanvas.hpp" />
     <ClInclude Include="GUILabel.hpp" />
     <ClInclude Include="GUIPanel.hpp" />
+    <ClInclude Include="GUISlider.hpp" />
     <ClInclude Include="Image.hpp" />
     <ClInclude Include="JSONObject.hpp" />
     <ClInclude Include="Log.hpp" />
     <ClInclude Include="Lua.hpp" />
     <ClInclude Include="Map.hpp" />
     <ClInclude Include="MapHelper.hpp" />
+    <ClInclude Include="Music.hpp" />
     <ClInclude Include="nHeaders.hpp" />
     <ClInclude Include="NPC.hpp" />
     <ClInclude Include="Object.hpp" />
     <ClInclude Include="ObjectScript.hpp" />
+    <ClInclude Include="oggCallbacks.hpp" />
     <ClInclude Include="Particles.hpp" />
     <ClInclude Include="PathFinder.hpp" />
     <ClInclude Include="Prop.hpp" />
     <ClInclude Include="Resource.hpp" />
+    <ClInclude Include="ResourceGroup.hpp" />
     <ClInclude Include="Resources.hpp" />
     <ClInclude Include="Scene.hpp" />
     <ClInclude Include="SceneNode.hpp" />
     <ClInclude Include="Shader.hpp" />
     <ClInclude Include="Singleton.hpp" />
+    <ClInclude Include="Sound.hpp" />
+    <ClInclude Include="SoundManager.hpp" />
+    <ClInclude Include="SoundSource.hpp" />
     <ClInclude Include="Tile.hpp" />
     <ClInclude Include="Timer.hpp" />
     <ClInclude Include="types.hpp" />
@@ -163,23 +169,30 @@
     <ClCompile Include="GUIGLCanvas.cpp" />
     <ClCompile Include="GUILabel.cpp" />
     <ClCompile Include="GUIPanel.cpp" />
+    <ClCompile Include="GUISlider.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="JSONObject.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="Lua.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="MapHelper.cpp" />
+    <ClCompile Include="Music.cpp" />
     <ClCompile Include="NPC.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectScript.cpp" />
+    <ClCompile Include="oggCallbacks.cpp" />
     <ClCompile Include="Particles.cpp" />
     <ClCompile Include="PathFinder.cpp" />
     <ClCompile Include="Prop.cpp" />
     <ClCompile Include="Resource.cpp" />
+    <ClCompile Include="ResourceGroup.cpp" />
     <ClCompile Include="Resources.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneNode.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Sound.cpp" />
+    <ClCompile Include="SoundManager.cpp" />
+    <ClCompile Include="SoundSource.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Util.cpp" />

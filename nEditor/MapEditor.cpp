@@ -7,6 +7,8 @@
 */
 
 #include "MapEditor.hpp"
+#include "MainWindow.hpp"
+
 #include "nEngine/nHeaders.hpp"
 #include "nEngine/Resources.hpp"
 #include "nEngine/Scene.hpp"
@@ -15,24 +17,40 @@
 #include "Icons/object.xpm"
 
 BEGIN_EVENT_TABLE(MapEditor, wxGLCanvas)
-	EVT_PAINT(MapEditor::OnPaint)
+	EVT_RIGHT_DOWN(MapEditor::OnRightDown)
+	EVT_RIGHT_UP(MapEditor::OnRightUp)
+
 	EVT_LEFT_DOWN(MapEditor::OnLeftDown)
 	EVT_LEFT_UP(MapEditor::OnLeftUp)
+
 	EVT_MOTION(MapEditor::OnMouseMoved)
 	EVT_LEAVE_WINDOW(MapEditor::OnMouseLeave)
+
+	EVT_PAINT(MapEditor::OnPaint)
     EVT_ERASE_BACKGROUND(MapEditor::OnEraseBackground)
 END_EVENT_TABLE()
 
 // ------------------------------------------------------------------
-MapEditor::MapEditor(wxWindow* parent, wxSize& size)
+MapEditor::MapEditor(wxWindow* parent, wxSize& size, wxWindow* root)
 	:wxGLCanvas(parent, wxID_ANY, wxDefaultPosition, size),
-	 mMouseDragged(false)
+	 mDragging(false),
+	 mPlacing(false),
+	 mField(NULL)
 {
+	mRoot = root;
+	this->SetLabel("mapEditor");
 	this->SetBackgroundStyle(wxBG_STYLE_CUSTOM);
 }
 
 // ------------------------------------------------------------------
 MapEditor::~MapEditor()
+{
+
+}
+
+
+// ------------------------------------------------------------------
+void MapEditor::OnBackgroundPaint(wxEraseEvent& evt)
 {
 
 }
@@ -103,51 +121,110 @@ void MapEditor::InitOpenGL()
 // ------------------------------------------------------------------
 void MapEditor::SetMap(const std::string& id)
 {
-	nEngine::Map* map = nEngine::Resources::inst().get<nEngine::Map> ("tutorial");
-	map->setShadows(false);
-
-	nEngine::Scene::inst().setMap(map);
-	nEngine::Scene::inst().start();
+	MainWindow* wnd = (MainWindow*)mRoot;
+	nEngine::Map* map = nEngine::Resources::inst().get<nEngine::Map> (wnd->GetMapName());
 	
-	this->Refresh();
-	this->Update();
+	if (map) {
+		map->setShadows(false);
+
+		nEngine::Scene::inst()
+			.setMap(map)
+			.start();
+	
+		this->Refresh();
+		this->Update();
+	}
 }
 
 
 // ------------------------------------------------------------------
 void MapEditor::OnLeftDown(wxMouseEvent& evt)
 {
-	mMouseDragged = true;
-	mInitialOffset = wxPoint(mCamera->getPosition().getX(), mCamera->getPosition().getY());
-	mInitialMouse = evt.GetPosition();
+	mPlacing = true;
+	this->SetCursor(wxCursor(wxCURSOR_HAND));
 }
 
 // ------------------------------------------------------------------
 void MapEditor::OnLeftUp(wxMouseEvent& evt)
 {
-	mMouseDragged = false;
+	mPlacing = false;
+	PlaceTile(evt.GetPosition());
+	this->SetCursor(wxCursor(wxCURSOR_ARROW));
+}
+
+
+// ------------------------------------------------------------------
+void MapEditor::OnRightDown(wxMouseEvent& evt)
+{
+	mDragging = true;
+	mInitialOffset = wxPoint(mCamera->getPosition().getX(), mCamera->getPosition().getY());
+	mInitialMouse = evt.GetPosition();
+	this->SetCursor(wxCursor(wxCURSOR_SIZING));
 }
 
 // ------------------------------------------------------------------
-void MapEditor::OnMouseLeave(wxMouseEvent& evt)
+void MapEditor::OnRightUp(wxMouseEvent& evt)
 {
-	mMouseDragged = false;
+	mDragging = false;
+	this->SetCursor(wxCursor(wxCURSOR_ARROW));
 }
-
 
 // ------------------------------------------------------------------
 void MapEditor::OnMouseMoved(wxMouseEvent& evt)
 {
-	if (mMouseDragged) {
+	wxPoint mouse = evt.GetPosition();
+
+	if (mDragging) {
 		wxPoint pt = mInitialOffset + mInitialMouse - evt.GetPosition();
 		mCamera->setPosition(nEngine::Vec2(pt.x, pt.y));
+
 		this->Refresh();
+		return;
+	}
+
+	if (mPlacing && mField != NULL) {
+		PlaceTile(mouse);
+		return;
 	}
 }
 
 
 // ------------------------------------------------------------------
-void MapEditor::OnBackgroundPaint(wxEraseEvent& evt)
+void MapEditor::PlaceTile(wxPoint& mouse)
 {
+	MainWindow* wnd = (MainWindow*)mRoot;
+	nEngine::Vec2 v = nEngine::Scene::inst().getTileAt(mouse.x, mouse.y);
+	nEngine::Map* map = nEngine::Resources::inst().get<nEngine::Map> (wnd->GetMapName());
+		
+	if (map && map->hasTile(v)) {
+		map->setTileID(v, mField->mID);
+		this->Refresh();
+	}
 
+}
+
+// ------------------------------------------------------------------
+void MapEditor::OnMouseLeave(wxMouseEvent& evt)
+{
+	this->SetCursor(wxCursor(wxCURSOR_ARROW));
+	mDragging = mPlacing = false;
+}
+
+
+
+// ------------------------------------------------------------------
+void MapEditor::SetField(nEngine::FieldType* fld)
+{
+	mField = fld;
+}
+
+
+// ------------------------------------------------------------------
+void MapEditor::Save()
+{
+	MainWindow* wnd = (MainWindow*)mRoot;
+	nEngine::Map* map = nEngine::Resources::inst().get<nEngine::Map> (wnd->GetMapName());
+	if (map != NULL) {
+		map->writeMapData();
+	}
 }

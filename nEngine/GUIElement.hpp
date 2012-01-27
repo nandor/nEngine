@@ -146,7 +146,7 @@ namespace nEngine {
 			@param func		Event handler
 		*/
 		NAPI void connect(GUIEventType type, boost::function<void(GUIEvent&)> func);
-
+		
 		/**
 			Check if the element is visible?
 			@return			True if it's visible

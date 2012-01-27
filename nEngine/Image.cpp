@@ -24,7 +24,7 @@ namespace nEngine {
 		}
 
 		unsigned off = image->getFileOffset();
-		memcpy(outBytes, image->getFile()->getData() + off, bytesToRead);	
+		memcpy(outBytes, (char*)image->getFile()->getData() + off, bytesToRead);	
 	
 		image->setFileOffset(off + bytesToRead);
 		return;

@@ -70,18 +70,16 @@ namespace nEngine {
 			}
 
 			BOOST_FOREACH (ptree::value_type& v, data.get_child("fields")) {
-				FieldType& f = mFields[v.second.get<int> ("id")];
-				f.mID = v.second.get<int> ("id");
+				int id = boost::lexical_cast<int> (v.first);
+				FieldType& f = mFields[id];
+				f.mID = id;
 				f.mImage = v.second.get<std::string> ("image");
 				f.mName =v.second.get<std::string> ("name");
 			}
 
 			mNamespace = data.get<std::string> ("namespace");
-			BOOST_FOREACH (ptree::value_type& v, data.get_child("script")) {
-				luaReadFile(v.second.get_value<std::string>());
-			}
-
 			loadMapData(data.get<std::string>("mapData"));
+		
 		} catch (ptree_error err) {
 			throw Error ("Map error ", getID(), err.what()); 	
 		}
@@ -90,6 +88,7 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	void Map::loadMapData(const std::string& fileName)
 	{
+		mDataName = fileName;
 		File* file =  Resources::inst().require<File>(fileName);
 		
 		mData = new Tile* [mSize * mSize];
@@ -103,6 +102,42 @@ namespace nEngine {
 		}
 	}
 	
+
+	// ------------------------------------------------------------------
+	void Map::writeMapData(const std::string& fileName)
+	{
+		std::string name = File::processName((fileName.size() == 0) ? mDataName : fileName);
+		std::pair<uint8*, unsigned> data = buildMapData();
+		FILE* fout = fopen(name.c_str(), "wb");
+		
+		if (!fout) {
+			throw Error("Map", getID(), "Cannot open file for writing: '" + name + "'");
+		}
+
+		if (fwrite(data.first, sizeof(uint8), data.second, fout) != data.second) {
+			fclose(fout);
+			throw Error("Map", getID(), "Cannot write data in: '" + name + "'");
+		}
+
+		fclose(fout);
+		delete[] data.first;
+	}
+
+	// ------------------------------------------------------------------
+	std::pair<uint8*, unsigned> Map::buildMapData()
+	{
+		unsigned length = mSize * mSize * sizeof(fdata);
+		uint8* data = new uint8[length];
+		memset(data, 0, sizeof(data));
+
+		for (int  i = 0; i < mSize * mSize; ++i) {
+			fdata* d = ((fdata*)data) + i;
+			d->id = mData[i]->getID();
+			d->blocked = mData[i]->isBlocked();
+		}
+		return std::make_pair(data, length);
+	}
+
 	// ------------------------------------------------------------------
 	void Map::draw()
 	{
@@ -237,7 +272,6 @@ namespace nEngine {
 	{
 		lua_State* L = luaGlobalState();
 
-		lua_pushcfunction(L, luaErrorCallback);
 		lua_getglobal(L, mNamespace.c_str());
 		
 		if (!lua_istable(L, -1)) {
@@ -252,7 +286,15 @@ namespace nEngine {
 		}
 
 		luaInstance(L, Map, this);
-		lua_pcall(L, 1, 0, -4);
+		lua_pcall(L, 1, 0, 0);
+	}
+
+	// ------------------------------------------------------------------
+	void Map::setTileID(Vec2 pos, int id)
+	{
+		Tile* tile = mData[(int)pos.getX() * mSize + (int)pos.getY()];
+
+		tile->setID(id);
 	}
 
 

@@ -10,6 +10,7 @@
 #define MAPEDITOR_HPP
 
 #include "nEngine/Camera.hpp"
+#include "nEngine/Map.hpp"
 
 #include <gl/glew.h>
 #include <wx/wx.h>
@@ -17,13 +18,16 @@
 
 class MapEditor : public wxGLCanvas {
 public:
-	MapEditor(wxWindow* parent, wxSize& size);
+	MapEditor(wxWindow* parent, wxSize& size, wxWindow* root);
 	~MapEditor();
-
+	
+	void Save();
 	void OnPaint(wxPaintEvent& evt);
 	void InitOpenGL();
 	void SetOrtho();
 	void SetMap(const std::string& id);
+	void SetField(nEngine::FieldType* field);
+	void PlaceTile(wxPoint& mouse);
 
 private:
 
@@ -31,14 +35,29 @@ private:
 
 	void OnLeftDown(wxMouseEvent& evt);
 	void OnLeftUp(wxMouseEvent& evt);
+	
+	void OnRightDown(wxMouseEvent& evt);
+	void OnRightUp(wxMouseEvent& evt);
+
 	void OnMouseLeave(wxMouseEvent& evt);
 	void OnMouseMoved(wxMouseEvent& evt);
-	void OnBackgroundPaint(wxEraseEvent& evt);
-private:
-	nEngine::Camera* mCamera;
 
-	wxPoint mInitialOffset, mInitialMouse;
-	bool mMouseDragged;
+	void OnBackgroundPaint(wxEraseEvent& evt);
+
+private:
+
+	nEngine::Camera* mCamera;
+	wxWindow* mRoot;
+
+	nEngine::FieldType* mField;
+	wxPoint mInitialOffset;
+	wxPoint mInitialMouse;
+
+	/// Is the screen being dragged?
+	bool mDragging;
+
+	/// Is the user placing objects?
+	bool mPlacing;
 };
 
 #endif /*MAPEDITOR_HPP*/

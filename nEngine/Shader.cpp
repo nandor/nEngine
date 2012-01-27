@@ -21,7 +21,6 @@ namespace nEngine {
 	Shader::Shader(const std::string& id)
 		:Resource(id, RESOURCE_SHADER)
 	{
-		setUnloadable(false);
 		mProgramId = glCreateProgramObjectARB();
 	}
 
@@ -61,7 +60,7 @@ namespace nEngine {
 		    throw Error ("Shader", getID(), "Missing shader file");
 		}
 
-		uint8* data = file->getData();
+		uint8* data = (uint8*)file->getData();
 		glShaderSourceARB(id, 1, (const GLchar**)&data, NULL);
 		glCompileShaderARB(id);
 

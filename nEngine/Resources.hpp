@@ -13,9 +13,10 @@
 
 #include "types.hpp"
 #include "Lua.hpp"
+#include "Timer.hpp"
 #include "Singleton.hpp"
 #include "Resource.hpp"
-#include "Timer.hpp"
+#include "ResourceGroup.hpp"
 
 namespace nEngine {
     /**
@@ -101,17 +102,30 @@ namespace nEngine {
 
 			/**
 				Load a resource group from a file
-				@param groupName	Name of the resource group
-				@param fileName		Resource group descriptor file
+				@param package
 			*/
-			NAPI Resources& loadResourceGroup(const std::string& groupName, const std::string& fileName);
+			NAPI Resources& loadGroup(const std::string& package);
 
 			/**
-				Unload a resource group
-				@param groupName	Name of the resource group
+				Unload an entire resource group
+				@param package
 			*/
-			NAPI Resources& unloadResourceGroup(const std::string& groupName);
-			
+			NAPI Resources& unloadGroup(const std::string& package);
+
+			/**
+				Get a resource group or create a new one
+				@param name			Name of the resource group
+				@return				Pointer to the group
+			*/
+			NAPI ResourceGroup* getGroup(const std::string& name);
+
+			/**
+				Create a new resource group
+				@param name			Name of the group
+				@return				Pointer to the sucker
+			*/
+			NAPI ResourceGroup* createGroup(const std::string& name);
+						
 			/**
 				Get the memory used by the resources
 				@return				Used memory in bytes
@@ -119,16 +133,21 @@ namespace nEngine {
 			NAPI int getMemoryUsage();
 
 			/**
+				Clear all the resources
+			*/
+			NAPI Resources& clearResources();
+
+			/**
 				Get the names of resource groups
 				@return				std::vector
 			*/
 			NAPI std::vector<std::string> getResourceGroupNames();
-
 			/**
-				Return all resources in a group
-				@param name			Group Name
+				Delete a resource
+				@param id			ID of the resource
+				@param type			Type of the resource
 			*/
-			NAPI std::vector<std::pair<std::string, ResourceType> > Resources::getResourcesInGroup(const std::string& name);
+			NAPI Resources& unloadResource(const std::string& id, ResourceType type);
 
         private:
 			
@@ -155,7 +174,7 @@ namespace nEngine {
             boost::ptr_map<tResId, Resource> mResources;
 			
 			/// map for resource groups
-			std::map<std::string, std::vector<tResId> > mResourceGroups;
+			boost::ptr_map<std::string, ResourceGroup> mResourceGroups;
     };
 
     /**

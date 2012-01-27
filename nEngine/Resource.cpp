@@ -11,10 +11,10 @@
 
 namespace nEngine {
 	Resource::Resource(const std::string& id, ResourceType type)
+		:mId(id),
+		 mType(type)
 	{
-		mId = id;
-		mType = type;
-		mIsUnloadable = true;
+
 	}
 
 	Resource::~Resource()

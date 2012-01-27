@@ -41,12 +41,17 @@ namespace nEngine {
 		NAPI std::vector<std::pair<int, int> > getDisplayModes();
 
 		NAPI static void killSingletons();
+
     protected:
 
         NAPI void initOpenGL();
 		NAPI void initWindow();
+		
+		NAPI void parseCmdLine();
+
 		NAPI void closeWindow();
-		NAPI void loadConfig();
+		NAPI void drawWaitScreen();
+
         NAPI void draw();
 		NAPI void handleMessage(MSG message);
 		
@@ -54,12 +59,14 @@ namespace nEngine {
 		int			mHeight;
 		int			mBpp;
 		int			mMaxFPS;
+		int			mVolume;
 
 		bool		mFullScreen;
 		bool		mActive;
 		bool		mDone;
 
 		std::string mWindowTitle;
+		std::string mInitFile;
 
 		HGLRC		mGlContext;
 		HDC			mDeviceContext;

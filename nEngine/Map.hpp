@@ -38,7 +38,7 @@ namespace nEngine {
     };
 
     /**
-        @brief Singleton class that holds and manages map data
+        @brief Load & manage map data
     */
     class Map : public Resource {
     public:
@@ -169,6 +169,34 @@ namespace nEngine {
 			mShadow = shadow;
 		}
 
+		/**
+			Change the id of the tile
+			@param pos			Position of the tile
+			@param tile			Id of the tile
+		*/
+		NAPI void setTileID(Vec2 pos, int tile);
+
+		/**
+			Write the map data
+			@param fileName		Name of the output file. If fileName is "", the old one is rewritten
+		*/
+		NAPI void writeMapData(const std::string& fileName = "");
+
+		/**
+			Build the map data
+			@return				Pointer to an array containing map data
+		*/
+		NAPI std::pair<uint8*, unsigned> buildMapData();
+
+		/**
+			Get the name of the namespace
+			@return				String containing namespace name
+		*/
+		NAPI std::string getNamespace()
+		{
+			return mNamespace;
+		}
+
 	private:
 
 		/**
@@ -193,6 +221,9 @@ namespace nEngine {
 		
 		/// Lua namespace name
 		std::string mNamespace;
+		
+		/// Name of the file containing map data
+		std::string mDataName;
 
 		/// Is the map shadowed?
 		bool mShadow;

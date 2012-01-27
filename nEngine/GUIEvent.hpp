@@ -28,16 +28,18 @@ namespace nEngine {
 		GUI_EVENT_CLICK,
 
 		GUI_EVENT_SELECTION,
-		
+		GUI_EVENT_CHANGED,
+
 		GUI_NUM_EVENTS
 	};
 
 	class GUIEvent {
 	public:
 		NAPI GUIEvent();
+		NAPI GUIEvent(GUIEventType);
 		NAPI GUIEvent(GUIEventType, int mouseX, int mouseY);
 		NAPI GUIEvent(GUIEventType, Vec2 mouse);
-
+	
 		NAPI ~GUIEvent();
 		
 		/**
@@ -67,7 +69,7 @@ namespace nEngine {
 			mMouseX = pos.getX();
 			mMouseY = pos.getY();
 		}
-
+		
 	private:
 		int mMouseX, mMouseY;
 		GUIEventType mType;

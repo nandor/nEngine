@@ -1,5 +1,5 @@
 /**
-	@file Console.hpp
+	@file Singleton.hpp
 	@author Licker Nandor
 
 	This file is part of nEngine.
@@ -19,16 +19,24 @@ namespace nEngine {
 		NAPI Singleton& operator= (const Singleton<T>&);
 
 	protected:
+
 		Singleton() {}
 		NAPI static T* __inst;
 
 	public:
+
 		static T& inst() {
-			return *((__inst == NULL) ? (__inst = new T()) : (__inst));
+			if (__inst == NULL) {
+				__inst = new T();
+			}
+			return *__inst;
 		}
 
 		static T* instPtr() {
-			return (__inst == NULL) ? (__inst = new T()) : (__inst);
+			if (__inst == NULL) {
+				__inst = new T();
+			}
+			return __inst;
 		}
 
 		static void kill() {

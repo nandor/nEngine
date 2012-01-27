@@ -17,15 +17,16 @@
 
 class Application : public wxApp {
 public:
-    virtual bool OnInit()
+    virtual bool OnInit() 
 	{
 		try {
+			wxImage::AddHandler(new wxPNGHandler);
 
 			nEngine::luaRegisterEngine();
 			nEngine::luaReadFile("fs://data/lua/lib.lua");
-			nEngine::luaReadFile("fs://data/lua/config.lua");
+			nEngine::luaReadFile("fs://data/lua/editor.lua");
 			
-			MainWindow *wnd = new MainWindow(wxT("Simple"));	
+			MainWindow *wnd = new MainWindow(wxT("nEditor"));	
 			wnd->Show();
 
 		} catch (nEngine::Error e) {

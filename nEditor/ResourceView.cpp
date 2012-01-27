@@ -14,6 +14,7 @@
 
 // Icons
 #include "Icons/error.xpm"
+#include "Icons/file.xpm"
 #include "Icons/font.xpm"
 #include "Icons/map.xpm"
 #include "Icons/object.xpm"
@@ -22,7 +23,7 @@
 #include "Icons/particles.xpm"
 #include "Icons/json.xpm"
 #include "Icons/shader.xpm"
-
+#include "Icons/sound.xpm"
 
 enum ResourceIcon {
 	RESOURCE_ICON_PACKAGE = nEngine::RESOURCE_NUM,
@@ -30,8 +31,9 @@ enum ResourceIcon {
 };
 
 BEGIN_EVENT_TABLE(ResourceView, wxTreeCtrl)
-	EVT_TREE_SEL_CHANGED(wxID_ANY, ResourceView::OnItemActivate)
+	EVT_TREE_SEL_CHANGED(wxID_ANY, ResourceView::OnItemSelect)
 	EVT_TREE_ITEM_MENU(wxID_ANY, ResourceView::OnItemMenu)
+	EVT_TREE_ITEM_ACTIVATED(wxID_ANY, ResourceView::OnItemActivate)
 END_EVENT_TABLE();
 
 // ------------------------------------------------------------------
@@ -54,6 +56,7 @@ public:
 	}
 	
 private:
+
 	std::string mId;
 	nEngine::ResourceType mType;
 };
@@ -85,7 +88,7 @@ void ResourceView::CreateIcons()
 	wxIcon icons[RESOURCE_NUM_ICONS];
 	
 	icons[nEngine::RESOURCE_NONE] = wxIcon(error_xpm);
-	icons[nEngine::RESOURCE_FILE] = wxIcon(error_xpm);
+	icons[nEngine::RESOURCE_FILE] = wxIcon(file_xpm);
 	icons[nEngine::RESOURCE_IMAGE] = wxIcon(error_xpm);
 	icons[nEngine::RESOURCE_FONT] = wxIcon(font_xpm);
 	icons[nEngine::RESOURCE_SHADER] = wxIcon(shader_xpm);
@@ -95,6 +98,7 @@ void ResourceView::CreateIcons()
 	icons[nEngine::RESOURCE_OBJECT] = wxIcon(object_xpm);
 	icons[nEngine::RESOURCE_NPC] = wxIcon(error_xpm);
 	icons[nEngine::RESOURCE_JSON] = wxIcon(json_xpm);
+	icons[nEngine::RESOURCE_SOUND] = wxIcon(sound_xpm);
 	icons[RESOURCE_ICON_PACKAGE] = wxIcon(package_xpm);
 
 	for (unsigned i = 0; i < WXSIZEOF(icons); ++i) {
@@ -107,18 +111,34 @@ void ResourceView::CreateIcons()
 // ------------------------------------------------------------------
 void ResourceView::Refresh()
 {
-	this->DeleteAllItems();
-	mRootID = this->AddRoot(wxT("Root"));
+	this->DeleteChildren(mRootID);
+
+	this->AppendItem(mRootID, "init", nEngine::RESOURCE_FILE, nEngine::RESOURCE_FILE, new TreeItemData("init", nEngine::RESOURCE_FILE));
 
 	std::vector<std::string> resourceGroups = nEngine::Resources::inst().getResourceGroupNames();
 	for (unsigned i = 0; i < resourceGroups.size(); ++i) {
 		wxTreeItemId group = this->AppendItem(mRootID, resourceGroups[i], RESOURCE_ICON_PACKAGE, RESOURCE_ICON_PACKAGE);
 
 		std::vector<std::pair<std::string, nEngine::ResourceType> >::iterator it;
-		std::vector<std::pair<std::string, nEngine::ResourceType> > items = nEngine::Resources::inst().getResourcesInGroup(resourceGroups[i]);
+		std::vector<std::pair<std::string, nEngine::ResourceType> > items = nEngine::Resources::inst().getGroup(resourceGroups[i])->getResources();
 		
 		for (it = items.begin(); it != items.end(); ++it) {
-			this->AppendItem(group, it->first, it->second, it->second, new TreeItemData(it->first, it->second));
+			wxTreeItemId itm = this->AppendItem(group, it->first, it->second, it->second, new TreeItemData(it->first, it->second));
+
+			switch (it->second) {
+			case nEngine::RESOURCE_SHADER: {
+				nEngine::Shader* shader = nEngine::Resources::inst().get<nEngine::Shader> (it->first);
+				std::vector<std::string> shaders = shader->getShaderNames();
+
+				for (std::vector<std::string>::iterator it = shaders.begin(); it != shaders.end(); ++it) {
+					this->AppendItem(itm, *it, nEngine::RESOURCE_FILE, nEngine::RESOURCE_FILE, new TreeItemData(*it, nEngine::RESOURCE_FILE));
+				}
+
+				break;
+			}
+			default:
+				break;
+			}
 		}
 	}
 
@@ -140,7 +160,7 @@ void ResourceView::OnItemMenu(wxTreeEvent& evt)
 }
 
 // ------------------------------------------------------------------
-void ResourceView::OnItemActivate(wxTreeEvent& evt)
+void ResourceView::OnItemSelect(wxTreeEvent& evt)
 {
 	wxTreeItemId item = evt.GetItem();
 	if (!item.IsOk() || GetItemData(item) == NULL) {
@@ -151,4 +171,20 @@ void ResourceView::OnItemActivate(wxTreeEvent& evt)
 	
 	MainWindow* wnd = (MainWindow*)mRoot;
 	wnd->OnResourceSelected(std::pair<std::string, nEngine::ResourceType> (data->getID(), data->getType()));
+}
+
+// ------------------------------------------------------------------
+void ResourceView::OnItemActivate(wxTreeEvent& evt)
+{
+	wxTreeItemId item = evt.GetItem();
+	if (!item.IsOk() || GetItemData(item) == NULL) {
+		return;
+	}
+
+	TreeItemData* data = (TreeItemData*)this->GetItemData(item);
+	MainWindow* wnd = (MainWindow*)mRoot;
+
+	if (data->getType() == nEngine::RESOURCE_FILE) {
+		wnd->OpenFileEditor(data->getID());
+	}
 }

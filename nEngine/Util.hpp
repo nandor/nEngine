@@ -20,23 +20,23 @@
 
 namespace nEngine 
 {
-    void glPrint(Font* ft, int x, int y, const std::string& fmt, ...);
+    NAPI void glPrint(Font* ft, int x, int y, const std::string& fmt, ...);
 
-	void glPrint(Font* ft, int x, int y, unsigned length, const std::string& fmt);
+	NAPI void glPrint(Font* ft, int x, int y, unsigned length, const std::string& fmt);
 
-	Vec2 getScreenSize();
+	NAPI Vec2 getScreenSize();
 
 	/**
 		Return a Win32 error message
 
 		@return			Staring containing the error message
 	*/
-	std::string getWin32Error();
+	NAPI std::string getWin32Error();
 
 	/**
 		Convert a hexadecimal character to an integer
 	*/
-	int charToInt(char c);
+	NAPI int charToInt(char c);
 };
 
 #endif /* UTIL_HPP */

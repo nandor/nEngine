@@ -87,9 +87,16 @@ namespace nEngine {
         NAPI static bool luaRegister (lua_State* L);
 
     private:
-        bool mBlocked;
-        int mID, mFunc;
+        /// Is the tile blocked?
+		bool mBlocked;
+
+		/// ID of the tile
+        int mID;
 		
+		/// Reference to the lua function
+		int mFunc;
+		
+		/// Position of the tile
 		Vec2 mPos;
 
 		/// Is the tile highlighted ?

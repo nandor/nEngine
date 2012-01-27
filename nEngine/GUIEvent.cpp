@@ -14,7 +14,12 @@ namespace nEngine {
 	{
 
 	}
-
+	
+	// ------------------------------------------------------------------
+	GUIEvent::GUIEvent(GUIEventType type)
+	{
+		mType = type;
+	}
 
 	// ------------------------------------------------------------------
 	GUIEvent::GUIEvent(GUIEventType type, int x, int y)

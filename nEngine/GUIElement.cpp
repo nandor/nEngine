@@ -165,7 +165,11 @@ namespace nEngine {
 		} else {
 			switch (evt.getType()) {
 			case GUI_EVENT_MOUSEMOVE:
-				fireEvent(GUIEvent(GUI_EVENT_MOUSEMOVE, evt.getMousePos()));
+				if (!mMouseOver) {
+					fireEvent(GUIEvent(GUI_EVENT_MOUSEENTER, evt.getMousePos()));
+				} else {
+					fireEvent(GUIEvent(GUI_EVENT_MOUSEMOVE, evt.getMousePos()));
+				}
 				mMouseOver = true;
 				break;
 			case GUI_EVENT_MOUSEDOWN:

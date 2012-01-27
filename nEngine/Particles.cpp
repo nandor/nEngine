@@ -31,7 +31,7 @@ namespace nEngine {
 		:SceneNode(id, "Particles")
 	{
 		JSONObject* obj = Resources::inst().require<JSONObject> (confID);
-
+		 
 		try {
 			mLifetime = obj->getValue<float> ("lifetime");
 			mLifetimeSpread = obj->getValue<float> ("lifetimeSpread");
@@ -216,7 +216,10 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	luaNewMethod(Particles, new)
 	{
-		Particles* p = new Particles(std::string(luaL_checkstring(L, 1)), std::string(luaL_checkstring(L, 2)));
+		std::string id(luaL_checkstring(L, 1));
+		std::string script(luaL_checkstring(L, 2));
+
+		Particles* p = new Particles(id, script);
 		luaInstance(L, Particles, p);
 		return 1;
 	}

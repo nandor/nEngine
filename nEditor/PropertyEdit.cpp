@@ -17,21 +17,9 @@ PropertyEdit::PropertyEdit(wxWindow* parent, wxSize& size, wxWindow* root)
 {
 	mRoot = root;
 	int toolbarHeight = 30;
-
-	wxSizer* sizer = new wxBoxSizer(wxVERTICAL);
-
-	mToolbar = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(size.GetWidth(), toolbarHeight));
-	sizer->Add(mToolbar, 0, wxFIXED_MINSIZE, 5);
-
-	new wxStaticText(mToolbar, wxID_ANY, "No property sheet selected!");
-
-
+	
 	mGrid = new wxPropertyGrid(this, wxID_ANY, wxDefaultPosition, wxSize(size.GetWidth(), size.GetHeight() - toolbarHeight), 
 								wxPG_AUTO_SORT | wxPG_SPLITTER_AUTO_CENTER | wxPG_DEFAULT_STYLE);
-	sizer->Add(mGrid, 1, wxEXPAND);
-
-	this->SetSizerAndFit(sizer);
-	
 }
 
 
@@ -66,8 +54,10 @@ void PropertyEdit::setResourceShader(const std::string& id)
 	}
 
     wxPGProperty* shaderCont = mGrid->Append(new wxArrayStringProperty(wxT("Shaders"), wxT("shaders"), shaderList));
+}
 
-	// Set up the toolbar
-	mToolbar->DestroyChildren();
-	new wxStaticText(mToolbar, wxID_ANY, wxT("GSLS Shader"));
+// ------------------------------------------------------------------
+void PropertyEdit::setResourceMap(const std::string& id)
+{
+	mGrid->Clear();
 }
