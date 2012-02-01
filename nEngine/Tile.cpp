@@ -8,6 +8,7 @@
 
 #include "nHeaders.hpp"
 #include "Tile.hpp"
+#include "Scene.hpp"
 
 namespace nEngine {
 	// ------------------------------------------------------------------
@@ -15,9 +16,7 @@ namespace nEngine {
 		:mBlocked(false),
 		 mID(0),
 		 mFunc(LUA_NOREF),
-		 mPos(pos),
-		 mExplored(false),
-		 mVisible(false)
+		 mPos(pos)
 	{
 
 	}
@@ -28,7 +27,15 @@ namespace nEngine {
 	{
 
 	}
-		
+
+	// ------------------------------------------------------------------
+	void Tile::addLight(unsigned id)
+	{
+		assert(id < Scene::sNumLights);
+		mLights |= (1 << id);
+	}
+
+
 	// ------------------------------------------------------------------
 	void Tile::useAction()
 	{

@@ -65,6 +65,7 @@ void MapEditor::OnPaint(wxPaintEvent& evt)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	nEngine::Scene::inst().draw();
+
 	glFlush();
 	SwapBuffers();
 }
@@ -125,11 +126,9 @@ void MapEditor::SetMap(const std::string& id)
 	nEngine::Map* map = nEngine::Resources::inst().get<nEngine::Map> (wnd->GetMapName());
 	
 	if (map) {
-		map->setShadows(false);
+		map->setLighting(false);
 
-		nEngine::Scene::inst()
-			.setMap(map)
-			.start();
+		nEngine::Scene::inst().setMap(map);
 	
 		this->Refresh();
 		this->Update();

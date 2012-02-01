@@ -54,8 +54,8 @@ namespace nEngine {
 			glVertex2i(0, 3);
 		glEnd();
 		
-		float colorDiff = (mSliderDown ? 0.7 : (mMouseOver ? 1.2 : 1.0));
-		(mSliderColor * colorDiff).setA(1.0f).glUse();	
+		float ColorDiff = (mSliderDown ? 0.7 : (mMouseOver ? 1.2 : 1.0));
+		(mSliderColor * ColorDiff).setA(1.0f).glUse();	
 
 		glTranslatef(mSize.getX() * mValue / 100.0f, 0.0f, 0.0f);		
 		glBegin(GL_QUADS);

@@ -116,7 +116,7 @@ namespace nEngine {
 				
 				if (onLimitZone(nx, ny) && onLimitZone(nx, ny)) {
 					Tile* tile = mMap->getTile(nx, ny);
-					if (!tile->isBlocked() && !Scene::inst().getNodeAt(Vec2(nx, ny))) {
+					if (!mMap->isBlocked(nx, ny) && !Scene::inst().getNodeAt(Vec2(nx, ny))) {
 						if (mDist[xIndex(x)][yIndex(y)] + 1 < mDist[xIndex(nx)][yIndex(ny)]) {
 
 							mDist[xIndex(nx)][yIndex(ny)] = mDist[xIndex(x)][yIndex(y)] + 1;
@@ -138,8 +138,7 @@ namespace nEngine {
 			for (int i = 0; i <= (mLimit << 1); ++i) {
 				for (int j = 0; j <= (mLimit << 1); ++j) {
 					if (mMap->hasTile (rxIndex(i), ryIndex(j))) {
-						Tile* t = mMap->getTile (rxIndex(i), ryIndex(j));
-						if (!t->isBlocked () && !Scene::inst().getNodeAt(Vec2(rxIndex(i), ryIndex(j)))) {
+						if (!mMap->isBlocked (rxIndex(i), ryIndex(j)) && !Scene::inst().getNodeAt(Vec2(rxIndex(i), ryIndex(j)))) {
 							int d = abs (mFx - rxIndex(i)) + abs (mFy - ryIndex(j));
 							if (d < min || (d == min && mDist[i][j] < mDist[xIndex(px)][yIndex(py)])) {
 								min = d;

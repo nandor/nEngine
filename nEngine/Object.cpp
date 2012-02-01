@@ -62,6 +62,7 @@ namespace nEngine {
 			} else {
 				mAnimRun = false;
 				mPos = anim_target;	
+				mDrawOn = mTile;
 			}
 		}
 
@@ -83,6 +84,7 @@ namespace nEngine {
 				} else {
 					mDrawOn = target;
 				}
+
 				std::string dir(boost::lexical_cast<std::string>(mMoveDir));
 				std::string newID("move_" + dir);
 

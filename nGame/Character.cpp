@@ -31,9 +31,10 @@ Character::~Character()
 void Character::draw ()
 {
 	Vec2 pt = Scene::inst().getMap()->getSize();
+	int z = (pt.getX() - mDrawOn.getX() + mDrawOn.getY()) * pt.getX();
 
 	glPushMatrix();
-	glTranslatef(mPos.getX(), mPos.getY() + 30, (pt.getX() - mDrawOn.getX()) * pt.getY() + mDrawOn.getY()) ;
+	glTranslatef(mPos.getX(), mPos.getY() + 30, z) ;
 	
 	mCurrentAnimation.draw();
 
@@ -50,4 +51,28 @@ void Character::drawMarker()
 void Character::update()
 {
 	Object::update();
+}
+
+// ------------------------------------------------------------------
+luaNewMethod(Character, init)
+{
+	Character* c = new Character("character");
+	c->setTile(Vec2(2, 2));
+	Scene::inst().addNode(c);
+	return 0;
+}
+
+// ------------------------------------------------------------------
+luaBeginMeta(Character)
+luaEndMeta()
+
+luaBeginMethods(Character)
+	luaMethod(Character, init)
+luaEndMethods()
+
+// ------------------------------------------------------------------
+bool luaRegisterCharacter(lua_State* L)
+{
+	luaInheritClass(L, Character, SceneNode);
+	return true;
 }

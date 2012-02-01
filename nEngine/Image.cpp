@@ -141,12 +141,12 @@ namespace nEngine {
 			throw Error("Invalid XPM data!");
 		}
 
-		int ncolors, cpp;
+		int nColors, cpp;
 		int x_hotspot = 0, y_hotspot = 0;
 		bool hasXPMEXT = false;
 
 		std::stringstream valuesStream(xpm[0]);
-		valuesStream >> mWidth >> mHeight >> ncolors >> cpp;
+		valuesStream >> mWidth >> mHeight >> nColors >> cpp;
 
 		if (!valuesStream.eof()) {
 			valuesStream >> x_hotspot >> y_hotspot;
@@ -160,76 +160,76 @@ namespace nEngine {
 			}
 		}
 
-		struct color {
+		struct Color {
 			GLubyte r, g, b, a;
 		};
 
-		std::map<std::string, color> colors;
-		for (int i = 1; i <= ncolors; ++i) {
+		std::map<std::string, Color> Colors;
+		for (int i = 1; i <= nColors; ++i) {
 			std::stringstream lineStream(xpm[i]);
-			std::string id = "", type, colorString;
+			std::string id = "", type, ColorString;
 
 			for (int j = 0; j < cpp; ++j) {
 				id.push_back(lineStream.get());
 			}
 
 			while (!lineStream.eof()) {
-				lineStream >> type >> colorString;
+				lineStream >> type >> ColorString;
 				if (type == "c") {
-					color newColor;
+					Color newColor;
 					memset(&newColor, 0, sizeof(newColor));
-					if (boost::algorithm::to_lower_copy(colorString) == "none") {
+					if (boost::algorithm::to_lower_copy(ColorString) == "none") {
 						newColor.a = 0xFF;
 						continue;	
 					}
 
-					if (colorString[0] != '#') {
-						xpmError("Only RGB colors are supported!", i, cpp + 2);
+					if (ColorString[0] != '#') {
+						xpmError("Only RGB Colors are supported!", i, cpp + 2);
 					}
 
-					colorString = colorString.substr(1, colorString.length());
-					boost::algorithm::to_lower(colorString);
+					ColorString = ColorString.substr(1, ColorString.length());
+					boost::algorithm::to_lower(ColorString);
 
-					switch (colorString.length()) {
+					switch (ColorString.length()) {
 					case 6:
 						// #XXYYZZ
-						newColor.r = ((charToInt(colorString[0]) * 16) + charToInt(colorString[1]));
-						newColor.g = ((charToInt(colorString[2]) * 16) + charToInt(colorString[3]));
-						newColor.b = ((charToInt(colorString[4]) * 16) + charToInt(colorString[5]));
+						newColor.r = ((charToInt(ColorString[0]) * 16) + charToInt(ColorString[1]));
+						newColor.g = ((charToInt(ColorString[2]) * 16) + charToInt(ColorString[3]));
+						newColor.b = ((charToInt(ColorString[4]) * 16) + charToInt(ColorString[5]));
 						newColor.a = 255;
 						break;
 					case 8:
 						// #XXYYZZAA
-						newColor.r = ((charToInt(colorString[0]) << 4) + charToInt(colorString[1]));
-						newColor.g = ((charToInt(colorString[2]) << 4) + charToInt(colorString[3]));
-						newColor.b = ((charToInt(colorString[4]) << 4) + charToInt(colorString[5]));
-						newColor.a = ((charToInt(colorString[6]) << 4) + charToInt(colorString[7]));
+						newColor.r = ((charToInt(ColorString[0]) << 4) + charToInt(ColorString[1]));
+						newColor.g = ((charToInt(ColorString[2]) << 4) + charToInt(ColorString[3]));
+						newColor.b = ((charToInt(ColorString[4]) << 4) + charToInt(ColorString[5]));
+						newColor.a = ((charToInt(ColorString[6]) << 4) + charToInt(ColorString[7]));
 						break;
 					default:
-						xpmError("Invalid color: '#" + colorString + "'", i, cpp + 2);
+						xpmError("Invalid Color: '#" + ColorString + "'", i, cpp + 2);
 						break;
 					}
-					colors.insert(std::make_pair(id, newColor));
+					Colors.insert(std::make_pair(id, newColor));
 					break;
 				}
 			}
 		}
 
-		int pp = sizeof(color);
+		int pp = sizeof(Color);
 
-		GLubyte* imgData = new GLubyte[mWidth * mHeight * sizeof(color)];
-		memset(imgData, 0, mWidth * mHeight * sizeof(color));
+		GLubyte* imgData = new GLubyte[mWidth * mHeight * sizeof(Color)];
+		memset(imgData, 0, mWidth * mHeight * sizeof(Color));
 		GLubyte* ptr = imgData;
 
-		for (int i = ncolors + 1; i < ncolors + mHeight + 1; ++i) {
+		for (int i = nColors + 1; i < nColors + mHeight + 1; ++i) {
 			for (int j = 0; j < mWidth * cpp; j += cpp) {
 				std::string id = "";
 				for (int k = 0; k < cpp; ++k) {
 					id.push_back(xpm[i][j + k]);
 				}
 
-				color c = colors[id];
-				memcpy(ptr, &c, sizeof(color));
+				Color c = Colors[id];
+				memcpy(ptr, &c, sizeof(Color));
 				if (id == "V ") {
 					int a = 5;
 				}

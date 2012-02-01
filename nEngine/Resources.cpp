@@ -99,10 +99,15 @@ namespace nEngine {
 				}
 			}
 
+			// we may have a single child
+			std::string luaFile = json->getRoot().get("lua", "");
+			if (luaFile != "") {
+				luaReadFile(luaFile);
+			}
+
 
 			// shaders
-			boost::optional<ptree&> shaders = json->getRoot().get_child_optional("shader");
-			
+			boost::optional<ptree&> shaders = json->getRoot().get_child_optional("shader");			
 			if (shaders.is_initialized()) {
 				BOOST_FOREACH(ptree::value_type& node, shaders.get()) {
 					ptree& item = node.second;
@@ -245,7 +250,6 @@ namespace nEngine {
 	luaNewMethod(Resources, loadPackage)
 	{
 		std::string groupName(luaL_checkstring(L, 1));
-
 		Resources::inst().loadGroup(groupName);
 		return 0;
 	}

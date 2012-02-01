@@ -52,10 +52,10 @@ namespace nEngine {
 			glPushMatrix();
 			glTranslatef(mComputedSize.getX(), mComputedSize.getY() / 2, 0.0f);
 			
-			float colorDiff = (mMousePressed ? 0.9 : (mMouseOver ? 1.1 : 1.0));
+			float ColorDiff = (mMousePressed ? 0.9 : (mMouseOver ? 1.1 : 1.0));
 
 			// draw the checkbox
-			(mBackgroundColor * colorDiff).glUse();
+			(mBackgroundColor * ColorDiff).glUse();
 			glBegin(GL_QUADS);
 				glVertex2i(-32, -15);
 				glVertex2i(-2, -15);

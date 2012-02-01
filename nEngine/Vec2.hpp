@@ -25,11 +25,11 @@ namespace nEngine {
 		
 		NAPI ~Vec2();
 
-		NAPI float getX() {
+		NAPI float getX() const {
 			return mV[0];
 		}
 
-		NAPI float getY() {
+		NAPI float getY() const {
 			return mV[1];
 		}
 

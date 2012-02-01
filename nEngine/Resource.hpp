@@ -88,7 +88,24 @@ namespace nEngine {
 		{
 			mGroupName = groupName;
 		}
+		
+		/**
+			Set the edit flag
+			@param				True if the resource can be edited
+		*/
+		void setEditable(bool v)
+		{
+			mEditable = v;
+		}
 
+		/**
+			Check if the object is editable
+			@return				True if the object is editable
+		*/
+		bool isEditable()
+		{
+			return mEditable;
+		}
     private:
 
 		/// ID of the resource
@@ -102,6 +119,9 @@ namespace nEngine {
 
 		/// The group of this resource
 		std::string			mGroupName;
+
+		/// Edit flag
+		bool				mEditable;
     };
 };
 

@@ -46,10 +46,11 @@ private:
 	bool compilePackage(const std::string& name, boost::property_tree::ptree& packData);
 	bool compileHeader();
 
-	bool compileLua(const std::string& input);
+	bool compileLua(const std::string& input, const std::string& output);
 	bool compileMap(const std::string& id, boost::property_tree::ptree& data);
 
 	bool writeFile(const std::string fileName, const void* data, unsigned length);
+	bool writeInitScript();
 
 private:
 

@@ -41,6 +41,11 @@ public:
 		return mInitScript;
 	}
 
+	std::string getProjName()
+	{
+		return mProjName;
+	}
+
 	std::vector<std::pair<std::string, std::string> > getResourceGroups();
 
 private:
@@ -50,6 +55,7 @@ private:
 	std::string mName;
 	std::string mDir;
 	std::string mInitScript;
+	std::string mProjName;
 };
 
 #endif /*NPROJ_HPP*/

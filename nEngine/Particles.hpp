@@ -112,7 +112,6 @@ namespace nEngine {
 		struct Gradient {
 			Vec2 mSize;
 			Color mColor;
-			std::string mTexture;
 			float mTime;
 		};
 
@@ -134,6 +133,7 @@ namespace nEngine {
 			Get the two required gradient stops
 		*/
 		std::pair<tGradientIter, tGradientIter> getGradientStops(float f);
+
 	private:
 		/// Position of the emitter
 		Vec2 mEmitterPos;
@@ -173,6 +173,9 @@ namespace nEngine {
 
 		/// Gradient
 		std::map<float, Gradient> mGradient;
+
+		/// Texture
+		std::string mTexture;
 	};
 
 	bool luaRegisterParticles(lua_State* L);

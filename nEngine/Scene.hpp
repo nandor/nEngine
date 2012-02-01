@@ -12,8 +12,8 @@
 #define SCENE_HPP
 
 #include "types.hpp"
-#include "Error.hpp"
 #include "Map.hpp"
+#include "Light.hpp"
 #include "Camera.hpp"
 #include "SceneNode.hpp"
 #include "Singleton.hpp"
@@ -118,21 +118,44 @@ namespace nEngine {
 		NAPI Vec2 getCameraOffset();
 
 		/**
-			Activate the scene
-		*/
-		NAPI Scene& stop();
-
-		/**
-			Deactivate the scene
-		*/
-		NAPI Scene& start();
-
-		/**
 			Set the way the renderer draws the scene
 			@param drawMode				OR-d SceneRenderModes
 		*/
 		NAPI Scene& setDrawMode(int drawMode);
+
+		/**
+			Add a new light to the scene
+			@param l					Pointer to the light
+		*/
+		NAPI Scene& addLight(Light* l);
+
+		/**
+			Remove a light from the scene
+			@param id					Name of the id
+		*/
+		NAPI Scene& removeLight(const std::string& id);
+
+	public:
+
+		/// Number of available lights
+		static const int sNumLights = 8;
+
 	private:
+
+		/**
+			Check if a tile is on the screen
+			@param tile					Position
+			@return						bool			
+		*/
+		bool onScreen(Vec2& tile);
+
+		/**
+			Apply all the lights
+		*/
+		void setLights();
+
+	private:
+		
 		/// Size of tiles
 		Vec2 mTileSize;
 
@@ -141,9 +164,6 @@ namespace nEngine {
 
 		/// Pointer to the map
 		Map* mMap;
-
-		/// Scene activation flag
-		bool mActive;
 
 		/// Map containig the objects
 		std::map<std::string, SceneNode*> mNodes;
@@ -159,6 +179,12 @@ namespace nEngine {
 
 		/// Map to convert OpenGL id to a std::string in O(log N) time
 		std::map<unsigned, std::string> mHandleToId;
+
+		/// map containing lights
+		std::map<std::string, Light*> mLights;
+		
+		/// Iterator for the map containing lights
+		typedef std::map<std::string, Light*>::iterator tLightIter;
 	};
 
 	/**

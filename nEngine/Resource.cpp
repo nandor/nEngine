@@ -12,7 +12,8 @@
 namespace nEngine {
 	Resource::Resource(const std::string& id, ResourceType type)
 		:mId(id),
-		 mType(type)
+		 mType(type),
+		 mEditable(true)
 	{
 
 	}

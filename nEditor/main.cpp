@@ -22,7 +22,7 @@ public:
 		try {
 			wxImage::AddHandler(new wxPNGHandler);
 
-			nEngine::luaRegisterEngine();
+			nEngine::luaRegisterEngine(nEngine::initLua());
 			nEngine::luaReadFile("fs://data/lua/lib.lua");
 			nEngine::luaReadFile("fs://data/lua/editor.lua");
 			

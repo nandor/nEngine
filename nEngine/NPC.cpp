@@ -57,7 +57,7 @@ namespace nEngine {
 		// Draw the health bar
 		if (mMaxHealth > mHealth && mDamageable) {
 			glDisable(GL_DEPTH_TEST);
-			Shader::useProgram("color");
+			Shader::useProgram("Color");
 			
 			int height = mCurrentAnimation.getFrameHeight();
 

@@ -11,10 +11,8 @@
 
 #include "types.hpp"
 #include "Lua.hpp"
-#include "File.hpp"
 #include "Tile.hpp"
-#include "Image.hpp"
-#include "Shader.hpp"
+#include "Light.hpp"
 #include "Resource.hpp"
 #include "MapHelper.hpp"
 
@@ -27,14 +25,20 @@ namespace nEngine {
 		NAPI FieldType();
 		NAPI ~FieldType();
 
-		/** Id of the field */
+		/// Id of the field
 		int mID;
 
-        /** Name of the tile */
+        /// Name of the tile
         std::string mName;
         
-		/** Filename of the tile */
+		/// Filename of the tile
         std::string mImage;
+
+		/// True if the player can't step on the tile
+		bool mBlocked;
+
+		/// Height of the field
+		int mHeight;
     };
 
     /**
@@ -100,32 +104,6 @@ namespace nEngine {
 		*/
 		NAPI Tile* getTile(int x, int y);
 
-
-		/**
-			Shadow all the tiles
-		*/
-		NAPI void shadow();
-
-		/**
-			Highlight an area 
-		*/
-		NAPI void highlight(Vec2 pos, int range);
-
-		/**
-			Check if a tile is visible
-			@param i		X coordinate
-			@param j		Y coordinate
-			@return			True if fairies are walking on the tile
-		*/
-		NAPI bool isVisible(int i, int j);
-		
-		/**
-			Check if a tile is visible
-			@param pos		Position o f the tile
-			@return			True if fairies are walking on the tile
-		*/
-		NAPI bool isVisible(Vec2& pos);
-
 		/**
 			Get the ammount of memory used by the map
 			@return			Memory in bytes
@@ -153,22 +131,13 @@ namespace nEngine {
 		{
 			return mFields;
 		}
-
+		
 		/**
 			Call a lua method from the map's namespace
 			@param method		Name of the method
 		*/
 		NAPI void callLuaMethod(const std::string& method);
-
-		/**
-			Enable / disable map shadows (aoe explore map like)
-			@param shadow		True / False
-		*/
-		NAPI void setShadows(bool shadow)
-		{
-			mShadow = shadow;
-		}
-
+		
 		/**
 			Change the id of the tile
 			@param pos			Position of the tile
@@ -197,6 +166,34 @@ namespace nEngine {
 			return mNamespace;
 		}
 
+		/**
+			Check if the tile is blocked
+			@param pos		Position o f the tile
+		*/
+		NAPI bool isBlocked(const Vec2& v);
+
+		/**
+			Check if the tile is blocked
+			@param i		X coordinate
+			@param j		Y coordinate
+		*/
+		NAPI bool isBlocked(int i, int j);
+		
+		/**
+			Enable or disable lighting
+			@param light		True if lighting is enabled
+		*/
+		NAPI void setLighting(bool light)
+		{
+			mLighting = light;
+		}
+
+		/**
+			Build the lightmap based on the selected lights
+			@param lights		Map containing lights
+		*/
+		NAPI void buildLightMap(std::map<std::string, Light*>& lights);
+
 	private:
 
 		/**
@@ -205,6 +202,23 @@ namespace nEngine {
 		*/
 		void loadMapData (const std::string& fileName);
 
+		/**
+			Get the height of a tile
+			@param x					X coordinate
+			@param y					Y coordinate
+		*/
+		int getHeight(int i, int j);
+
+		/**
+			Return the minimum height on the line from p0 to p1
+			@param x0
+			@param y0
+			@param x1
+			@param y1
+			
+			@return minimum height
+		*/
+		int getMaxHeight(int x0, int y0, int x1, int y1);
 	private:
 		
 		/// Size of the map (must be a power of two)
@@ -225,8 +239,8 @@ namespace nEngine {
 		/// Name of the file containing map data
 		std::string mDataName;
 
-		/// Is the map shadowed?
-		bool mShadow;
+		/// Is lighting enables?
+		bool mLighting;
 
 	public:
 		

@@ -74,11 +74,6 @@ namespace nEngine {
         }
 
 		/**
-			Register the 'Shader' lua class
-		*/
-		NAPI static bool luaRegister(lua_State* L);
-
-		/**
 			Get the names of shader sources
 		*/
 		NAPI std::vector<std::string> getShaderNames();
@@ -103,6 +98,11 @@ namespace nEngine {
         static std::vector<GLhandleARB> shaderStack;
         static unsigned currentProgram;
     };
+
+	/**
+		Register the 'Shader' lua class
+	*/
+	NAPI bool luaRegisterShader(lua_State* L);
 };
 
 #endif /*SHADER_HPP*/

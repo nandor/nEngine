@@ -90,21 +90,21 @@ namespace nEngine {
 		NAPI virtual bool handleEvent (GUIEvent& evt);
 		
 		/**
-			Set the background color
-			@param color		Color of the background
+			Set the background Color
+			@param Color		Color of the background
 		*/
-		NAPI void setBackgroundColor(const Color& color)
+		NAPI void setBackgroundColor(const Color& Color)
 		{
-			mBackgroundColor = color;
+			mBackgroundColor = Color;
 		}
 
 		/**
-			Set the text color
-			@param color		Color of the text
+			Set the text Color
+			@param Color		Color of the text
 		*/
-		NAPI void setTextColor(const Color& color)
+		NAPI void setTextColor(const Color& Color)
 		{
-			mFontColor = color;
+			mFontColor = Color;
 		}
 		
 		/**
@@ -239,10 +239,10 @@ namespace nEngine {
 		/// Position of the element (relative to parent)
 		Vec2 mPos;
 
-		/// Background color
+		/// Background Color
 		Color mBackgroundColor;
 
-		/// Font color
+		/// Font Color
 		Color mFontColor;
 
 		/// Is the mouse over the element?

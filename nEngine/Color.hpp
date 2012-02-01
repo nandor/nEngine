@@ -6,10 +6,11 @@
     (c) 2011 Licker Nandor
 */
 
-#ifndef COLOR_HPP
-#define COLOR_HPP
+#ifndef Color_HPP
+#define Color_HPP
 
 #include "types.hpp"
+#include "Lua.hpp"
 
 namespace nEngine {
 	class Color {
@@ -58,6 +59,8 @@ namespace nEngine {
 
 		float mV[4];
 	};
+
+	bool luaRegisterColor(lua_State* L);
 };
 
-#endif /*COLOR_HPP*/
+#endif /*Color_HPP*/

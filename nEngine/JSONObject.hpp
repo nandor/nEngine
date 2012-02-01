@@ -60,10 +60,10 @@ namespace nEngine {
 		Vec2 getVec(const std::string& id);
 
 		/**
-			Get a color
-			@param id			ID of the color
+			Get a Color
+			@param id			ID of the Color
 		*/
-		Color getColor(const std::string& color);
+		Color getColor(const std::string& Color);
 
 	public:
 		

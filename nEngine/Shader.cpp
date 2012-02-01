@@ -221,7 +221,7 @@ namespace nEngine {
 	luaEndMethods()
 
 	// ------------------------------------------------------------------
-	bool Shader::luaRegister(lua_State* L)
+	bool luaRegisterShader(lua_State* L)
 	{
 		luaClass(L, Shader);
 		return true;

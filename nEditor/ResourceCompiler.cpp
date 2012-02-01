@@ -48,6 +48,8 @@ wxThread::ExitCode ResourceCompiler::Entry()
 		if (compile()) {
 			sendMessage(100, "Done: Compiled " + boost::lexical_cast<std::string> (mResourceCount) + " resources!");
 		}
+	} catch (nEngine::Error e) {
+		wxMessageBox(e.getMessage(), "Error");
 	} catch (...) {
 		sendMessage(100, "Compile failed!");
 	}
@@ -65,25 +67,47 @@ bool ResourceCompiler::compile()
 		}
 	}	
 
+	return writeInitScript();
+}
+
+
+// ------------------------------------------------------------------
+bool ResourceCompiler::writeInitScript()
+{
+	nEngine::File* f = nEngine::Resources::inst().require<nEngine::File> ("init");
+	FILE* fout = fopen((mOutDir + "/build/init.lua").c_str(), "wb");
+
+	if (!fout) {
+		return false;
+	}
+	
+	if (fwrite(f->getData(), 1, f->getSize(), fout) != f->getSize()) {
+		fclose(fout);
+		return false;
+	}
+
+	fclose(fout);
 	return true;
 }
+
 
 // ------------------------------------------------------------------
 bool ResourceCompiler::compilePackage(const std::string& name, boost::property_tree::ptree& packData)
 {
 	mPackageName = name;
-	mPackage = zipOpen((mOutDir + "/build/" + name + ".zip").c_str(), APPEND_STATUS_CREATE);
+	mPackage = zipOpen((mOutDir + "/build/" + mPackageName + ".zip").c_str(), APPEND_STATUS_CREATE);
 	mHeader.clear();
 
 	mHeader.put_child("lua", ptree());
 	mHeader.put_child("map", ptree());
+	mHeader.put("packageName", mPackageName);
 
 	BOOST_FOREACH(ptree::value_type& resNode, packData) {	
 		std::string type(resNode.second.get<std::string> ("type"));
 		sendMessage((mNumCompiled++) / mResourceCount * 100.0f, "Compiled: " + resNode.first);
 	
 		if (type == "LUA") {
-			if (!compileLua(resNode.second.get<std::string> ("file"))) {
+			if (!compileLua(resNode.first, resNode.second.get<std::string> ("file"))) {
 				return false;
 			}
 			continue;
@@ -107,18 +131,17 @@ bool ResourceCompiler::compilePackage(const std::string& name, boost::property_t
 }
 
 // ------------------------------------------------------------------
-bool ResourceCompiler::compileLua(const std::string& input)
+bool ResourceCompiler::compileLua(const std::string& input, const std::string& output)
 {
-	std::string fileName(input);
-	nEngine::File* f = nEngine::Resources::inst().require<nEngine::File> (fileName);
-		
+	nEngine::File* f = nEngine::Resources::inst().require<nEngine::File> (input);
+	
 	// Add the file to the archive
-	if (!writeFile(nEngine::File::strip(fileName), f->getData(), f->getSize())) {
+	if (!writeFile(nEngine::File::strip(output), f->getData(), f->getSize())) {
 		return false;
 	}
 
 	// Add the file to the header
-	mHeader.get_child("lua").put_value("%" + mPackageName + "%/" + nEngine::File::strip(fileName));
+	mHeader.get_child("lua").put_value("%" + mPackageName + "%/" + nEngine::File::strip(output));
 	return true;
 }
 
@@ -132,7 +155,7 @@ bool ResourceCompiler::compileMap(const std::string& id, boost::property_tree::p
 	
 	mapHeader.put("size", data.get<std::string>("size"));
 	mapHeader.put("namespace", data.get<std::string> ("namespace"));
-	mapHeader.put("mapData", mapFileName);
+	mapHeader.put("mapData", "%" + mPackageName + "%/" + mapFileName);
 
 
 	BOOST_FOREACH(ptree::value_type& v, data.get_child("fields")) {
@@ -145,6 +168,8 @@ bool ResourceCompiler::compileMap(const std::string& id, boost::property_tree::p
 
 		field.put("name", v.second.get<std::string> ("name"));
 		field.put("image", "%" + mPackageName + "%/" + nEngine::File::strip(imageName));
+		field.put("blocked", v.second.get<bool> ("blocked"));
+		field.put("height", v.second.get<int> ("height"));
 		fields.put_child(v.first, field);
 	}
 

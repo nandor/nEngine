@@ -189,6 +189,7 @@ void MainWindow::OnCompile(wxCommandEvent&)
 {
 	nEngine::File::setenv("path", mProj->getDir() + "/src");
 	mMainNotebook->SaveAll();
+
 	if (mProj) {
 		mProgressDialog = new wxProgressDialog(
 			"Compiling '" + mProj->getName() + "'", 

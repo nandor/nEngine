@@ -31,9 +31,9 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	void GUIButton::onDraw()
 	{
-		float colorDiff = (mMousePressed ? 0.9 : (mMouseOver ? 1.1 : 1.0));
+		float ColorDiff = (mMousePressed ? 0.9 : (mMouseOver ? 1.1 : 1.0));
 
-		(mBackgroundColor * colorDiff).glUse();		
+		(mBackgroundColor * ColorDiff).glUse();		
 
 		glBegin(GL_QUADS);
 			glVertex2i(0, 0);

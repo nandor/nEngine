@@ -8,8 +8,11 @@
 
 #include "nHeaders.hpp"
 #include "Map.hpp"
-#include "PathFinder.hpp"
+#include "File.hpp"
 #include "Scene.hpp"
+#include "Image.hpp"
+#include "Shader.hpp"
+#include "PathFinder.hpp"
 using namespace boost::property_tree;
 
 namespace nEngine {
@@ -33,7 +36,8 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	Map::Map(const std::string& id)
 		:Resource(id, RESOURCE_MAP),
-		 mShadow(true)
+		 mTileSize(120.0f, 60.0f),
+		 mLighting(true)
 	{
 
 	}
@@ -74,7 +78,9 @@ namespace nEngine {
 				FieldType& f = mFields[id];
 				f.mID = id;
 				f.mImage = v.second.get<std::string> ("image");
-				f.mName =v.second.get<std::string> ("name");
+				f.mName = v.second.get<std::string> ("name");
+				f.mBlocked = v.second.get<bool> ("blocked");
+				f.mHeight = v.second.get<int> ("height");
 			}
 
 			mNamespace = data.get<std::string> ("namespace");
@@ -95,9 +101,13 @@ namespace nEngine {
 
 		for (int i = 0; i < mSize * mSize; ++i) {
 			Tile* t = mData[i] = new Tile(Vec2(i / mSize, i % mSize));
-
+			
 			fdata* d = ((fdata*)file->getData()) + i;
+
+			FieldType& f = getFieldType(d->id);
+
 			t->setID(d->id);
+			t->setHeight(f.mHeight);
 			t->setBlocked(d->blocked);
 		}
 	}
@@ -108,6 +118,10 @@ namespace nEngine {
 	{
 		std::string name = File::processName((fileName.size() == 0) ? mDataName : fileName);
 		std::pair<uint8*, unsigned> data = buildMapData();
+
+		File* f = Resources::inst().require<File> (mDataName);
+		f->copyData(data.first, data.second);
+
 		FILE* fout = fopen(name.c_str(), "wb");
 		
 		if (!fout) {
@@ -145,84 +159,127 @@ namespace nEngine {
 
 		Vec2 off = Scene::inst().getCameraOffset(), screenSize = getScreenSize(), tileSize(TILE_WIDTH, TILE_HEIGHT);
 	
-		int ybeg = max(0, min((off.getX() / 2 + off.getY()) / TILE_HEIGHT, mSize - 1));
-		int yend = max(0, min(((off.getX() + screenSize.getX()) / 2 + off.getY() + screenSize.getY()) / tileSize.getY(), mSize - 1));
+		int ybeg = std::max(0, std::min((int)(off.getX() / 2 + off.getY()) / (int)tileSize.getY() - 2, mSize - 1));
+		int yend = std::max(0, std::min((int)((off.getX() + screenSize.getX()) / 2 + off.getY() + screenSize.getY()) / (int)tileSize.getY() + 2, mSize - 1));
 		
-		int xbeg = max(0, min((off.getX() / 2 - off.getY() - screenSize.getY()) / tileSize.getY(), mSize - 1));
-		int xend = max(0, min(((off.getX() + screenSize.getX()) / 2 - off.getY()) / tileSize.getY(), mSize - 1));
+		int xbeg = std::max(0, std::min((int)(off.getX() / 2 - off.getY() - screenSize.getY()) / (int)tileSize.getY() - 2, mSize - 1));
+		int xend = std::max(0, std::min((int)((off.getX() + screenSize.getX()) / 2 - off.getY()) / (int)tileSize.getY() + 2, mSize - 1));
 		
 		glColor3f (1.0f, 1.0f, 1.0f);
-
+		
 		for (int x = xend; x >= xbeg; --x) {
 			for (int y = ybeg; y <= yend; ++y) {
 				int trans_x = ((x + y) * TILE_WIDTH) >> 1;
 				int trans_y = ((y - x - 1) * TILE_HEIGHT ) >> 1;
-				int trans_z = (mSize - x) * mSize + y;
+				int trans_z = (mSize - x + y) * mSize;
 
 				Tile* t = mData[x * mSize + y];				
 				FieldType& f = getFieldType(t->getID());
 				Image* img =  Resources::inst().require<Image>(f.mImage);
 
-				int isExplored = mShadow ? (t->isVisible() ? 2 : (t->isExplored() ? 1 : 0)) : 2;
+				int isExplored = 2;
 				int width = img->getWidth(), height = img->getHeight();
+				int light = t->getLight();
 
-				Shader::setUniformi("isExplored", 1, &isExplored);
-				Shader::setUniformi("tileWidth", 1, &width); 
-				Shader::setUniformi("tileHeight", 1, &height); 
+				Shader::setUniformi("lights", 1, &light);
+				Shader::setUniformi("tileX", 1, &trans_x);				
+				Shader::setUniformi("tileY", 1, &trans_y);
+				
 				
 				img->bind();
-				glBegin (GL_QUADS);
+				glBegin (GL_TRIANGLE_STRIP);
 					glTexCoord2f(0.0f, 0.0f); glVertex3i (trans_x, trans_y + 60 - height, trans_z);
 					glTexCoord2f(1.0f, 0.0f); glVertex3i (trans_x + width, trans_y + 60 - height, trans_z);
-					glTexCoord2f(1.0f, 1.0f); glVertex3i (trans_x + width, trans_y + 60, trans_z);
 					glTexCoord2f(0.0f, 1.0f); glVertex3i (trans_x, trans_y + 60, trans_z);
+					glTexCoord2f(1.0f, 1.0f); glVertex3i (trans_x + width, trans_y + 60, trans_z);
 				glEnd ();
 			}
 		}
 	}
 	
 	// ------------------------------------------------------------------
-	void Map::shadow()
+	void Map::buildLightMap(std::map<std::string, Light*>& lights)
 	{
-		if (mShadow) {
-			for (int i = 0; i < mSize * mSize; ++i) {
-				mData[i]->setVisible(false);
-			}
+		typedef std::map<std::string, Light*>::iterator iter;
+		
+		for (int i = 0; i < mSize * mSize; ++i) {
+			mData[i]->setLight(0);
 		}
-	}
-	
-	// ------------------------------------------------------------------
-	void Map::highlight(Vec2 pos, int range)
-	{
-		if (mShadow) {
-			for (int i = pos.getX() - range; i <= pos.getX() + range; ++i) {
-				for (int j = pos.getY() - range; j <= pos.getY() + range; ++j) {
-					int dx = abs(i - pos.getX());
-					int dy = abs(j - pos.getY());
 
-					if (hasTile(i, j) && dx * dx + dy * dy <= range * range) {
-						Tile* t = mData[i * mSize + j];
+		for (iter it = lights.begin(); it != lights.end(); ++it) {
+			Light* l = it->second;
 
-						t->setExplored(true);
-						t->setVisible(true);
+			Vec2 pos = l->getTile();
+			int ix = pos.getX(), iy = pos.getY();
+			int height = mData[ix * mSize + iy]->getHeight();
+
+			int A = std::ceilf(l->getRange()) + 2;
+			
+			for (int x = std::max(0, ix - A); x < std::min(mSize, ix + A); ++x) {
+				for (int y = std::max(0, iy - A); y < std::min(mSize, iy + A); ++y) {
+					if ((double)(ix - x) * (ix - x) + (iy - y) * (iy - y) > A * A) {
+						continue;
+					}
+					
+					Tile* t = mData[x * mSize + y];
+
+					if (getMaxHeight(ix, iy, x, y) <= height) {
+						t->addLight(l->getGLID());
 					}
 				}
 			}
 		}
 	}
+	
+	// ------------------------------------------------------------------
+	int Map::getHeight(int x, int y)
+	{
+		return mData[x * mSize + y]->getHeight();
+	}
+
+	
+	// ------------------------------------------------------------------
+	int Map::getMaxHeight(int x0, int y0, int x1, int y1)
+	{
+		int maxHeight = getHeight(x1, y1);
+		int dx = std::abs(x1 - x0), dy = std::abs(y1 - y0);
+
+		int sx = (x0 < x1) ? 1 : -1;
+		int sy = (y0 < y1) ? 1 : -1;
+
+		int error = dx - dy;
+
+		while (x0 != x1 && y0 != y1) {
+			maxHeight = std::max(maxHeight, getHeight(x0, y0));
+			int err2 = 2 * error;
+			
+			if (err2 > -dy) {
+				error -= dy;
+				x0 += sx;
+			}
+			if (err2 < dx) {
+				error += dx;
+				y0 += sy;	
+			}
+		}
+
+		return maxHeight;
+	}
 
 	// ------------------------------------------------------------------
-	bool Map::isVisible (Vec2& tile)
+	bool Map::isBlocked(const Vec2& tile) 
 	{
 		Tile* t = mData[(int)tile.getX() * mSize + (int)tile.getY()];
-		return t->isVisible();
+		FieldType& f = getFieldType(t->getID());
+		return t->isBlocked() || f.mBlocked;
 	}
 	
 	// ------------------------------------------------------------------
-	bool Map::isVisible (int i, int j)
+	bool Map::isBlocked(int x, int y) 
 	{
-		Tile* t = mData[i * mSize + j];
-		return t->isVisible();
+		Tile* t = mData[x * mSize + y];
+		FieldType& f = getFieldType(t->getID());
+		return t->isBlocked() || f.mBlocked;
 	}
 
 	// ------------------------------------------------------------------

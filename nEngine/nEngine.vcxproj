@@ -109,6 +109,7 @@
     <ClInclude Include="GUISlider.hpp" />
     <ClInclude Include="Image.hpp" />
     <ClInclude Include="JSONObject.hpp" />
+    <ClInclude Include="Light.hpp" />
     <ClInclude Include="Log.hpp" />
     <ClInclude Include="Lua.hpp" />
     <ClInclude Include="Map.hpp" />
@@ -172,6 +173,7 @@
     <ClCompile Include="GUISlider.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="JSONObject.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="Lua.cpp" />
     <ClCompile Include="Map.cpp" />

@@ -27,8 +27,14 @@ nProj::nProj(const std::string& file, const std::string& dir)
 		read_json(file, mData);
 		
 		mInitScript = mData.get<std::string> ("init");
+		mProjName = mData.get<std::string> ("name");
+
 		nEngine::Resources::inst().clearResources();
-		nEngine::Resources::inst().addResource(new nEngine::File("ini", mInitScript));
+
+		nEngine::File* f = new nEngine::File("init", mInitScript);
+		f->setEditable(true);
+
+		nEngine::Resources::inst().addResource(f);
 
 		boost::optional<ptree&> packs = mData.get_child_optional("packs");
 

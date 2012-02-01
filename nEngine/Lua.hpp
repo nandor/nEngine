@@ -135,7 +135,7 @@ namespace nEngine {
 	*/
 	NAPI int luaErrorCallback(lua_State* L);
 
-	NAPI lua_State* luaRegisterEngine();
+	NAPI lua_State* luaRegisterEngine(lua_State* L);
 };
 
 #endif /*LUAHELPER_H*/

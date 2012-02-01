@@ -42,16 +42,6 @@ namespace nEngine {
 		mDeviceContext = NULL;
 		mInstance = NULL;
 		mWindowHandle = NULL;
-	
-		luaRegisterEngine();
-		luaReadFile("fs://data/lua/lib.lua");
-
-		try {
-			parseCmdLine();
-		} catch (std::exception err) {
-			throw Error("Application", "Invalid command line: " + std::string(err.what()));
-		}
-
 		srand(time(NULL));
 	}
 	
@@ -69,6 +59,12 @@ namespace nEngine {
 	
 	
 	// ------------------------------------------------------------------
+	void Application::onLuaInit(lua_State* L)
+	{
+		luaRegisterEngine(L);
+	}
+	
+	// ------------------------------------------------------------------
 	void Application::parseCmdLine()
 	{
 		po::options_description desc ("Options");
@@ -78,6 +74,7 @@ namespace nEngine {
 			("width", po::value<int>(), "Window width")
 			("height", po::value<int>(), "Window height")
 			("fullscreen", "Start in fullscreen mode")
+			("directory", po::value<std::string>(), "Set the working directory")
 			("config", po::value<std::string>()->default_value("fs://data/lua/config.lua"), "Configuration script")
 			("init", po::value<std::string>()->default_value("fs://data/lua/init.lua"), "Initialisation script");
 
@@ -109,8 +106,13 @@ namespace nEngine {
 			mMaxFPS = luaGetGlobalInt("maxFPS");
 		}
 
-		if (vm.count("init") && vm["init"].as<std::string>() != "none") {			
+		if (vm.count("init") && vm["init"].as<std::string>() != "none") {	
 			mInitFile = vm["init"].as<std::string>();
+		}
+			
+		if (vm.count("directory")) {
+			boost::filesystem::path workDir(vm["directory"].as<std::string>());
+			boost::filesystem::current_path(workDir);
 		}
 		
 		mWidth = vm.count("width") ? vm["width"].as<int>() : mWidth;
@@ -138,7 +140,7 @@ namespace nEngine {
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		glViewport(0, 0, mWidth, mHeight);
-		glOrtho(0, mWidth, mHeight, 0, -10000.0f, 1000000.0f);
+		glOrtho(0, mWidth, mHeight, 0, -10000.0f, 100000.0f);
 		glMatrixMode(GL_MODELVIEW);
 	}
 	
@@ -350,6 +352,15 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	void Application::start ()
 	{	
+		onLuaInit(initLua());
+		luaReadFile("fs://data/lua/lib.lua");
+
+		try {
+			parseCmdLine();
+		} catch (std::exception err) {
+			throw Error("Application", "Invalid command line: " + std::string(err.what()));
+		}
+
 		initWindow();
 		initOpenGL();
 		

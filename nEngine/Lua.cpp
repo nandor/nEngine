@@ -8,6 +8,8 @@
 
 #include "nHeaders.hpp"
 #include "Lua.hpp"
+#include "Light.hpp"
+#include "Color.hpp"
 #include "Chat.hpp"
 #include "Console.hpp"
 #include "GUI.hpp"
@@ -20,7 +22,7 @@ namespace nEngine {
 	lua_State* L = NULL;
 	void (*error_call)(const std::string&) = NULL;
 	int errorFuncRef;
-		
+
 	// ------------------------------------------------------------------
 	int luaErrorCallback (lua_State* L)
 	{	
@@ -43,7 +45,28 @@ namespace nEngine {
 		return 0;
 	}
 		
+	// ------------------------------------------------------------------
+	luaNewMethod(Core, messageBox)
+	{
+		std::string message(luaL_checkstring(L, 1)), title;
+		if (lua_gettop(L) >= 2 && lua_isstring(L, 2)) {
+			title = std::string(lua_tostring(L, 2));
+		}
+
+		MessageBox(NULL, message.c_str(), title.c_str(), NULL);
+
+		return 0;
+	}
 	
+		
+	// ------------------------------------------------------------------
+	luaBeginMethods(Core)
+		luaMethod(Core, messageBox) 
+	luaEndMethods()
+
+	luaBeginMeta(Core)
+	luaEndMeta()
+
 		
 	// ------------------------------------------------------------------
 	lua_State* initLua()
@@ -53,6 +76,8 @@ namespace nEngine {
 
 		lua_pushcfunction(L, luaImport);
 		lua_setglobal(L, "import");
+
+		luaClass(L, Core);
 
 		return L;
 	}
@@ -144,8 +169,8 @@ namespace nEngine {
 			lua_pushstring(L, "__base");
 			lua_rawget(L, -2);
 		}
-
-		luaError(L, std::string("Argument must be of type '" + name + "'").c_str());
+		
+		throw Error("Lua", "Expected '" + name + "'!");
 		return NULL;
 	}
 	
@@ -243,19 +268,18 @@ namespace nEngine {
 	}
 	
 	// -----------------------------------------------------------------
-	lua_State* luaRegisterEngine()
+	lua_State* luaRegisterEngine(lua_State* L)
 	{	
-		lua_State* L = initLua();
-
 		Vec2::luaRegister(L);
 		Console::luaRegister(L);
 		Tile::luaRegister(L);
-		Font::luaRegister(L);
-		Shader::luaRegister(L);
 		Chat::luaRegister(L);
-		 
+		
+		luaRegisterColor(L);
 		luaRegisterMap(L);
 		luaRegisterResources(L);
+		luaRegisterShader(L);
+		luaRegisterLight(L);
 		luaRegisterScene(L);
 		luaRegisterSceneNode(L);
 		luaRegisterObject(L);

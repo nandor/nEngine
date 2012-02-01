@@ -63,9 +63,9 @@ namespace nEngine {
 		}
 
 		Color buttonColor(0.6f, 0.6f, 0.6f, 1.0f);
-		float colorMult = (mExpandOver ? (mExpandDown ? 0.7 : 1.3) : 1.0); 
+		float ColorMult = (mExpandOver ? (mExpandDown ? 0.7 : 1.3) : 1.0); 
 
-		(buttonColor * colorMult).glUse();
+		(buttonColor * ColorMult).glUse();
 		
 		glBegin(GL_TRIANGLES);
 			glVertex2i(mComputedSize.getX() - 30, mComputedSize.getY() / 2 - 4);

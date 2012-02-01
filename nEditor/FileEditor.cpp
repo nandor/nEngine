@@ -28,36 +28,41 @@ FileEditor::FileEditor(wxWindow* parent, nEngine::File* file)
 
 	mEditable = nEngine::Resources::inst().getGroup(file->getGroupName())->isEditable();
 
-	if (!mEditable) {
+	if (!mEditable && !file->isEditable()) {
 		this->SetReadOnly(true);
 	}
 	
-	wxColour commentColour(0, 100, 0);
-	wxColour stringColor(100, 0, 0);
-	wxColour varColour(0, 0, 200);
+	wxColor commentColor(0, 100, 0);
+	wxColor stringColor(100, 0, 0);
+	wxColor varColor(0, 0, 200);
+	wxColor keyColor(0, 0, 200);
 
 	if (std::regex_match(file->getID(), shaderRegex)) {
 		this->SetLexer(wxSCI_LEX_CPP);
 
-		this->StyleSetForeground(wxSCI_C_COMMENT, commentColour);
-		this->StyleSetForeground(wxSCI_C_COMMENTLINE, commentColour);
-		this->StyleSetForeground(wxSCI_C_COMMENTDOC, commentColour);
+		this->StyleSetForeground(wxSCI_C_COMMENT, commentColor);
+		this->StyleSetForeground(wxSCI_C_COMMENTLINE, commentColor);
+		this->StyleSetForeground(wxSCI_C_COMMENTDOC, commentColor);
 		
 		this->StyleSetForeground(wxSCI_C_STRING, stringColor);
 		
-		this->StyleSetForeground(wxSCI_C_NUMBER, wxColour(0, 0, 100));
+		this->StyleSetForeground(wxSCI_C_NUMBER, wxColor(0, 0, 100));
 	} else {
 		this->SetLexer(wxSCI_LEX_LUA);
-
-		this->StyleSetForeground(wxSCI_LUA_COMMENT, commentColour);
-		this->StyleSetForeground(wxSCI_LUA_COMMENTLINE, commentColour);
-		this->StyleSetForeground(wxSCI_LUA_COMMENTDOC, commentColour);
+		
+		this->StyleSetForeground(wxSCI_LUA_COMMENT, commentColor);
+		this->StyleSetForeground(wxSCI_LUA_COMMENTLINE, commentColor);
+		this->StyleSetForeground(wxSCI_LUA_COMMENTDOC, commentColor);
 		
 		this->StyleSetForeground(wxSCI_LUA_STRING, stringColor);
 
-		this->StyleSetForeground(wxSCI_C_NUMBER, wxColour(0, 0, 100));
+		this->StyleSetForeground(wxSCI_C_NUMBER, wxColor(0, 0, 100));
 	}
-
+	
+	wxFont ft(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, "Courier New");
+	for (unsigned i = 0; i < 20; ++i) {
+		this->StyleSetFont(i, ft);
+	}
 	mModified = false;
 }
 
@@ -77,8 +82,10 @@ void FileEditor::OnModified(wxScintillaEvent& evt)
 // ------------------------------------------------------------------
 void FileEditor::Save()
 {
-	mFile->setData((nEngine::uint8*)this->GetText().c_str(), this->GetText().length());
+	std::string str (this->GetText());
+	mFile->copyData(str.c_str(), str.length());
 	mFile->write();
+
 	mModified = false;
 }
 

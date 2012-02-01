@@ -35,8 +35,8 @@ namespace nEngine {
 	Vec2 SceneNode::getPosition()
 	{
 		return Vec2(
-			(mTile.getX() + mTile.getY()) * TILE_WIDTH * 2,
-			(mTile.getY() - mTile.getX() - 1) * TILE_HEIGHT * 2
+			(mTile.getX() + mTile.getY()) * TILE_WIDTH / 2,
+			(mTile.getY() - mTile.getX() - 1) * TILE_HEIGHT / 2
 		);
 	}
 

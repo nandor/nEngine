@@ -45,6 +45,10 @@ namespace nEngine {
 			mGravity = obj->getVec("gravity");
 
 			mIsTextured = obj->getValue<bool> ("isTextured");
+			
+			if (mIsTextured) {
+				mTexture = obj->getValue<std::string> ("texture");
+			}
 
 			mGenPeriod = obj->getValue<float> ("genPeriod");
 			mGenNumber = obj->getValue<int> ("genNumber");
@@ -62,10 +66,6 @@ namespace nEngine {
 				);
 
 				mGradient[frame].mTime = frame;
-
-				if (mIsTextured) {
-					mGradient[frame].mTexture = v.second.get<std::string> ("texture");
-				}
 			}
 
 			if (mGradient.find(0.0) == mGradient.end() || mGradient.find(1.0) == mGradient.end()) {
@@ -91,15 +91,17 @@ namespace nEngine {
 
 		float time = Timer::inst().getTime();
 		glDisable(GL_DEPTH_TEST);
-
-		Vec2 pos(
-			(mTile.getY() + mTile.getX()) * TILE_WIDTH / 2,
-			(mTile.getY() - mTile.getX()) * TILE_HEIGHT / 2
-		);
+		
+		Vec2 pos = getPosition();
 
 		glScalef(1.0f, -1.0f, 1.0f);
-
+		
 		Shader::useProgram("particle");
+			
+		if (mIsTextured) {
+			Image* texture = Resources::inst().require<Image> (mTexture);
+			texture->bind(0);
+		}
 
 		for (tIter it = mParticles.begin(); it != mParticles.end(); ++it) {
 			float d = (time - it->mInitTime) / (it->mExpire - it->mInitTime);
@@ -122,17 +124,6 @@ namespace nEngine {
 			Shader::setUniformi("isTextured", 1, &isTextured);
 
 			Vec2 iSize = first.mSize * (1.0 - dt) + second.mSize * dt;
-			
-			if (mIsTextured) {
-				Image* texA = Resources::inst().require<Image> (first.mTexture);
-				Image* texB = Resources::inst().require<Image> (second.mTexture);
-				
-				glActiveTextureARB(GL_TEXTURE0_ARB); 
-				glBindTexture(GL_TEXTURE_2D, texA->getTextureID()); 
-
-				glActiveTextureARB(GL_TEXTURE1_ARB); 
-				glBindTexture(GL_TEXTURE_2D, texB->getTextureID()); 
-			}
 			
 			glColor3f(0.0, 1.0, 0.0f);
 			glBegin(GL_QUADS);

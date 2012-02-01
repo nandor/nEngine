@@ -10,18 +10,27 @@
 #define TILE_H
 
 #include "types.hpp"
-#include "Color.hpp"
 #include "Vec2.hpp"
-#include "Error.hpp"
 #include "Lua.hpp"
 
 namespace nEngine {
     class Tile {
     public:
         
-		NAPI Tile (Vec2 _pos);
-        NAPI ~Tile ();
+		/**
+			Create a new tile
+			@param pos			Position of the tile
+		*/
+		NAPI Tile (Vec2 pos);
+        
+		/**
+			Destroy the tile
+		*/
+		NAPI ~Tile ();
 
+		/**
+			Get the id of the field type present on the tile
+		*/
         NAPI int getID () 
 		{
 			return mID;
@@ -62,24 +71,30 @@ namespace nEngine {
 			return mPos;
 		}
 
-		NAPI void setExplored(bool explored)
+		NAPI float getLight()
 		{
-			mExplored = explored;
+			return mLights;
 		}
 
-		NAPI bool isExplored()
+		/**
+			Set a bitmask for the used lights
+			@param light			i-th bit is 1 if i-th light
+		*/
+		NAPI void setLight(float light)
 		{
-			return mExplored;
+			mLights = light;
 		}
 
-		NAPI bool isVisible()
+		NAPI void addLight(unsigned id);
+
+		NAPI int getHeight()
 		{
-			return mVisible;
+			return mHeight;
 		}
 
-		NAPI void setVisible(bool visible)
+		NAPI void setHeight(int height)
 		{
-			mVisible = visible;
+			mHeight = height;
 		}
 
         NAPI void useAction();
@@ -87,6 +102,7 @@ namespace nEngine {
         NAPI static bool luaRegister (lua_State* L);
 
     private:
+
         /// Is the tile blocked?
 		bool mBlocked;
 
@@ -99,11 +115,12 @@ namespace nEngine {
 		/// Position of the tile
 		Vec2 mPos;
 
-		/// Is the tile highlighted ?
-		bool mVisible;
+		/// IDs of lights that affect the tile
+		int mLights;
 
-		/// Is the tile explored ?
-		bool mExplored;
+		/// Height of the tile
+		int mHeight;
     };
 };
+
 #endif /*TILE_H*/

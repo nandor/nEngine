@@ -6,9 +6,12 @@
 	(c) 2011 Licker Nandor
 */
 
+#include "nEngine/nHeaders.hpp"
 #include "Runner.hpp"
 #include "MainWindow.hpp"
 #include "nProj.hpp"
+
+namespace fs = boost::filesystem3;
 
 DEFINE_EVENT_TYPE(wxEVT_RUNEND)
 
@@ -18,6 +21,9 @@ Runner::Runner(wxWindow* wnd)
 {
 	mRoot = wnd;
 	nProj* prj = ((MainWindow*)mRoot)->GetProject();
+	
+	mProjDir = prj->getDir();
+	mProjName = prj->getProjName();
 
 	if (Create() == wxTHREAD_NO_ERROR) {
 		wxThread::Run();
@@ -33,8 +39,33 @@ Runner::~Runner()
 // ------------------------------------------------------------------
 wxThread::ExitCode Runner::Entry()
 {
+	try {
+		run();
+	} catch (std::exception e) {
+		wxMessageBox("Unhandler exception: " + std::string(e.what()), "Error");
+	} 
+
+	return NULL;
+}
+// ------------------------------------------------------------------
+void Runner::run()
+{
 	std::string executable(nEngine::luaGetGlobalString("execPath"));
-	std::string params(executable + " " + nEngine::luaGetGlobalString("execArgs"));
+	std::string params(executable + " " + nEngine::luaGetGlobalString("execArgs") + " ");
+
+	fs::path dataDir(executable);
+	dataDir.remove_filename();
+	dataDir /= "data\\" + mProjName;
+
+	fs::path projDir(mProjDir);
+	projDir /= "build";
+
+	if (!copyData(projDir, dataDir)) {
+		throw std::logic_error("Cannot copy folders!");
+	}
+
+	// Add current directory
+	params += "--init \"fs://data/" + mProjName + "/init.lua\"";
 
     STARTUPINFO startupInfo; 
     PROCESS_INFORMATION processInfo; 
@@ -56,9 +87,32 @@ wxThread::ExitCode Runner::Entry()
 		evt.SetInt(0);
 		evt.SetString("Cannot create child process : '" + nEngine::getWin32Error() + "'!");
     }
+	
+	if (fs::exists(dataDir)) {
+		fs::remove_all(dataDir);
+	}
 
 	mRoot->AddPendingEvent(evt);
 	delete[] paramPtr;	
+}
+
+// ------------------------------------------------------------------
+bool Runner::copyData(fs::path source, fs::path dest)
+{
+	if (!fs::exists(source)) {
+		return false;
+	}
 	
-	return NULL;
+	if (fs::exists(dest)) {
+		fs::remove_all(dest);
+	}
+
+	fs::create_directories(dest);
+	for (fs::directory_iterator it(source); it != fs::directory_iterator(); ++it) {
+		if (fs::is_regular_file(*it)) {
+			fs::copy_file(it->path(), dest / it->path().filename());
+		}
+	}
+	
+	return true;
 }

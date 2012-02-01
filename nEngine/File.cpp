@@ -112,8 +112,11 @@ namespace nEngine {
 			delete[] mData;
 		}
 		
+		mData = new char[size + 1];
 		mSize = size;
+
 		memcpy(mData, data, mSize);
+		((char*)mData)[size] = '\0';
     }
 
 	// ------------------------------------------------------------------
@@ -121,6 +124,10 @@ namespace nEngine {
 	{
 		if (!mFromArchive) {
 			FILE* fout = fopen(mFileName.c_str(), "wb");
+			if (!fout) {
+				throw Error("Cannot open output file!");
+			}
+
 			fwrite(mData, sizeof(uint8), mSize, fout);
 			fclose(fout);
 		} else {
@@ -222,7 +229,7 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	int File::read(void* buf, unsigned length)
 	{
-		unsigned numBytes = min (mSize - mPosition, length);
+		unsigned numBytes = std::min (mSize - mPosition, length);
 		
 		memcpy(buf, (char*)mData + mPosition, numBytes);
 		mPosition += numBytes;

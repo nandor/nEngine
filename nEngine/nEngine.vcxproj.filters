@@ -74,9 +74,6 @@
     <ClInclude Include="Error.hpp">
       <Filter>Other</Filter>
     </ClInclude>
-    <ClInclude Include="Color.hpp">
-      <Filter>Other</Filter>
-    </ClInclude>
     <ClInclude Include="Console.hpp">
       <Filter>Other</Filter>
     </ClInclude>
@@ -182,6 +179,12 @@
     <ClInclude Include="nHeaders.hpp">
       <Filter>Other</Filter>
     </ClInclude>
+    <ClInclude Include="Light.hpp">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Color.hpp">
+      <Filter>Other</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -234,9 +237,6 @@
     </ClCompile>
     <ClCompile Include="GUIPanel.cpp">
       <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Color.cpp">
-      <Filter>Other</Filter>
     </ClCompile>
     <ClCompile Include="Console.cpp">
       <Filter>Other</Filter>
@@ -336,6 +336,12 @@
     </ClCompile>
     <ClCompile Include="GUISlider.cpp">
       <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Color.cpp">
+      <Filter>Other</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

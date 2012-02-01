@@ -83,7 +83,7 @@ namespace nEngine {
 		glPrint(stats, 5, bHeight + 48, "Mouse: <" + boost::lexical_cast<std::string> (mousePos.getX()) + "|" + boost::lexical_cast<std::string> (mousePos.getY()) + ">");
 		glPrint(ft, 5, bHeight - 4, "> " + editBuffer);
 
-		int currentLine = max(0, (int)lines.size () - height), pos = 0;
+		int currentLine = std::max(0, (int)lines.size () - height), pos = 0;
 		for (line_iter iter = lines.begin() + currentLine; iter < lines.end (); ++iter)
 		{
 			std::string prefix = "";

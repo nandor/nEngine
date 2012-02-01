@@ -28,15 +28,6 @@ namespace nEngine {
 
 		NAPI void exit();
 
-		NAPI virtual void onSceneInit();
-		NAPI virtual void onSceneDestroy();
-
-		NAPI virtual void onResize (int width, int height);
-
-        NAPI virtual void onLeftClick (int x, int y);
-        NAPI virtual void onRightClick (int x, int y);
-        NAPI virtual void onMouseMove (int x, int y);
-
 		NAPI virtual void onKeyUp (int keyCode, char charCode);
 		NAPI std::vector<std::pair<int, int> > getDisplayModes();
 
@@ -46,7 +37,15 @@ namespace nEngine {
 
         NAPI void initOpenGL();
 		NAPI void initWindow();
-		
+
+		NAPI virtual void onSceneInit();
+		NAPI virtual void onSceneDestroy();
+		NAPI virtual void onLuaInit(lua_State* L);
+		NAPI virtual void onResize (int width, int height);
+        NAPI virtual void onLeftClick (int x, int y);
+        NAPI virtual void onRightClick (int x, int y);
+        NAPI virtual void onMouseMove (int x, int y);
+
 		NAPI void parseCmdLine();
 
 		NAPI void closeWindow();

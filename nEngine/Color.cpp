@@ -182,4 +182,67 @@ namespace nEngine {
 		return mV;
 	}
 
+	// ------------------------------------------------------------------
+	luaNewMethod(Color, new)
+	{
+		Color* c;
+	
+		switch (lua_gettop(L)) {
+			case 0:
+				c = new Color();
+				break;
+			case 1:
+				c = new Color(luaL_checknumber(L, 1));
+				break;
+			case 2:
+				c = new Color(
+					luaL_checknumber(L, 1),
+					luaL_checknumber(L, 2)
+				);
+				break;
+			case 3:
+				c = new Color(
+					luaL_checknumber(L, 1),
+					luaL_checknumber(L, 2),
+					luaL_checknumber(L, 3)
+				);
+				break;
+			case 4:
+				c = new Color(
+					luaL_checknumber(L, 1),
+					luaL_checknumber(L, 2),
+					luaL_checknumber(L, 3),
+					luaL_checknumber(L, 4)
+				);
+				break;
+			default:
+				throw Error("Color", "lua", "Invalid arguments for 'new'");
+				break;
+		};
+
+		luaInstance(L, Color, c);
+		return 1;
+	}
+
+	// ------------------------------------------------------------------
+	luaNewMethod(Color, __gc)
+	{
+		delete *(Color**)luaGetInstance(L, 1, "Color");
+		return 0;
+	}
+
+	// ------------------------------------------------------------------
+	luaBeginMethods(Color)
+		luaMethod(Color, new)
+	luaEndMethods()
+
+	luaBeginMeta(Color)
+	luaEndMeta()
+
+	// ------------------------------------------------------------------
+	bool luaRegisterColor(lua_State* L)
+	{
+		luaClass(L, Color);
+		return true;
+	}
 };

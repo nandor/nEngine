@@ -30,10 +30,18 @@ public:
 private:
 
 	wxThread::ExitCode Entry();
+	void run();
+	bool copyData(boost::filesystem3::path source, boost::filesystem3::path dest);
 
 private:
 	
 	wxWindow* mRoot;
+
+	/// Project output directory
+	std::string mProjDir;
+	
+	/// Project name
+	std::string mProjName;
 };
 
 #endif /*RUNNER_HPP*/
