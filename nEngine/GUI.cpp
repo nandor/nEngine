@@ -31,8 +31,9 @@ namespace nEngine {
 	void GUI::draw()
 	{
 		glPushMatrix();
-		glLoadIdentity();
 		glDisable(GL_DEPTH_TEST);
+
+		glLoadIdentity();
 		
 		Shader::useProgram("gui");
 		GUIElement::draw();

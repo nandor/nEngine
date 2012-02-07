@@ -36,6 +36,11 @@ namespace nEngine {
 		NAPI virtual void update() = 0;
 		
 		/**
+			Check if the object intersects a certain point
+		*/
+		NAPI virtual bool intersects(Vec2& v) = 0;
+
+		/**
 			Set the id of the object
 			@param id				ID of the object
 		*/
@@ -107,10 +112,6 @@ namespace nEngine {
 			mShowMarker = v;
 		}
 
-		void setHandle(unsigned handle)
-		{
-			mHandle = handle;
-		}
 	protected:		
 		/// ID of the object
 		std::string mID;
@@ -129,9 +130,6 @@ namespace nEngine {
 
 		/// Show a marker for the element
 		bool mShowMarker;
-
-		/// OpenGL handle
-		unsigned mHandle; 
 	};
 
 	bool luaRegisterSceneNode(lua_State* L);

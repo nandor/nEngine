@@ -11,6 +11,7 @@
 #define NGAME_HPP
 
 #include "nEngine/GUI.hpp"
+#include "nEngine/NPC.hpp"
 #include "nEngine/Application.hpp"
 #include "Character.hpp"
 
@@ -19,7 +20,7 @@ public:
 	nGame();
 	~nGame();
 	
-protected:
+private:
 	
 	void initUI();
 
@@ -31,6 +32,13 @@ protected:
 	void onLeftClick(int x, int y);
 	void onKeyUp (int keyCode, char charCode);
 	void onMouseUp (int mouseX, int mouseY);
+	void onMouseMove (int mouseX, int mouseY);
+
+	void beginChat();
+private:
+
+	std::string mExamine;
+	NPC* mSelectedNPC;
 };
 
 #endif /*NGAME_HPP*/

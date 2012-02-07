@@ -39,8 +39,7 @@ namespace nEngine {
 			Draw a marker to represent the emitter
 		*/
 		void drawMarker();
-
-
+		
 		/**
 			Update the particles
 		*/
@@ -87,54 +86,39 @@ namespace nEngine {
 			mLifetime = l;
 			mLifetimeSpread = s;
 		}
-
+		
 		/**
-			Set generation parameters
-			@param f			Frequency
-			@param t			How many particles should be generated each round
+			Check if the character is on a certain position
+			@param v				Cursor position
+			@return					Always true
 		*/
-		void setGenPeriod(float f, int num)
+		bool intersects(Vec2& v)
 		{
-			mGenPeriod = f;
-			mGenNumber = num;
+			return false;
 		}
-
 	private:
-		/// Structure holding data for a single particle
+		/// Particle data
 		struct Particle {
-			Vec2 mPos;
-			Vec2 mVel;
-			float mExpire;
-			float mInitTime;
+			float initX, initY;
+			float velX, velY;
+			float expire, initTime;
+			bool active;
 		};
-
+		
 		/// Structure holding gradient data
 		struct Gradient {
-			Vec2 mSize;
-			Color mColor;
 			float mTime;
+			Color mColor;
+			std::string mTexture;
 		};
 
 		/// Iterator for the gradient
 		typedef std::map<float, Gradient>::iterator tGradientIter;
 
-		/// Iterator for the particles
-		typedef std::list<Particle>::iterator tIter;
-
 	private:
+		/// Size of a partcle
+		Vec2 mParticleSize;
 
-		/**
-			Initialise a particle
-			@param p			Pointer to particle
-		*/
-		void initParticle(Particle* p);
-
-		/**
-			Get the two required gradient stops
-		*/
-		std::pair<tGradientIter, tGradientIter> getGradientStops(float f);
-
-	private:
 		/// Position of the emitter
 		Vec2 mEmitterPos;
 
@@ -157,19 +141,22 @@ namespace nEngine {
 		float mLifetimeSpread;
 
 		/// Generation period
-		float mGenPeriod;
-
-		/// Last time we generated particles
-		float mLastGenTime;
+		int mNumParticles;
 
 		/// How many should be generated
-		int mGenNumber;
+		int mGenLimit;
 
-		/// Does the particles have textures?
-		bool mIsTextured;
+		/// Last gen time
+		float mGenTime;
 
-		/// Particles
-		std::list<Particle> mParticles;
+		/// Gen timeout
+		float mGenWait;
+		
+		/// Particle data
+		Particle* mData;
+
+		/// Vertex array
+		float *mPosBuffer, *mTexBuffer, *mActiveBuffer, *mTimeBuffer;
 
 		/// Gradient
 		std::map<float, Gradient> mGradient;

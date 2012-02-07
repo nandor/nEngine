@@ -77,6 +77,7 @@ namespace nEngine {
 			Get the names of shader sources
 		*/
 		NAPI std::vector<std::string> getShaderNames();
+
     private:
 
         std::vector<std::pair<std::string, unsigned> > mShaders;
@@ -85,14 +86,24 @@ namespace nEngine {
     public:
         NAPI static const ResourceType sType;
 
-        static void useProgram(const std::string& str);
-        static void popProgram();
-        static void clearStack();
+        NAPI static void useProgram(const std::string& str);
+        NAPI static void popProgram();
+        NAPI static void clearStack();
+		
 
-        static void setUniformf (const char* id, int length, float* values);
-        static void setUniformi (const char* id, int length, int* values);
-		static void setUniformColor (const char* id, Color& c);
-		static void setUniformVec2 (const char* vec, Vec2& v);
+		/**
+			Get the position of a vertex attribute
+		*/
+		NAPI static int  getAttribute(const char* id);
+
+        NAPI static void setUniformf(const char* id, int length, float* values);
+		NAPI static void setUniformf(const char* id, float value);
+
+        NAPI static void setUniformi(const char* id, int length, int* values);
+		NAPI static void setUniformi(const char* id, int value);
+
+		NAPI static void setUniformColor(const char* id, Color& c);
+		NAPI static void setUniformVec2(const char* vec, Vec2& v);
     private:
 
         static std::vector<GLhandleARB> shaderStack;

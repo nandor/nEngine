@@ -90,6 +90,11 @@ namespace nEngine {
 			Get the height of the frames
 		*/
 		NAPI int getFrameHeight();
+		
+		/**
+			Get the width of the frames
+		*/
+		NAPI int getFrameWidth();
 
 		/**
 			Run the animation for a period of time

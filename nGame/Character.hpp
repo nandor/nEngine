@@ -18,6 +18,16 @@ public:
 	void draw ();
 	void drawMarker();
 	void update ();
+
+	/**
+		Check if the character is on a certain position
+		@param v				Cursor position
+		@return					Always true
+	*/
+	bool intersects(Vec2& v)
+	{
+		return false;
+	}
 };
 
 bool luaRegisterCharacter(lua_State* L);

@@ -37,6 +37,14 @@ namespace nEngine {
 			Draw a marker
 		*/
 		NAPI void drawMarker();
+		
+		/**
+			The object does not intersect anything
+		*/
+		bool intersects(Vec2& v)
+		{
+			return false;
+		}
 
 		/**
 			Update the camera

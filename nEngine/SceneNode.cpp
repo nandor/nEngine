@@ -18,8 +18,7 @@ namespace nEngine {
 		 mTile(0, 0),
 		 mType(type),
 		 mHighlighted(false),
-		 mHighlightRange(0),
-		 mHandle(0)
+		 mHighlightRange(0)
 	{
 
 	}

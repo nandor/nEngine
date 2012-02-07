@@ -18,9 +18,8 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	Particles::Particles(const std::string& id)
 		:SceneNode(id, "Particles"),
-		 mParticles(NULL),
-		 mLastGenTime(0.0f),
-		 mGenPeriod(1e10)
+		 mData(NULL),
+		 mNumParticles(10)
 	{
 
 	}
@@ -28,7 +27,8 @@ namespace nEngine {
 	
 	// ------------------------------------------------------------------
 	Particles::Particles(const std::string& id, const std::string& confID)
-		:SceneNode(id, "Particles")
+		:SceneNode(id, "Particles"),
+		 mData(NULL)
 	{
 		JSONObject* obj = Resources::inst().require<JSONObject> (confID);
 		 
@@ -43,21 +43,13 @@ namespace nEngine {
 			mVelocitySpread = obj->getVec("velocitySpread");
 
 			mGravity = obj->getVec("gravity");
+			mParticleSize = obj->getVec("size");
 
-			mIsTextured = obj->getValue<bool> ("isTextured");
-			
-			if (mIsTextured) {
-				mTexture = obj->getValue<std::string> ("texture");
-			}
-
-			mGenPeriod = obj->getValue<float> ("genPeriod");
-			mGenNumber = obj->getValue<int> ("genNumber");
+			mNumParticles = obj->getValue<int> ("numParticles");
+			mGenLimit = obj->getValue<int> ("genLimit");
 
 			BOOST_FOREACH(ptree::value_type& v, obj->getChild("gradient")) {
 				float frame = boost::lexical_cast<float>(v.first);
-
-				mGradient[frame].mSize = Vec2(v.second.get<float>("size.x"), v.second.get<float>("size.y"));
-				
 				mGradient[frame].mColor = Color (
 					v.second.get("color.r", 0.0f), 
 					v.second.get("color.g", 0.0f),
@@ -65,6 +57,7 @@ namespace nEngine {
 					v.second.get("color.a", 1.0f)
 				);
 
+				mGradient[frame].mTexture = v.second.get<std::string> ("texture");
 				mGradient[frame].mTime = frame;
 			}
 
@@ -75,12 +68,52 @@ namespace nEngine {
 		} catch (std::exception except) {
 			throw Error("Particles", getID(), "[json]" + std::string(except.what()));
 		}
+		
+		mGenTime = 0.0f;
+		mGenWait = mLifetime / mGenLimit;
+
+		mData = new Particle[mNumParticles];
+		mPosBuffer = new float[mNumParticles << 3];
+		mTexBuffer = new float[mNumParticles << 3];
+		mActiveBuffer = new float[mNumParticles << 2];
+		mTimeBuffer = new float[mNumParticles << 2];
+		
+		for (int i = 0; i < mNumParticles; ++i) {
+			mData[i].expire = 0.0f;
+			mData[i].active = false;
+
+			mTexBuffer[(i << 3) + 0] = 0.0f;
+			mTexBuffer[(i << 3) + 1] = 0.0f;
+			
+			mTexBuffer[(i << 3) + 2] = 1.0f;			
+			mTexBuffer[(i << 3) + 3] = 0.0f;
+			
+			mTexBuffer[(i << 3) + 4] = 1.0f;
+			mTexBuffer[(i << 3) + 5] = 1.0f;
+		
+			mTexBuffer[(i << 3) + 6] = 0.0f;
+			mTexBuffer[(i << 3) + 7] = 1.0f;
+		}
 	}
 
 	// ------------------------------------------------------------------
 	Particles::~Particles()
 	{
-		mParticles.clear();
+		if (mData != NULL) {
+			delete[] mData;
+		}
+
+		if (mPosBuffer != NULL) {
+			delete[] mPosBuffer;
+		}
+
+		if (mActiveBuffer != NULL) {
+			delete[] mActiveBuffer;
+		}
+
+		if (mTimeBuffer != NULL) {
+			delete[] mTimeBuffer;
+		}
 	}
 
 
@@ -88,54 +121,92 @@ namespace nEngine {
 	void Particles::draw()
 	{
 		glPushMatrix();
-
-		float time = Timer::inst().getTime();
 		glDisable(GL_DEPTH_TEST);
-		
+
+		/// Translate to the position of the system
 		Vec2 pos = getPosition();
-
-		glScalef(1.0f, -1.0f, 1.0f);
+		glTranslatef(pos.getX() + 60, pos.getY(), 0.0f);
 		
+		/// Activate the shader
 		Shader::useProgram("particle");
-			
-		if (mIsTextured) {
-			Image* texture = Resources::inst().require<Image> (mTexture);
-			texture->bind(0);
-		}
 
-		for (tIter it = mParticles.begin(); it != mParticles.end(); ++it) {
-			float d = (time - it->mInitTime) / (it->mExpire - it->mInitTime);
+		/// Pass the gradient
+		int number = 0;
+		for (tGradientIter it = mGradient.begin(); it != mGradient.end(); ++it, number++) {
+			Resources::inst().require<Image> (it->second.mTexture)->bind(number);
 
-			glPushMatrix();
-			glTranslatef(pos.getX() + it->mPos.getX() + 60, pos.getY() + it->mPos.getY(), 0.0f);
+			std::string timeIdx("grdTime[" + boost::lexical_cast<std::string> (number) + "]");
+			Shader::setUniformf(timeIdx.c_str(), 1, &it->second.mTime);
 
-			std::pair<tGradientIter, tGradientIter> stops = getGradientStops(d);
-
-			Gradient& first = stops.first->second;
-			Gradient& second = stops.second->second;
-			
-			float dt = (d - first.mTime) / (second.mTime - first.mTime);
-
-			Shader::setUniformf("dt", 1, &dt);
-			Shader::setUniformColor("colorA", first.mColor);
-			Shader::setUniformColor("colorB", second.mColor);
-
-			int isTextured = mIsTextured;
-			Shader::setUniformi("isTextured", 1, &isTextured);
-
-			Vec2 iSize = first.mSize * (1.0 - dt) + second.mSize * dt;
-			
-			glColor3f(0.0, 1.0, 0.0f);
-			glBegin(GL_QUADS);
-				glVertex2f(0, 0);
-				glVertex2f(iSize.getX(), 0);
-				glVertex2f(iSize.getX(), iSize.getY());
-				glVertex2f(0, iSize.getY());
-			glEnd();
-
-			glPopMatrix();
+			std::string colorIdx("color[" + boost::lexical_cast<std::string> (number) + "]");
+			Shader::setUniformColor(colorIdx.c_str(), it->second.mColor);
 		}
 		
+		float time = Timer::inst().getTime();
+		for (int i = 0; i < mNumParticles; ++i) {
+			if (mData[i].active) {
+				float dt = time - mData[i].initTime;
+				
+				float posX = mData[i].initX + mData[i].velX * dt;
+				float posY = mData[i].initY + mData[i].velY * dt;
+
+				mPosBuffer[(i << 3) + 0] = posX;
+				mPosBuffer[(i << 3) + 1] = -posY;	
+
+				mPosBuffer[(i << 3) + 2] = posX + mParticleSize.getX();
+				mPosBuffer[(i << 3) + 3] = -posY;	
+
+				mPosBuffer[(i << 3) + 4] = posX + mParticleSize.getX();
+				mPosBuffer[(i << 3) + 5] = -posY + mParticleSize.getY();	
+
+				mPosBuffer[(i << 3) + 6] = posX;
+				mPosBuffer[(i << 3) + 7] = -posY + mParticleSize.getY();	
+
+				float deltaTime = dt / (mData[i].expire - mData[i].initTime);
+
+				mTimeBuffer[(i << 2) + 0] = deltaTime;	
+				mTimeBuffer[(i << 2) + 1] = deltaTime;	
+				mTimeBuffer[(i << 2) + 2] = deltaTime;		
+				mTimeBuffer[(i << 2) + 3] = deltaTime;
+
+				mActiveBuffer[(i << 2) + 0] = 1.0f;
+				mActiveBuffer[(i << 2) + 1] = 1.0f;
+				mActiveBuffer[(i << 2) + 2] = 1.0f;
+				mActiveBuffer[(i << 2) + 3] = 1.0f;
+
+			} else {
+
+				mActiveBuffer[(i << 2) + 0] = 0.0f;
+				mActiveBuffer[(i << 2) + 1] = 0.0f;
+				mActiveBuffer[(i << 2) + 2] = 0.0f;
+				mActiveBuffer[(i << 2) + 3] = 0.0f;
+			}
+		}
+
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		
+		int aTime = Shader::getAttribute("aTime");
+		int aActive = Shader::getAttribute("aActive");
+
+		glEnableVertexAttribArray(aTime);
+		glEnableVertexAttribArray(aActive);
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+		glVertexPointer(2, GL_FLOAT, 0, mPosBuffer);
+		glTexCoordPointer(2, GL_FLOAT, 0, mTexBuffer);
+		glVertexAttribPointer(aActive, 1, GL_FLOAT, GL_FALSE, 0, mActiveBuffer);
+		glVertexAttribPointer(aTime,   1, GL_FLOAT, GL_FALSE, 0, mTimeBuffer);
+
+		glDrawArrays(GL_QUADS, 0, mNumParticles);		
+
+		glDisableVertexAttribArray(aTime);
+		glDisableVertexAttribArray(aActive);
+		glDisableClientState(GL_VERTEX_ARRAY);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+		glEnable(GL_DEPTH_TEST);
 		glPopMatrix();
 	}
 
@@ -151,59 +222,35 @@ namespace nEngine {
 	{
 		float time = Timer::inst().getTime();
 
-		tIter it = mParticles.begin();
-		while (it != mParticles.end()) {
-			it->mPos += it->mVel;
+		int generated = 0;
+		for (int i = 0; i < mNumParticles; ++i) {
+			Particle* p = mData + i;
 
-			if (it->mExpire <= time) {
-				mParticles.erase(it++);
-			} else {
-				it++;
+			if (p->active && p->expire < time) {
+				p->active = false;
 			}
-		}
 
-		if (mLastGenTime + mGenPeriod <= time) {
-			mLastGenTime = time;
+			if (!p->active && generated < mGenLimit && mGenTime + mGenWait <= time) {
+				generated ++;
 
-			for (int i = 0; i < mGenNumber; ++i) {
-				Particle p;
-				initParticle(&p);
-				mParticles.push_back(p);
-			}
-		}
-	}
+				p->initTime = time;
+				p->expire = p->initTime + mLifetime + mLifetimeSpread * ((rand() % 1000) / 1000.0f - 0.5f);
 
-	// ------------------------------------------------------------------
-	void Particles::initParticle(Particle* p)
-	{
-		p->mInitTime = Timer::inst().getTime();
-		p->mExpire = p->mInitTime + mLifetime + mLifetimeSpread * ((rand() % 1000) / 1000.0f - 0.5f);
-
-		p->mPos.setX(mEmitterPos.getX() + mEmitterSpread.getX() * ((rand() % 1000) / 1000.0f) - 0.5f);
-		p->mPos.setY(mEmitterPos.getY() + mEmitterSpread.getY() * ((rand() % 1000) / 1000.0f) - 0.5f);
+				p->initX = mEmitterPos.getX() + mEmitterSpread.getX() * ((rand() % 1000) / 1000.0f - 0.5f);
+				p->initY = mEmitterPos.getY() + mEmitterSpread.getY() * ((rand() % 1000) / 1000.0f - 0.5f);
 		
-		p->mVel.setX(mVelocity.getX() + mVelocitySpread.getX() * ((rand() % 1000) / 1000.0f) - 0.5f);
-		p->mVel.setY(mVelocity.getY() + mVelocitySpread.getY() * ((rand() % 1000) / 1000.0f) - 0.5f);
-	}
+				p->velX = mVelocity.getX() + mVelocitySpread.getX() * ((rand() % 1000) / 1000.0f - 0.5f);
+				p->velY = mVelocity.getY() + mVelocitySpread.getY() * ((rand() % 1000) / 1000.0f - 0.5f);
 
-
-	// ------------------------------------------------------------------
-	std::pair<Particles::tGradientIter, Particles::tGradientIter> Particles::getGradientStops(float f)
-	{
-		for (tGradientIter it = mGradient.begin(); it != mGradient.end(); ++it) {
-			tGradientIter jt = it;
-			if (++jt == mGradient.end()) {
-				break;
-			}
-
-			if (it->first <= f && f <= jt->first) {
-				return std::make_pair(it, jt);
+				p->active = true;
 			}
 		}
 
-		return std::make_pair(mGradient.begin(), mGradient.begin());
+		if (mGenTime + mGenWait <= time) {
+			mGenTime = time;
+		}
 	}
-	
+		
 	// ------------------------------------------------------------------
 	luaNewMethod(Particles, new)
 	{

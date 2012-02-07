@@ -26,6 +26,7 @@ namespace nEngine {
 			PostMessage(handle, WM_QUIT, NULL, NULL);
 			return 0;
 		}
+
 		if (msg == WM_PAINT) {
 			PostMessage(handle, NENGINE_RELOAD, NULL, NULL);
 			return 0;
@@ -291,8 +292,8 @@ namespace nEngine {
 			throw Error ("Glew initialisation failed: " + std::string((char*)glewGetErrorString(err)));
 		}
 		
-		if (!glewGetExtension("GL_ARB_fragment_program") || !glewGetExtension("GL_ARB_vertex_program")) {
-			throw Error ("OpenGL ARB vertex and fragment shaders are required!");
+		if (!glewIsSupported("GL_VERSION_2_0")) {
+			throw Error ("Opengl 2.0 is required!");
 		}
 
 		// Clear screen

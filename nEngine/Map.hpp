@@ -112,9 +112,12 @@ namespace nEngine {
 		
 		/**
 			Get the size of the map
-			@return			Vec2 containing size (Vec2(mSize, mSize))
+			@return			Size of the map (width & height)
 		*/
-        NAPI Vec2 getSize ();
+        NAPI int getSize ()
+		{
+			return mSize;
+		}
 
 		/**
 			Get a reference to a certain field type

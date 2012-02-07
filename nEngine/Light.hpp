@@ -87,6 +87,30 @@ namespace nEngine {
 
 		/// OpenGL id of the light
 		int mGLID;
+
+	public:
+
+		/**
+			Set the ambient color
+			@param intensity		Ambient intensity
+		*/
+		NAPI static void setAmbient(float intensity) 
+		{
+			sAmbient = intensity;
+		}
+
+		/**
+			Return the ambient color
+			@return			Color
+		*/
+		NAPI static float getAmbient()
+		{
+			return sAmbient;
+		}
+	private:
+
+		/// Ambient light
+		NAPI static float sAmbient;
 	};
 
 	bool luaRegisterLight(lua_State* L);

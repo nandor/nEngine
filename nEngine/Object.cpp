@@ -14,8 +14,8 @@
 
 namespace nEngine {
 	// ------------------------------------------------------------------
-	Object::Object (const std::string& id, const std::string& obj)
-		 :SceneNode(id, "Object"),
+	Object::Object (const std::string& id, const std::string& obj, const std::string& type)
+		 :SceneNode(id, type),
 		  mDrawOn(0, 0),
 		  mPos(0, 0),
 		  mIsMoving(false)
@@ -90,8 +90,9 @@ namespace nEngine {
 
 				if (newID != mCurrentAnimation.getID()) {
 					mCurrentAnimation = *script->getAnimation("move_" + dir);
-					mCurrentAnimation.run(0.0f);
 				}
+
+				mCurrentAnimation.run(0.0f);
 
 				mTile = target;
 
@@ -107,7 +108,6 @@ namespace nEngine {
 	void Object::setIdle()
 	{
 		mIsMoving = false;
-		mCurrentAnimation = *getScript()->getAnimation("idle");
 		mCurrentAnimation.run(-1.0f);
 
 		mMoveQueue.clear();

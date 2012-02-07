@@ -21,7 +21,9 @@
 #include "nGame.hpp"
 
 nGame::nGame() 
-		:Application()
+		:Application(),
+		 mExamine(""),
+		 mSelectedNPC(NULL)
 {
 }
 	
@@ -47,6 +49,12 @@ void nGame::onSceneInit()
 // ------------------------------------------------------------------
 void nGame::initUI()
 {
+	GUILabel* examine = new GUILabel("examineText");
+	examine->setFont("gui12");
+	examine->setText("Examine: ");
+	examine->setTextColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
+	GUI::inst().add(examine);
+
 	GUIButton* newButton = new GUIButton("newButton");
 	newButton->setAlignment(GUI_ALIGN_LEFT, GUI_ALIGN_BOTTOM);
 	newButton->setPosition(Vec2(50, 220));
@@ -218,15 +226,33 @@ void nGame::onSaveClick(GUIEvent& evt)
 }
 	
 // ------------------------------------------------------------------
-void nGame::onLeftClick(int x, int y)
+void nGame::onLeftClick(int mouseX, int mouseY)
 {
-	Vec2 tilePos = Scene::inst().getTileAt(x, y);
+	Character* character = (Character*)Scene::inst().getNode("character");	
 	Map* map = Scene::inst().getMap();
-	Character* character = (Character*)Scene::inst().getNode("character");
 
 	if (map == NULL) {
 		return;
 	}
+	
+	SceneNode* selected = Scene::inst().selectNode(Vec2(mouseX, mouseY));
+	
+	if (selected != NULL && selected->getType() == "NPC") {
+		if (mSelectedNPC) {
+			mSelectedNPC->setSelection(false);
+		}
+
+		mSelectedNPC = (NPC*)selected;
+		mSelectedNPC->setSelection(true);
+		return;
+	} else {
+		if (mSelectedNPC) {
+			mSelectedNPC->setSelection(false);
+			mSelectedNPC = NULL;
+		}
+	}
+
+	Vec2 tilePos = Scene::inst().getTileAt(mouseX, mouseY);
 
 	if (map->hasTile (tilePos)) {
 		Tile* tile = map->getTile(tilePos);
@@ -243,13 +269,40 @@ void nGame::onLeftClick(int x, int y)
 }
 	
 // ------------------------------------------------------------------
+void nGame::beginChat()
+{
+	if (mSelectedNPC == NULL) {
+		return;
+	}
+}
+	
+// ------------------------------------------------------------------
 void nGame::onKeyUp (int keyCode, char charCode)
 {
 	Application::onKeyUp(keyCode, charCode);
+
+	switch (charCode) {
+	case 'T': case 't':
+		beginChat();
+		break;
+	}
 }
 	
 // ------------------------------------------------------------------
 void nGame::onMouseUp (int mouseX, int mouseY)
 {
 
+}
+
+// ------------------------------------------------------------------
+void nGame::onMouseMove (int mouseX, int mouseY)
+{
+	SceneNode* selected = Scene::inst().selectNode(Vec2(mouseX, mouseY));
+
+	mExamine = "";
+	if (selected != NULL) {
+		mExamine = selected->getID();
+	}
+
+	((GUILabel*)GUI::inst().get("examineText"))->setText("Examine: " + mExamine);
 }

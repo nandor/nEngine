@@ -18,7 +18,6 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	Scene::Scene()
 		:mTileSize(120, 60),
-		 mNextHandle(0),
 		 mDrawMode(SCENE_DRAW_OBJECTS)
 	{
 		mCamera = NULL;
@@ -43,6 +42,7 @@ namespace nEngine {
 	void Scene::draw()
 	{	
 		glPushMatrix();
+		glLoadIdentity();
 
 		if (mCamera) {
 			mCamera->focus();
@@ -51,6 +51,8 @@ namespace nEngine {
 		if (!mMap) {	
 			return;
 		} else {
+			glInitNames();
+			
 			mMap->draw();
 			for (tNodeIter it = mNodes.begin(); it != mNodes.end(); ++it) {
 				if (onScreen(it->second->getPosition())) {
@@ -62,6 +64,24 @@ namespace nEngine {
 		glPopMatrix();
 	}
 	
+	// ------------------------------------------------------------------
+	SceneNode* Scene::selectNode(Vec2& pos)
+	{
+		if (!mCamera) {
+			return NULL;
+		}
+
+		pos += mCamera->getOffset();
+
+		
+		for (tNodeIter it = mNodes.begin(); it != mNodes.end(); ++it) {
+			if (onScreen(it->second->getPosition()) && it->second->intersects(pos)) {
+				return it->second;
+			}
+		}		
+
+		return NULL;
+	}
 
 	// ------------------------------------------------------------------
 	void Scene::update()
@@ -86,9 +106,6 @@ namespace nEngine {
 			throw Error("Scene", "Node '" + c->getID() + "' already exists!");
 		}
 		
-		unsigned handle = mNextHandle++;
-		c->setHandle(handle);
-		mHandleToId[handle] = c->getID();
 		mNodes.insert(std::make_pair(c->getID(), c));
 		return *this;
 	}

@@ -156,6 +156,7 @@ namespace nEngine {
 	void Map::draw()
 	{
 		Shader::useProgram("tile");
+		Shader::setUniformf("ambient", Light::getAmbient());
 
 		Vec2 off = Scene::inst().getCameraOffset(), screenSize = getScreenSize(), tileSize(TILE_WIDTH, TILE_HEIGHT);
 	
@@ -164,8 +165,6 @@ namespace nEngine {
 		
 		int xbeg = std::max(0, std::min((int)(off.getX() / 2 - off.getY() - screenSize.getY()) / (int)tileSize.getY() - 2, mSize - 1));
 		int xend = std::max(0, std::min((int)((off.getX() + screenSize.getX()) / 2 - off.getY()) / (int)tileSize.getY() + 2, mSize - 1));
-		
-		glColor3f (1.0f, 1.0f, 1.0f);
 		
 		for (int x = xend; x >= xbeg; --x) {
 			for (int y = ybeg; y <= yend; ++y) {
@@ -178,20 +177,18 @@ namespace nEngine {
 				Image* img =  Resources::inst().require<Image>(f.mImage);
 
 				int isExplored = 2;
-				int width = img->getWidth(), height = img->getHeight();
-				int light = t->getLight();
+				int width = img->getWidth(), height = img->getHeight() + 1;
 
-				Shader::setUniformi("lights", 1, &light);
-				Shader::setUniformi("tileX", 1, &trans_x);				
-				Shader::setUniformi("tileY", 1, &trans_y);
-				
-				
+				Shader::setUniformi("lights", t->getLight());
+				Shader::setUniformf("tileX", trans_x);				
+				Shader::setUniformf("tileY", trans_y);
+
 				img->bind();
-				glBegin (GL_TRIANGLE_STRIP);
+				glBegin (GL_QUADS);
 					glTexCoord2f(0.0f, 0.0f); glVertex3i (trans_x, trans_y + 60 - height, trans_z);
 					glTexCoord2f(1.0f, 0.0f); glVertex3i (trans_x + width, trans_y + 60 - height, trans_z);
-					glTexCoord2f(0.0f, 1.0f); glVertex3i (trans_x, trans_y + 60, trans_z);
 					glTexCoord2f(1.0f, 1.0f); glVertex3i (trans_x + width, trans_y + 60, trans_z);
+					glTexCoord2f(0.0f, 1.0f); glVertex3i (trans_x, trans_y + 60, trans_z);
 				glEnd ();
 			}
 		}
@@ -200,6 +197,7 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	void Map::buildLightMap(std::map<std::string, Light*>& lights)
 	{
+		int h = getMaxHeight(8, 10, 15, 10);
 		typedef std::map<std::string, Light*>::iterator iter;
 		
 		for (int i = 0; i < mSize * mSize; ++i) {
@@ -213,7 +211,7 @@ namespace nEngine {
 			int ix = pos.getX(), iy = pos.getY();
 			int height = mData[ix * mSize + iy]->getHeight();
 
-			int A = std::ceilf(l->getRange()) + 2;
+			int A = std::ceilf(l->getRange()) + 3;
 			
 			for (int x = std::max(0, ix - A); x < std::min(mSize, ix + A); ++x) {
 				for (int y = std::max(0, iy - A); y < std::min(mSize, iy + A); ++y) {
@@ -241,7 +239,7 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	int Map::getMaxHeight(int x0, int y0, int x1, int y1)
 	{
-		int maxHeight = getHeight(x1, y1);
+		int maxHeight = std::numeric_limits<int>::min();
 		int dx = std::abs(x1 - x0), dy = std::abs(y1 - y0);
 
 		int sx = (x0 < x1) ? 1 : -1;
@@ -249,8 +247,13 @@ namespace nEngine {
 
 		int error = dx - dy;
 
-		while (x0 != x1 && y0 != y1) {
+		while (true) {
 			maxHeight = std::max(maxHeight, getHeight(x0, y0));
+
+			if (x0 == x1 && y0 == y1) {
+				break;
+			}
+
 			int err2 = 2 * error;
 			
 			if (err2 > -dy) {
@@ -292,12 +295,6 @@ namespace nEngine {
 	bool Map::hasTile (int x, int y)
 	{
 		return 0 <= x && x < mSize && 0 <= y && y < mSize;
-	}
-	
-	// ------------------------------------------------------------------
-	Vec2 Map::getSize ()
-	{
-		return Vec2(mSize, mSize);
 	}
 		
 	// ------------------------------------------------------------------
@@ -367,7 +364,7 @@ namespace nEngine {
 	{
 		Map* v = *(Map**)luaGetInstance(L, 1, "Map");
 		
-		luaInstance(L, Vec2, new Vec2(v->getSize()));
+		lua_pushnumber(L, v->getSize());
 		return 1;
 	}
 

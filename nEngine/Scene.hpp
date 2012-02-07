@@ -134,11 +134,21 @@ namespace nEngine {
 			@param id					Name of the id
 		*/
 		NAPI Scene& removeLight(const std::string& id);
+		
+		/**
+			Return the name of the selected object
+			@param pos					Position of the object
+			@return						Pointer to the object
+		*/
+		NAPI SceneNode* selectNode(Vec2& pos);
 
 	public:
 
 		/// Number of available lights
 		static const int sNumLights = 8;
+
+		/// Max number of selection hits
+		static const int sNumHits = 64;
 
 	private:
 
@@ -170,15 +180,12 @@ namespace nEngine {
 		
 		/// Iterator for the map containing the objects
 		typedef std::map<std::string, SceneNode*>::iterator tNodeIter;
-
-		/// Used for generating OpenGL item ids
-		unsigned mNextHandle;
-	
+			
 		/// Rendering mode
 		unsigned mDrawMode;
-
-		/// Map to convert OpenGL id to a std::string in O(log N) time
-		std::map<unsigned, std::string> mHandleToId;
+		
+		/// Selected node
+		SceneNode* mSelected;
 
 		/// map containing lights
 		std::map<std::string, Light*> mLights;

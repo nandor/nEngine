@@ -173,13 +173,7 @@ namespace nEngine {
 		std::vector<Vec2> vec;
 		for (int i = 0; i < mNumDir; ++i) {
 			Vec2 pos = Vec2(mSx + dx[i], mSy + dy[i]);
-			if (!mMap->hasTile(pos.getX(), pos.getY())) {
-				continue;
-			}
-
-			Tile* tile = mMap->getTile(pos);
-			
-			if (tile->isBlocked() || Scene::inst().getNodeAt(pos)) {
+			if (!mMap->hasTile(pos.getX(), pos.getY()) || mMap->isBlocked(pos.getX(), pos.getY())) {
 				continue;
 			}
 

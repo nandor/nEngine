@@ -15,7 +15,7 @@ using namespace nEngine;
 
 // ------------------------------------------------------------------
 Character::Character(const std::string& id)
-	:Object(id, "pete")
+	:Object(id, "pete", "Character")
 {	 
 	this->setHighlightRange(4);
 	this->setHightlighted(true);
@@ -30,12 +30,20 @@ Character::~Character()
 // ------------------------------------------------------------------
 void Character::draw ()
 {
-	Vec2 pt = Scene::inst().getMap()->getSize();
-	int z = (pt.getX() - mDrawOn.getX() + mDrawOn.getY()) * pt.getX();
+	int mapSize = Scene::inst().getMap()->getSize();
+	Tile* t = Scene::inst().getMap()->getTile(mTile);
+	
+	int z = (int)(mapSize - mDrawOn.getX() + mDrawOn.getY()) * mapSize;
 
 	glPushMatrix();
 	glTranslatef(mPos.getX(), mPos.getY() + 30, z) ;
-	
+
+	Shader::useProgram("character");
+	Shader::setUniformf("uAmbient", Light::getAmbient());
+	Shader::setUniformf("uPosX", mPos.getX());
+	Shader::setUniformf("uPosY", mPos.getY());
+	Shader::setUniformi("uLight", t->getLight());
+
 	mCurrentAnimation.draw();
 
 	glPopMatrix();
@@ -57,7 +65,7 @@ void Character::update()
 luaNewMethod(Character, init)
 {
 	Character* c = new Character("character");
-	c->setTile(Vec2(2, 2));
+	c->setTile(Vec2(5, 5));
 	Scene::inst().addNode(c);
 	return 0;
 }

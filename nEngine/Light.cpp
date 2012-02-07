@@ -10,6 +10,8 @@
 #include "Light.hpp"
 
 namespace nEngine {
+	float Light::sAmbient = 0.3f;
+
 	// ------------------------------------------------------------------
 	Light::Light(const std::string& id)
 		:mID(id)
@@ -84,6 +86,13 @@ namespace nEngine {
 	{
 		return 0;
 	}
+	
+	// ------------------------------------------------------------------
+	luaNewMethod(Light, setAmbient)
+	{
+		Light::setAmbient(luaL_checknumber(L, 1));
+		return 0;
+	}
 
 	// ------------------------------------------------------------------
 	luaBeginMeta(Light)
@@ -93,6 +102,7 @@ namespace nEngine {
 
 	luaBeginMethods(Light)
 		luaMethod(Light, new)
+		luaMethod(Light, setAmbient)
 	luaEndMethods()
 
 	// ------------------------------------------------------------------

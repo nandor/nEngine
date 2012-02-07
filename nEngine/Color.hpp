@@ -28,22 +28,22 @@ namespace nEngine {
 		NAPI void glUse();
 		NAPI float* getVec();
 
-		NAPI float getR() 
+		NAPI float getR() const 
 		{
 			return mV[0];
 		}
 
-		NAPI float getG()
+		NAPI float getG() const 
 		{
 			return mV[1];
 		}
 
-		NAPI float getB()
+		NAPI float getB() const 
 		{
 			return mV[2];
 		}
 
-		NAPI float getA()
+		NAPI float getA() const
 		{
 			return mV[3];
 		}

@@ -26,7 +26,7 @@ namespace nEngine {
 			@param id			ID of the object
 			@param script		Object Script
 		*/
-        NAPI Object(const std::string& id, const std::string& script);
+        NAPI Object(const std::string& id, const std::string& script, const std::string& type);
         
 		/**
 			Destroy the object

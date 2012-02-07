@@ -46,7 +46,7 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	void Timer::frameEnd()
 	{
-		if (mLastFrameTime >= 10000.0f) {
+		if (mLastFrameTime >= 1000.0f) {
 			mLastFrameTime = getTime();
 			mNumFrames = 0;
 		}

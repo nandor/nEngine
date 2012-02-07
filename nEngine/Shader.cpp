@@ -21,31 +21,31 @@ namespace nEngine {
 	Shader::Shader(const std::string& id)
 		:Resource(id, RESOURCE_SHADER)
 	{
-		mProgramId = glCreateProgramObjectARB();
+		mProgramId = glCreateProgram();
 	}
 
 	// ------------------------------------------------------------------
 	Shader::~Shader()
 	{
 		for (std::vector<std::pair<std::string, unsigned> >::iterator it = mShaders.begin(); it != mShaders.end(); ++it) {
-			glDetachObjectARB(mProgramId, it->second);
-			glDeleteObjectARB(it->second);
+			glDetachShader(mProgramId, it->second);
+			glDeleteShader(it->second);
 		}
 
-		glDeleteObjectARB(mProgramId);
+		glDeleteProgram(mProgramId);
 	}
 
 
 	// ------------------------------------------------------------------
 	void Shader::load(const std::string& fileName)
 	{
-		GLhandleARB id = NULL;
+		GLuint id = NULL;
 		if (std::regex_match(fileName, fragRegex)) {
-			id = glCreateShaderObjectARB(GL_FRAGMENT_SHADER);
+			id = glCreateShader(GL_FRAGMENT_SHADER);
 		}
 
 		if (std::regex_match(fileName, vertRegex)) {
-			id = glCreateShaderObjectARB(GL_VERTEX_SHADER);
+			id = glCreateShader(GL_VERTEX_SHADER);
 		}
 		
 		mShaders.push_back(std::make_pair(fileName, id));
@@ -61,10 +61,10 @@ namespace nEngine {
 		}
 
 		uint8* data = (uint8*)file->getData();
-		glShaderSourceARB(id, 1, (const GLchar**)&data, NULL);
-		glCompileShaderARB(id);
+		glShaderSource(id, 1, (const GLchar**)&data, NULL);
+		glCompileShader(id);
 
-		glAttachObjectARB(mProgramId, id);
+		glAttachShader(mProgramId, id);
 
 		int logSize = 0, status;
 		glGetShaderiv(id, GL_COMPILE_STATUS, &status);
@@ -76,7 +76,7 @@ namespace nEngine {
 				int length  = 0;
 				char *infoLog = new char[logSize];
 
-				glGetInfoLogARB(id, logSize, &length, infoLog);
+				glGetShaderInfoLog(id, logSize, &length, infoLog);
 
 				if (strlen (infoLog) > 0) {
 					throw Error ("Shader", getID(), "[OpenGL]" + std::string(infoLog));
@@ -102,7 +102,7 @@ namespace nEngine {
 				int length  = 0;
 				char *infoLog = new char[logSize];
 
-				glGetInfoLogARB(mProgramId, logSize, &length, infoLog);
+				glGetProgramInfoLog(mProgramId, logSize, &length, infoLog);
 
 				if (strlen (infoLog) > 0) {
 					throw Error ("Shader", getID(), "[OpenGL]" + std::string(infoLog));
@@ -127,28 +127,41 @@ namespace nEngine {
 	void Shader::setUniformf (const char*  id, int length, float* value)
 	{
 		GLint location = glGetUniformLocation(currentProgram, id);
-		glUniform1fvARB(location, length, value);
+		glUniform1fv(location, length, value);
 	}
-
+	
+	// ------------------------------------------------------------------
+	void Shader::setUniformf (const char* id, float value)
+	{
+		GLint location = glGetUniformLocation(currentProgram, id);
+		glUniform1f(location, value);
+	}
+	
+	// ------------------------------------------------------------------
+	void Shader::setUniformi (const char* id, int value)
+	{
+		GLint location = glGetUniformLocation(currentProgram, id);
+		glUniform1i(location, value);
+	}
 	// ------------------------------------------------------------------
 	void Shader::setUniformi (const char*  id, int length, int* value)
 	{
 		GLint location = glGetUniformLocation(currentProgram, id);
-		glUniform1ivARB(location, length, value);
+		glUniform1iv(location, length, value);
 	}
 	
 	// ------------------------------------------------------------------
 	void Shader::setUniformColor (const char*  id, Color& c)
 	{
 		GLint location = glGetUniformLocation(currentProgram, id);
-		glUniform4fvARB(location, 1, c.getVec());
+		glUniform4fv(location, 4, c.getVec());
 	}
 
 	// ------------------------------------------------------------------
 	void Shader::setUniformVec2 (const char*  id, Vec2& v)
 	{
 		GLint location = glGetUniformLocation(currentProgram, id);
-		glUniform2fvARB(location, 1, v.getVec());
+		glUniform2fv(location, 1, v.getVec());
 	}
 
 	// ------------------------------------------------------------------
@@ -159,7 +172,7 @@ namespace nEngine {
 		if (!sh) {
 			throw Error ("Shader", name, "Shader does not exist");
 		}
-		glUseProgramObjectARB(sh->getProgramId());
+		glUseProgram(sh->getProgramId());
 		shaderStack.push_back(sh->getProgramId());
 		currentProgram = sh->getProgramId();
 	}
@@ -176,6 +189,13 @@ namespace nEngine {
 			currentProgram = *(shaderStack.end() - 1);
 		}
 	}
+	
+
+	// ------------------------------------------------------------------
+	int Shader::getAttribute(const char* name)
+	{
+		return glGetAttribLocation(currentProgram, name);
+	}
 
 	// ------------------------------------------------------------------
 	void Shader::clearStack()
@@ -183,6 +203,8 @@ namespace nEngine {
 		shaderStack.clear();
 	}
 	
+
+	// ------------------------------------------------------------------
 	luaNewMethod(Shader, new)
 	{
 		std::string id(luaL_checkstring(L, 1));
@@ -192,7 +214,9 @@ namespace nEngine {
 		luaInstance(L, Shader, l);
 		return 1;
 	}
+	
 
+	// ------------------------------------------------------------------
 	luaNewMethod(Shader, load)
 	{
 		Shader** l = (Shader**)luaGetInstance(L, 1, "Shader");
@@ -201,7 +225,9 @@ namespace nEngine {
 
 		return 0;
 	}
+	
 
+	// ------------------------------------------------------------------
 	luaNewMethod(Shader, compile)
 	{
 		Shader** l = (Shader**)luaGetInstance(L, 1, "Shader");

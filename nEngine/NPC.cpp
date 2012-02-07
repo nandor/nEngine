@@ -15,14 +15,18 @@ namespace nEngine {
 	
 	// ------------------------------------------------------------------
 	NPC::NPC(const std::string& id, const std::string& base)
-		:Object(id, base),
+		:Object(id, base, "NPC"),
 		 mWander(false),
-		 mWanderRadius(0)
+		 mWanderRadius(0),
+		 mSelected(false)
 	{
 		ObjectScript* script = getScript();
 		mName = script->getValue <std::string> ("name");
-		mWanderRadius = script->getValue<int> ("wanderRadius");
 		mWander = script->getValue<bool> ("wander");
+
+		if (mWander) {
+			mWanderRadius = script->getValue<int> ("wanderRadius");
+		}
 	}
 	
 	
@@ -47,17 +51,23 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	void NPC::draw()
 	{
-		Vec2 pt = Scene::inst().getMap()->getSize();
+		int mapSize = Scene::inst().getMap()->getSize();	
+		int z = (int)(mapSize - mDrawOn.getX() + mDrawOn.getY()) * mapSize;
 
 		glPushMatrix();
-		glTranslatef(mPos.getX(), mPos.getY() + 30, (pt.getX() - mDrawOn.getX()) * pt.getY() + mDrawOn.getY()) ;
+		glTranslatef(mPos.getX(), mPos.getY() + 30, z) ;
 		
+		Shader::useProgram("npc");
+		Shader::setUniformi("uSelected", mSelected);
+		Shader::setUniformi("uWidth", mCurrentAnimation.getFrameWidth());
+		Shader::setUniformi("uHeight", mCurrentAnimation.getFrameHeight());
+
 		mCurrentAnimation.draw();
 
 		// Draw the health bar
 		if (mMaxHealth > mHealth && mDamageable) {
 			glDisable(GL_DEPTH_TEST);
-			Shader::useProgram("Color");
+			Shader::useProgram("color");
 			
 			int height = mCurrentAnimation.getFrameHeight();
 
@@ -84,10 +94,28 @@ namespace nEngine {
 		glPopMatrix();
 	}
 	
+	// ------------------------------------------------------------------
 	void NPC::drawMarker()
 	{
-
 	}
+
+	// ------------------------------------------------------------------
+	void NPC::setSpawn(Vec2& spawn)
+	{
+		mSpawn = spawn;
+		setTile(mSpawn);
+	}
+
+	// ------------------------------------------------------------------
+	bool NPC::intersects(Vec2& v)
+	{
+		int height = mCurrentAnimation.getFrameHeight();
+		int width = mCurrentAnimation.getFrameWidth();
+
+		return mPos + Vec2(0, - height) < v && v < mPos + Vec2(width, 0);
+	}
+
+	// ------------------------------------------------------------------
 	luaNewMethod(NPC, new)
 	{
 		NPC* npc = new NPC(std::string(luaL_checkstring(L, 1)), std::string(luaL_checkstring(L, 2)));
@@ -95,14 +123,34 @@ namespace nEngine {
 		return 1;
 	}
 
-	luaNewMethod(NPC, setSpawn)
+	// ------------------------------------------------------------------
+	luaNewMethod(NPC, __setter)
 	{
-		
+		NPC* npc = *(NPC**)luaGetInstance(L, 1, "NPC");
+		std::string field(luaL_checkstring(L, 2));
+
+		if (field == "spawn") {
+			npc->setSpawn(**(Vec2**)luaGetInstance(L, 3, "Vec2"));
+			return 0;
+		}
+
+		if (field == "wander") {
+			npc->setWander(lua_toboolean(L, 3));
+			return 0;
+		}
+
+		if (field == "wanderRadius") {
+			npc->setWanderRadius(luaL_checknumber(L, 3));
+			return 0;
+		}
+
 		return 0;
 	}
+	
 
+	// ------------------------------------------------------------------
 	luaBeginMeta(NPC)
-		luaMethod(NPC, setSpawn)
+		luaMethod(NPC, __setter)
 	luaEndMeta();
 
 	luaBeginMethods(NPC)
