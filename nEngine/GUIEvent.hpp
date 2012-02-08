@@ -11,7 +11,6 @@
 
 #include "types.hpp"
 #include "Vec2.hpp"
-#include "Color.hpp"
 
 namespace nEngine {
 

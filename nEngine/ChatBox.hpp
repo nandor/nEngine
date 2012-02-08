@@ -10,13 +10,17 @@
 #define CHATBOX_HPP
 
 #include "types.hpp"
-#include "ChatAction.hpp"
-#include "ChatMessage.hpp"
-#include "Chat.hpp"
 #include "Singleton.hpp"
-#include "GUI.hpp"
 
 namespace nEngine {
+	// Forward declarations
+	class ChatMessage;
+	class GUILabel;
+	class GUIPanel;
+
+	/**
+		Display a chatbox
+	*/
 	class ChatBox : public Singleton<ChatBox> {
 	public:
 		NAPI ChatBox();

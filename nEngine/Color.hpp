@@ -11,7 +11,6 @@
 
 #include "types.hpp"
 #include "Lua.hpp"
-
 namespace nEngine {
 	class Color {
 	public:

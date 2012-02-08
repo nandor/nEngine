@@ -7,8 +7,15 @@
 */
 
 #include "nHeaders.hpp"
+#include "ChatAction.hpp"
+#include "ChatMessage.hpp"
+#include "Chat.hpp"
+#include "GUI.hpp"
 #include "ChatBox.hpp"
 #include "GUIButton.hpp"
+#include "GUILabel.hpp"
+#include "GUIButton.hpp"
+#include "GUIPanel.hpp"
 
 namespace nEngine {
 	template<> ChatBox* ChatBox::Singleton<ChatBox>::__inst = NULL;

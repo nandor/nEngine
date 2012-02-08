@@ -8,12 +8,14 @@
 */
 
 #include "nEngine/nHeaders.hpp"
+
+#include "nEngine/GUI.hpp"
+#include "nEngine/GUIPanel.hpp"
+#include "nEngine/GUILabel.hpp"
+#include "nEngine/GUISlider.hpp"
 #include "nEngine/GUIButton.hpp"
 #include "nEngine/GUICheckbox.hpp"
 #include "nEngine/GUIComboBox.hpp"
-#include "nEngine/GUISlider.hpp"
-#include "nEngine/GUILabel.hpp"
-#include "nEngine/GUI.hpp"
 
 #include "nEngine/ChatBox.hpp"
 #include "nEngine/SoundManager.hpp"

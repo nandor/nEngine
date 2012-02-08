@@ -9,7 +9,6 @@
 #ifndef GUIBUTTON_HPP
 #define GUIBUTTON_HPP
 
-#include "Singleton.hpp"
 #include "GUIElement.hpp"
 
 namespace nEngine {

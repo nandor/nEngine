@@ -38,13 +38,17 @@ namespace nEngine {
         void keyPressed(char key);
         void specialKeyPressed(int key);
 
-        bool isVisible() {
+        bool isVisible() 
+		{
 			return visible;
 		}
+
         void setVisible(bool _visible);
 
         static void luaRegister(lua_State* L);
+
     private:
+
         void pushString(int type, std::string str);
 
         bool visible;

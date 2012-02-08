@@ -10,15 +10,7 @@
 #define GUI_HPP
 
 #include "Singleton.hpp"
-#include "Shader.hpp"
-#include "Util.hpp"
-#include "Font.hpp"
-
-// GUI elements
 #include "GUIElement.hpp"
-#include "GUIPanel.hpp"
-#include "GUILabel.hpp"
-
 
 namespace nEngine {
 	class GUI : public Singleton<GUI>, public GUIElement {
@@ -58,6 +50,7 @@ namespace nEngine {
 		{
 			return mMousePos;
 		}
+
 	private:
 		/// Add an element to the global array
 		bool addToGlobal(GUIElement* elem);

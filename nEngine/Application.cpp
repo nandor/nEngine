@@ -7,11 +7,18 @@
 */
 
 #include "nHeaders.hpp"
-#include "Application.hpp"
-#include "Console.hpp"
-#include "ChatBox.hpp"
 #include "GUI.hpp"
+#include "Lua.hpp"
+#include "Map.hpp"
+#include "Tile.hpp"
+#include "Util.hpp"
+#include "Scene.hpp"
+#include "Timer.hpp"
+#include "Console.hpp"
 #include "SoundManager.hpp"
+#include "ChatBox.hpp"
+
+#include "Application.hpp"
 
 #define NENGINE_DRAW_WAIT (WM_USER + 0x0001)
 #define NENGINE_RELOAD (WM_USER + 0x0002)

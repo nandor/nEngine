@@ -11,6 +11,7 @@
 
 #include "Lua.hpp"
 #include "SceneNode.hpp"
+#include "Color.hpp"
 
 namespace nEngine {
 	class Light {

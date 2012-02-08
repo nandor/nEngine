@@ -10,12 +10,6 @@
 #define APPLICATION_HPP
 
 #include "types.hpp"
-#include "Lua.hpp"
-#include "Map.hpp"
-#include "Tile.hpp"
-#include "Util.hpp"
-#include "Scene.hpp"
-#include "Timer.hpp"
 
 namespace nEngine {
     class Application {

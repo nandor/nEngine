@@ -7,6 +7,9 @@
 */
 #include "nHeaders.hpp"
 #include "GUI.hpp"
+#include "Util.hpp"
+#include "Font.hpp"
+#include "Shader.hpp"
 #include "GUIGLCanvas.hpp"
 
 namespace nEngine {		

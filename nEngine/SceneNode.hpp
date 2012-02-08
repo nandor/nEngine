@@ -10,7 +10,6 @@
 #define SCENENODE_HPP
 
 #include "types.hpp"
-#include "Color.hpp"
 #include "Vec2.hpp"
 #include "Lua.hpp"
 
