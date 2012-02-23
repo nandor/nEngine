@@ -183,7 +183,7 @@ namespace nEngine {
 	}
 
 	// ------------------------------------------------------------------
-	luaNewMethod(Color, new)
+	luaDeclareMethod(Color, new)
 	{
 		Color* c;
 	
@@ -225,7 +225,7 @@ namespace nEngine {
 	}
 
 	// ------------------------------------------------------------------
-	luaNewMethod(Color, __gc)
+	luaDeclareMethod(Color, __gc)
 	{
 		delete *(Color**)luaGetInstance(L, 1, "Color");
 		return 0;

@@ -90,7 +90,7 @@ namespace nEngine {
 	}
 	
 	// ------------------------------------------------------------------
-	luaNewMethod(Camera, new)
+	luaDeclareMethod(Camera, new)
 	{
 		Camera* c = new Camera(luaL_checkstring(L, 1));
 		luaInstance(L, Camera, c);
@@ -98,7 +98,7 @@ namespace nEngine {
 	}
 	
 	// ------------------------------------------------------------------
-	luaNewMethod(Camera, follow)
+	luaDeclareMethod(Camera, follow)
 	{
 		Camera* c = *(Camera**)luaGetInstance(L, 1, "Camera");
 		std::string name(luaL_checkstring(L, 2));

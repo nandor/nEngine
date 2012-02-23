@@ -279,7 +279,7 @@ namespace nEngine {
 	}
 
 	// ------------------------------------------------------------------
-	luaNewMethod(Scene, add)
+	luaDeclareMethod(Scene, add)
 	{
 		SceneNode* node = *(SceneNode**)luaGetInstance(L, 1, "SceneNode");
 		Scene::inst().addNode(node);
@@ -287,7 +287,7 @@ namespace nEngine {
 	}
 	
 	// ------------------------------------------------------------------
-	luaNewMethod(Scene, addLight)
+	luaDeclareMethod(Scene, addLight)
 	{
 		Light* l = *(Light**)luaGetInstance(L, 1, "Light");
 		Scene::inst().addLight(l);
@@ -295,14 +295,14 @@ namespace nEngine {
 	}
 
 	// ------------------------------------------------------------------
-	luaNewMethod(Scene, setCamera)
+	luaDeclareMethod(Scene, setCamera)
 	{
 		Scene::inst().setCamera(std::string(luaL_checkstring(L, 1)));
 		return 0;
 	}
 
 	// ------------------------------------------------------------------
-	luaNewMethod(Scene, get)
+	luaDeclareMethod(Scene, get)
 	{
 		SceneNode* node = Scene::inst().getNode(std::string(luaL_checkstring(L, 1)));
 		luaInstance(L, SceneNode, node);
@@ -310,7 +310,7 @@ namespace nEngine {
 	}
 
 	// ------------------------------------------------------------------
-	luaNewMethod(Scene, setMap)
+	luaDeclareMethod(Scene, setMap)
 	{
 		if (lua_isstring(L, 1)) {
 			std::string mapName(luaL_checkstring(L, 1));

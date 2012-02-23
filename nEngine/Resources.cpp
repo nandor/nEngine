@@ -12,10 +12,9 @@
 #include "Font.hpp"
 #include "Shader.hpp"
 #include "Resources.hpp"
-#include "JSONObject.hpp"
+#include "DataSource.hpp"
 #include "Console.hpp"
 #include "Map.hpp"
-#include "ObjectScript.hpp"
 using namespace boost::property_tree;
 
 namespace nEngine {
@@ -86,7 +85,7 @@ namespace nEngine {
 		try {
 			std::string packageLocation = "zip://" + File::getRawName(package);
 
-			JSONObject* json = require<JSONObject>(packageLocation + "/header");
+			DataSource* json = require<DataSource>(packageLocation + "/header");
 			std::string packageName = json->getValue<std::string> ("packageName");
 			File::setenv(packageName, packageLocation);
 			
@@ -145,18 +144,10 @@ namespace nEngine {
 			}
 
 			// object
-			boost::optional<ptree&> objects = json->getRoot().get_child_optional("object");
-			if (objects.is_initialized()) {
-				BOOST_FOREACH(ptree::value_type& node, objects.get()) {
-					Resources::inst().addResource(new ObjectScript(node.first, node.second), packageName);
-				}
-			}
-			
-			// particle
-			boost::optional<ptree&> particles = json->getRoot().get_child_optional("particle");
-			if (particles.is_initialized()) {
-				BOOST_FOREACH(ptree::value_type& node, particles.get()) {
-					Resources::inst().addResource(new JSONObject(node.first, node.second), packageName);
+			boost::optional<ptree&> data = json->getRoot().get_child_optional("data");
+			if (data.is_initialized()) {
+				BOOST_FOREACH(ptree::value_type& node, data.get()) {
+					Resources::inst().addResource(new DataSource(node.first, node.second.get_value<std::string>()), packageName);
 				}
 			}
 
@@ -247,7 +238,7 @@ namespace nEngine {
 	}
 	
 	// ------------------------------------------------------------------
-	luaNewMethod(Resources, loadPackage)
+	luaDeclareMethod(Resources, loadPackage)
 	{
 		std::string groupName(luaL_checkstring(L, 1));
 		Resources::inst().loadGroup(groupName);
@@ -255,7 +246,7 @@ namespace nEngine {
 	}
 
 	// ------------------------------------------------------------------
-	luaNewMethod(Resources, unloadGroup)
+	luaDeclareMethod(Resources, unloadGroup)
 	{
 		std::string groupName(luaL_checkstring(L, 1));
 

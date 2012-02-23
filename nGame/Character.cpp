@@ -62,7 +62,7 @@ void Character::update()
 }
 
 // ------------------------------------------------------------------
-luaNewMethod(Character, init)
+luaDeclareMethod(Character, init)
 {
 	Character* c = new Character("character");
 	c->setTile(Vec2(5, 5));

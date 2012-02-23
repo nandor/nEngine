@@ -78,7 +78,7 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	void GUISlider::onMouseDown(GUIEvent& evt)
 	{
-		Vec2 pos = evt.getMousePos() - mComputedPos - Vec2(mSize.getX() * mValue / 100.0f, mSize.getY() / 2);
+		Vec2 pos = evt.getMousePos() - mPos - Vec2(mSize.getX() * mValue / 100.0f, mSize.getY() / 2);
 		if (Vec2(-8, -15) < pos && pos < Vec2(8, 15)) {
 			mSliderDown = true;
 		}
@@ -87,14 +87,14 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	void GUISlider::onMouseMove(GUIEvent& evt)
 	{
-		Vec2 pos = evt.getMousePos() - mComputedPos - Vec2(mSize.getX() * mValue / 100.0f, mSize.getY() / 2);
+		Vec2 pos = evt.getMousePos() - mPos - Vec2(mSize.getX() * mValue / 100.0f, mSize.getY() / 2);
 		if (Vec2(-8, -15) > pos || pos > Vec2(8, 15)) {
 			return;
 		}
 
 		if (mSliderDown) {
-			int x = evt.getMousePos().getX() - mComputedPos.getX();
-			mValue = x * 100.0f / mComputedSize.getX();
+			int x = evt.getMousePos().getX() - mPos.getX();
+			mValue = x * 100.0f / mSize.getX();
 			fireEvent(GUIEvent(GUI_EVENT_CHANGED));
 		}
 	}

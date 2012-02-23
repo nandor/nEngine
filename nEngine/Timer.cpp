@@ -109,14 +109,14 @@ namespace nEngine {
 	}
 
 	// ------------------------------------------------------------------
-	luaNewMethod(Timer, getTime)
+	luaDeclareMethod(Timer, getTime)
 	{
 		lua_pushnumber(L, Timer::inst().getTime());
 		return 1;
 	}
 
 	// ------------------------------------------------------------------
-	luaNewMethod(Timer, queue)
+	luaDeclareMethod(Timer, queue)
 	{
 		if (lua_type(L, 1) != LUA_TFUNCTION) {
 			throw Error("Timer", "Object needs to be a function");

@@ -361,7 +361,6 @@ namespace nEngine {
 	void Application::start ()
 	{	
 		onLuaInit(initLua());
-		luaReadFile("fs://data/lua/lib.lua");
 
 		try {
 			parseCmdLine();

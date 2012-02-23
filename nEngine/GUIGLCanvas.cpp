@@ -34,7 +34,7 @@ namespace nEngine {
 	}
 	
 	// ------------------------------------------------------------------
-	luaNewMethod(GUIGLCanvas, new)
+	luaDeclareMethod(GUIGLCanvas, new)
 	{
 		return 0;
 	}

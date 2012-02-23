@@ -15,7 +15,7 @@
 #include "Timer.hpp"
 #include "Animation.hpp"
 #include "File.hpp"
-#include "ObjectScript.hpp"
+#include "DataSource.hpp"
 #include "SceneNode.hpp"
 
 namespace nEngine {
@@ -82,7 +82,7 @@ namespace nEngine {
 			mHealth = health;
 		}
 
-		NAPI ObjectScript* getScript();
+		NAPI DataSource* getScript();
 
         NAPI virtual Vec2 getPosition();
 

@@ -21,20 +21,27 @@ public:
 	~nGame();
 	
 private:
-	
-	void initUI();
 
-	void onLuaInit(lua_State* L);
+	// Engine events
 	void onSceneInit();
-	void onSettingsClick(GUIEvent& evt);
-	void onCancelClick(GUIEvent& evt);
-	void onSaveClick(GUIEvent& evt);
+	void onLuaInit(lua_State* L);
 	void onLeftClick(int x, int y);
 	void onKeyUp (int keyCode, char charCode);
 	void onMouseUp (int mouseX, int mouseY);
 	void onMouseMove (int mouseX, int mouseY);
 
+private:
+	// GUI events
+	void onSettingsClick(GUIEvent& evt);
+	void onCancelClick(GUIEvent& evt);
+	void onSaveClick(GUIEvent& evt);
+	void onExitClick(GUIEvent& evt);
+	void onVolumeChanged(GUIEvent& evt);
+private:
+	// Helpers
+	void initUI();
 	void beginChat();
+
 private:
 
 	std::string mExamine;

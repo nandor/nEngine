@@ -36,6 +36,8 @@ namespace nEngine
 			case '\t':
 				glCallList(ft->getListBase() + (int)' ');
 				glCallList(ft->getListBase() + (int)' ');
+				glCallList(ft->getListBase() + (int)' ');
+				glCallList(ft->getListBase() + (int)' ');
 				break;
 			default:
 				glCallList(ft->getListBase() + text[i]);

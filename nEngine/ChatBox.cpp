@@ -24,20 +24,20 @@ namespace nEngine {
 	ChatBox::ChatBox()
 	{				
 		panel = new GUIPanel("chatPanel");
-		panel->setSize(Vec2(400, 150));
+		panel->setSize(GUIMetric(400), GUIMetric(150));
 		panel->setAlignment(GUI_ALIGN_CENTER, GUI_ALIGN_BOTTOM);
 		panel->setBackgroundColor(Color(0.17f, 0.06f, 0.47f, 0.8f));
 		
 		lbl = new GUILabel("message");
-		lbl->setSize(Vec2(90, 30), GUI_SIZE_PERCENT);
+		lbl->setSize(GUIMetric(90), GUIMetric(30, GUI_METRIC_PERCENT));
 		lbl->setAlignment(GUI_ALIGN_CENTER, GUI_ALIGN_NONE);
-		lbl->setPosition(Vec2(10, 10));
+		lbl->setPosition(GUIMetric(10), GUIMetric(10));
 		lbl->setTextColor(Color(1.0f, 1.0f, 1.0f));
 		lbl->setText("Hello world!");
 		
 		GUI::inst().add(panel);
 		panel->add(lbl);
-		panel->hide();
+		panel->setVisibility(false);
 	}
 
 
@@ -51,7 +51,7 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	void ChatBox::setChatMessage(ChatMessage* msg)
 	{
-		panel->show();
+		panel->setVisibility(false);
 
 		switch (msg->getType()) {
 		case CHAT_PLAYER:
@@ -65,15 +65,15 @@ namespace nEngine {
 
 				GUIButton* btn = new GUIButton(msg->getID() + "_act" + boost::lexical_cast<std::string>(i));
 
-				btn->setSize(Vec2(90, 25), GUI_SIZE_PERCENT, GUI_SIZE_PIXEL);
-				btn->setPosition(Vec2(0, pos += 30));
+				btn->setSize(GUIMetric(90), GUIMetric(25, GUI_METRIC_PERCENT));
+				btn->setPosition(GUIMetric(0), GUIMetric(pos += 30));
 				btn->setAlignment(GUI_ALIGN_CENTER, GUI_ALIGN_NONE);
 				btn->setCaption(act.getText());
 
 				panel->add(btn);
 			}
 
-			panel->setSize(Vec2(400, 40 + 30 * (msg->getNumActions() + 1)));
+			panel->setSize(GUIMetric(400), GUIMetric(40 + 30 * (msg->getNumActions() + 1)));
 
 			break;
 		}
@@ -87,6 +87,6 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	void ChatBox::hide()
 	{
-		panel->hide();
+		panel->setVisibility(false);
 	}
 };

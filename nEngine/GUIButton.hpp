@@ -40,6 +40,9 @@ namespace nEngine {
 	private:
 		std::string mCaption;
 	};
+
+	bool luaRegisterGUIButton(lua_State* L);
+
 };
 
 #endif /*GUIBUTTON_HPP*/

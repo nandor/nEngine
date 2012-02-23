@@ -7,7 +7,7 @@
 */
 
 #include "nHeaders.hpp"
-#include "JSONObject.hpp"
+#include "DataSource.hpp"
 #include "Particles.hpp"
 #include "Scene.hpp"
 #include "Timer.hpp"
@@ -30,9 +30,10 @@ namespace nEngine {
 		:SceneNode(id, "Particles"),
 		 mData(NULL)
 	{
-		JSONObject* obj = Resources::inst().require<JSONObject> (confID);
+		DataSource* obj = Resources::inst().require<DataSource> (confID);
 		 
 		try {
+
 			mLifetime = obj->getValue<float> ("lifetime");
 			mLifetimeSpread = obj->getValue<float> ("lifetimeSpread");
 
@@ -252,7 +253,7 @@ namespace nEngine {
 	}
 		
 	// ------------------------------------------------------------------
-	luaNewMethod(Particles, new)
+	luaDeclareMethod(Particles, new)
 	{
 		std::string id(luaL_checkstring(L, 1));
 		std::string script(luaL_checkstring(L, 2));

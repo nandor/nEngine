@@ -38,12 +38,6 @@
     <ClInclude Include="Image.hpp">
       <Filter>Resources</Filter>
     </ClInclude>
-    <ClInclude Include="JSONObject.hpp">
-      <Filter>Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjectScript.hpp">
-      <Filter>Resources</Filter>
-    </ClInclude>
     <ClInclude Include="Resource.hpp">
       <Filter>Resources</Filter>
     </ClInclude>
@@ -185,6 +179,18 @@
     <ClInclude Include="Color.hpp">
       <Filter>Other</Filter>
     </ClInclude>
+    <ClInclude Include="DataSource.hpp">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIScriptReader.hpp">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIMetric.hpp">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIStyledText.hpp">
+      <Filter>GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -203,12 +209,6 @@
       <Filter>Resources</Filter>
     </ClCompile>
     <ClCompile Include="Image.cpp">
-      <Filter>Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="JSONObject.cpp">
-      <Filter>Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="ObjectScript.cpp">
       <Filter>Resources</Filter>
     </ClCompile>
     <ClCompile Include="Resource.cpp">
@@ -342,6 +342,18 @@
     </ClCompile>
     <ClCompile Include="Color.cpp">
       <Filter>Other</Filter>
+    </ClCompile>
+    <ClCompile Include="DataSource.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIScriptReader.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIMetric.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIStyledText.cpp">
+      <Filter>GUI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

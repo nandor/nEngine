@@ -84,7 +84,7 @@ namespace nEngine {
 
 	
 	// ------------------------------------------------------------------
-	luaNewMethod(Chat, new) 
+	luaDeclareMethod(Chat, new) 
 	{
 		std::string id (luaL_checkstring(L, 1));
 
@@ -94,7 +94,7 @@ namespace nEngine {
 
 
 	// ------------------------------------------------------------------
-	luaNewMethod(Chat, showMessage)
+	luaDeclareMethod(Chat, showMessage)
 	{
 		Chat* c = *(Chat**)luaGetInstance(L, 1, "Chat");
 

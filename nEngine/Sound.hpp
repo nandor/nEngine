@@ -55,6 +55,15 @@ namespace nEngine {
 		*/
 		NAPI void play();
 
+		/**
+			Play the sound forever!
+		*/
+		NAPI void loop();
+
+		/**
+			Stop the sound from playing
+		*/
+		NAPI void stop();
 	private:
 
 		/// Source id
@@ -66,6 +75,8 @@ namespace nEngine {
 		/// Was the sound started? (started & finished songs are dumped)
 		bool			mStarted;
 	};
+
+	bool luaRegisterSound(lua_State* L);
 };
 
 #endif /*SOUND_HPP*/

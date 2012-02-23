@@ -11,6 +11,7 @@
 
 #include "types.hpp"
 #include "Error.hpp"
+#include "Object.hpp"
 #include "Singleton.hpp"
 #include "Sound.hpp"
 #include "Music.hpp"
@@ -71,6 +72,17 @@ namespace nEngine {
 		*/
 		NAPI int getVolume();
 
+		/**
+			Set the listener position
+			@param vec			Position of the listener
+		*/
+		NAPI void setListenerPosition(Vec2& v);
+
+		/**
+			Set the object to be followed by the listener
+		*/
+		NAPI void setListener(Object* obj);
+
 	private:
 
 		NAPI static const ALCchar* mDeviceName;
@@ -96,6 +108,8 @@ namespace nEngine {
 		/// Maximum volume
 		const float mMaxVolume;
 	};
+
+	bool luaRegisterSoundManager(lua_State* L);
 };
 
 #endif /*SOUNDMANAGER_HPP*/

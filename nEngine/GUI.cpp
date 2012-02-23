@@ -5,12 +5,19 @@
 	This file is part of nEngine.
 	(c) 2011 Licker Nandor
 */
+
 #include "nHeaders.hpp"
-#include "GUI.hpp"
 #include "Util.hpp"
 #include "Font.hpp"
 #include "Shader.hpp"
+#include "Resources.hpp"
+#include "DataSource.hpp"
+
+#include "GUI.hpp"
+#include "GUIPanel.hpp"
+#include "GUIButton.hpp"
 #include "GUIGLCanvas.hpp"
+#include "GUIStyledText.hpp"
 
 namespace nEngine {		
 	template<> GUI* GUI::Singleton<GUI>::__inst = NULL;
@@ -19,8 +26,8 @@ namespace nEngine {
 	GUI::GUI()
 		:GUIElement("")
 	{
-		mComputedPos = mPos = Vec2(0, 0);
-		mComputedSize = mSize = Vec2(getScreenSize());
+		mPos = mPos = Vec2(0, 0);
+		mSize = mSize = Vec2(getScreenSize());
 		mParent = NULL;
 	}		
 	
@@ -81,18 +88,25 @@ namespace nEngine {
 		std::map<std::string, GUIElement*>::const_iterator it = mGlobal.find(id);
 
 		if (it == mGlobal.end()) {
-			return NULL;
+			throw Error("GUI", "Item does not exist: " + id);
 		}
 
 		return it->second;
 	}
 	
 	// ------------------------------------------------------------------
-	luaNewMethod(GUI, add)
+	luaDeclareMethod(GUI, add)
 	{
 		GUIElement* elem = *(GUIElement**)luaGetInstance(L, 1, "GUIElement");
 		GUI::inst().add(elem);
 		return 0;
+	}
+	
+	// ------------------------------------------------------------------
+	luaDeclareMethod(GUI, loadScript)
+	{
+		GUI::inst().loadScript(luaL_checkstring(L, 1));
+		return 1;
 	}
 
 	// ------------------------------------------------------------------
@@ -103,6 +117,7 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	luaBeginMethods(GUI)
 		luaMethod(GUI, add)
+		luaMethod(GUI, loadScript)
 	luaEndMethods()
 	
 	// ------------------------------------------------------------------
@@ -110,8 +125,13 @@ namespace nEngine {
 	{
 		luaClass(L, GUI);
 		
+		luaRegisterGUIEvent(L);
 		luaRegisterGUIElement(L);
+		luaRegisterGUIPanel(L);
 		luaRegisterGUIGLCanvas(L);
+		luaRegisterGUIStyledText(L);
+		luaRegisterGUIButton(L);
+
 		return true;
 	}
 };

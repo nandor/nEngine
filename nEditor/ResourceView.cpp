@@ -95,9 +95,8 @@ void ResourceView::CreateIcons()
 	icons[nEngine::RESOURCE_CHAT] = wxIcon(error_xpm);
 	icons[nEngine::RESOURCE_MAP] = wxIcon(map_xpm);
 	icons[nEngine::RESOURCE_ARCHIVE] = wxIcon(error_xpm);
-	icons[nEngine::RESOURCE_OBJECT] = wxIcon(object_xpm);
 	icons[nEngine::RESOURCE_NPC] = wxIcon(error_xpm);
-	icons[nEngine::RESOURCE_JSON] = wxIcon(json_xpm);
+	icons[nEngine::RESOURCE_DATA] = wxIcon(json_xpm);
 	icons[nEngine::RESOURCE_SOUND] = wxIcon(sound_xpm);
 	icons[RESOURCE_ICON_PACKAGE] = wxIcon(package_xpm);
 

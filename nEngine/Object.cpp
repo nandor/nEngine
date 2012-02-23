@@ -21,7 +21,7 @@ namespace nEngine {
 		  mIsMoving(false)
 	{	
 		mScriptName = obj;
-		ObjectScript* script = getScript();
+		DataSource* script = getScript();
 
 		if (script == NULL) {
 			throw Error ("Object", getID(), "Invalid object script!");
@@ -34,7 +34,7 @@ namespace nEngine {
 		mAnimRun = false;
 		mMoveDir = 0;
 
-		mCurrentAnimation = *script->getAnimation("idle");
+		mCurrentAnimation = script->getAnimation("idle");
 		mCurrentAnimation.run(-1.0f);
 	}
 	
@@ -50,7 +50,7 @@ namespace nEngine {
 		float time = Timer::inst().getTime();
 		float length = mMoveSpeed;
 		
-		ObjectScript* script = getScript();
+		DataSource* script = getScript();
 		
 		if (mAnimRun) {
 			float d = float(time - anim_begin_time) / length;
@@ -89,7 +89,7 @@ namespace nEngine {
 				std::string newID("move_" + dir);
 
 				if (newID != mCurrentAnimation.getID()) {
-					mCurrentAnimation = *script->getAnimation("move_" + dir);
+					mCurrentAnimation = script->getAnimation("move_" + dir);
 				}
 
 				mCurrentAnimation.run(0.0f);
@@ -140,13 +140,13 @@ namespace nEngine {
 
 	
 	// ------------------------------------------------------------------
-	ObjectScript* Object::getScript()
+	DataSource* Object::getScript()
 	{
-		return Resources::inst().require<ObjectScript> (mScriptName);
+		return Resources::inst().require<DataSource> (mScriptName);
 	}
 		
 	// ------------------------------------------------------------------
-	luaNewMethod(Object, __getter)
+	luaDeclareMethod(Object, __getter)
 	{
 		Object* obj = *(Object**)luaGetInstance(L, 1, "Object");
 		std::string field(luaL_checkstring(L, 2));
@@ -155,7 +155,7 @@ namespace nEngine {
 	}
 	
 	// ------------------------------------------------------------------
-	luaNewMethod(Object, __setter)
+	luaDeclareMethod(Object, __setter)
 	{
 		Object* obj = *(Object**)luaGetInstance(L, 1, "Object");
 		std::string field(luaL_checkstring(L, 2));

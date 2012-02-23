@@ -5,7 +5,9 @@
 	This file is part of nEngine.
 	(c) 2011 Licker Nandor
 */
+
 #include "nHeaders.hpp"
+#include "Scene.hpp"
 #include "Console.hpp"
 #include "Timer.hpp"
 #include "GUI.hpp"
@@ -76,11 +78,12 @@ namespace nEngine {
 		glEnd ();
 		
 		Vec2 mousePos = GUI::inst().getMousePos();
+		Vec2 tilePos = Scene::inst().getTileAt(mousePos.getX(), mousePos.getY());
 
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		glPrint(stats, 5, bHeight + 20, "FPS: " + boost::lexical_cast<std::string> ((int)Timer::inst().getFPS()));
 		glPrint(stats, 5, bHeight + 34, "Memory: " + boost::lexical_cast<std::string> ((int)Resources::inst().getMemoryUsage() / 1024) + " Kb");
-		glPrint(stats, 5, bHeight + 48, "Mouse: <" + boost::lexical_cast<std::string> (mousePos.getX()) + "|" + boost::lexical_cast<std::string> (mousePos.getY()) + ">");
+		glPrint(stats, 5, bHeight + 48, "Mouse: <" + boost::lexical_cast<std::string> (tilePos.getX()) + "|" + boost::lexical_cast<std::string> (tilePos.getY()) + ">");
 		glPrint(ft, 5, bHeight - 4, "> " + editBuffer);
 
 		int currentLine = std::max(0, (int)lines.size () - height), pos = 0;
@@ -214,7 +217,7 @@ namespace nEngine {
 	
 	
 	// ------------------------------------------------------------------
-	luaNewMethod(Console, log)
+	luaDeclareMethod(Console, log)
 	{
 		const char* str = luaL_checkstring(L, -1);
 		Console::inst().message(MESSAGE_NORMAL, std::string(str));
@@ -223,7 +226,7 @@ namespace nEngine {
 	
 
 	// ------------------------------------------------------------------
-	luaNewMethod(Console, warn)
+	luaDeclareMethod(Console, warn)
 	{
 		const char* str = luaL_checkstring(L, -1);
 		Console::inst().message(MESSAGE_WARNING, std::string(str));
@@ -232,7 +235,7 @@ namespace nEngine {
 
 	
 	// ------------------------------------------------------------------
-	luaNewMethod(Console, error)
+	luaDeclareMethod(Console, error)
 	{
 		const char* str = luaL_checkstring(L, -1);
 		Console::inst().message(MESSAGE_ERROR, std::string(str));
@@ -241,7 +244,7 @@ namespace nEngine {
 	
 
 	// ------------------------------------------------------------------
-	luaNewMethod(Console, setVisible)
+	luaDeclareMethod(Console, setVisible)
 	{
 		if (lua_isboolean(L, 1)) {
 			bool v = lua_toboolean(L, 1);

@@ -12,7 +12,7 @@
 #include "File.hpp"
 #include "Resources.hpp"
 
-#define luaNewMethod(cls, func) static int cls ## _ ## func (lua_State* L)
+#define luaDeclareMethod(cls, func) static int cls ## _ ## func (lua_State* L)
 
 #define luaBeginMethods(cls) static luaL_Reg cls ## _methods [] = {
 #define luaMethod(cls, func) {#func, cls ## _ ## func},
@@ -32,7 +32,8 @@
 	lua_pushstring(L, "__name");\
 	lua_pushstring(L, #cls);\
 	lua_settable(L, -3);\
-	luaL_register(L, #cls, cls ## _methods);
+	luaL_register(L, #cls, cls ## _methods);\
+	lua_pop(L, 2);
 	
 #define luaInheritClass(L, cls, base)\
 	luaL_newmetatable(L, #cls);\

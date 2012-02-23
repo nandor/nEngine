@@ -17,6 +17,10 @@
 #include "NPC.hpp"
 #include "ChatBox.hpp"
 #include "Particles.hpp"
+#include "Music.hpp"
+#include "Sound.hpp"
+#include "SoundManager.hpp"
+#include "Sound.hpp"
 
 namespace nEngine {
 	lua_State* L = NULL;
@@ -46,7 +50,7 @@ namespace nEngine {
 	}
 		
 	// ------------------------------------------------------------------
-	luaNewMethod(Core, messageBox)
+	luaDeclareMethod(Core, messageBox)
 	{
 		std::string message(luaL_checkstring(L, 1)), title;
 		if (lua_gettop(L) >= 2 && lua_isstring(L, 2)) {
@@ -195,7 +199,7 @@ namespace nEngine {
 		return lua_toboolean(L, -1);
 	}
 		
-	// ------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 	std::string luaGetGlobalString(const std::string& id)
 	{
 		lua_State* L = luaGlobalState();
@@ -207,7 +211,7 @@ namespace nEngine {
 		
 		
 		
-	// ------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 	int luaClassIndex(lua_State* L)
 	{
 		std::string name = std::string(luaL_checkstring(L, 2));
@@ -226,10 +230,20 @@ namespace nEngine {
 			lua_gettable(L, -2);
 
 			if (!lua_isnil(L, -1)) {
+				int level = lua_gettop(L);
+
 				lua_pushvalue(L, 1);
 				lua_pushvalue(L, 2);
-				lua_pcall(L, 2, 1, 0);
-				return 1;
+				lua_call(L, 2, 1);
+
+				int numResults = lua_gettop(L) - level;
+
+				if (numResults == 1 && (!lua_isboolean(L, 1) || 
+					lua_toboolean(L, 1) == 1))  
+				{
+					return 1;
+				}
+
 			} else {
 				lua_pop(L, 1);
 				lua_pushstring(L, "__base");
@@ -241,7 +255,7 @@ namespace nEngine {
 	}
 	
 		
-	// ------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 	int luaClassNewIndex(lua_State* L)
 	{
 		lua_getmetatable(L, 1);
@@ -251,12 +265,21 @@ namespace nEngine {
 			lua_gettable(L, -2);
 
 			if (!lua_isnil(L, -1)) {
+				int level = lua_gettop(L);
+
 				lua_pushvalue(L, 1);
 				lua_pushvalue(L, 2);
 				lua_pushvalue(L, 3);
 
 				lua_pcall(L, 3, 1, 0);
-				return 1;
+
+				int numResults = lua_gettop(L) - level;
+
+				if (numResults == 1 && (!lua_isboolean(L, 1) || 
+					lua_toboolean(L, 1) == 1)) 
+				{
+						return 1;
+				}
 			}
 			
 			lua_pop(L, 1);
@@ -267,7 +290,7 @@ namespace nEngine {
 		return 0;
 	}
 	
-	// -----------------------------------------------------------------
+	// -------------------------------------------------------------------------
 	lua_State* luaRegisterEngine(lua_State* L)
 	{	
 		Vec2::luaRegister(L);
@@ -288,6 +311,7 @@ namespace nEngine {
 		luaRegisterCamera(L);
 		luaRegisterGUI(L);
 		luaRegisterTimer(L);
+		luaRegisterSoundManager(L);
 
 		return L;
 	}

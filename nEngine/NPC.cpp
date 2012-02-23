@@ -20,7 +20,7 @@ namespace nEngine {
 		 mWanderRadius(0),
 		 mSelected(false)
 	{
-		ObjectScript* script = getScript();
+		DataSource* script = getScript();
 		mName = script->getValue <std::string> ("name");
 		mWander = script->getValue<bool> ("wander");
 
@@ -116,7 +116,7 @@ namespace nEngine {
 	}
 
 	// ------------------------------------------------------------------
-	luaNewMethod(NPC, new)
+	luaDeclareMethod(NPC, new)
 	{
 		NPC* npc = new NPC(std::string(luaL_checkstring(L, 1)), std::string(luaL_checkstring(L, 2)));
 		luaInstance(L, NPC, npc);
@@ -124,7 +124,7 @@ namespace nEngine {
 	}
 
 	// ------------------------------------------------------------------
-	luaNewMethod(NPC, __setter)
+	luaDeclareMethod(NPC, __setter)
 	{
 		NPC* npc = *(NPC**)luaGetInstance(L, 1, "NPC");
 		std::string field(luaL_checkstring(L, 2));

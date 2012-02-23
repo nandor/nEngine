@@ -7,6 +7,7 @@
 */
 #include "nHeaders.hpp"
 #include "GUIElement.hpp"
+#include "GUIScriptReader.hpp"
 #include "GUI.hpp"
 
 namespace nEngine {
@@ -23,10 +24,6 @@ namespace nEngine {
 		 mIsVisible(true),
 		 mVertAlign(GUI_ALIGN_NONE),
 		 mHorzAlign(GUI_ALIGN_NONE),
-		 mComputedPos(0, 0),
-		 mComputedSize(0, 0),
-		 mWidthType(GUI_SIZE_PIXEL),
-		 mHeightType(GUI_SIZE_PIXEL),
 		 mEnabled(true)
 	{
 		mID = id;
@@ -61,14 +58,14 @@ namespace nEngine {
 	}
 	
 	
-	// ------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 	void GUIElement::draw()
 	{
 		if (!mIsVisible)
 			return;
 
 		glPushMatrix();
-		glTranslatef(mComputedPos.getX(), mComputedPos.getY(), 0.0f);
+		glTranslatef(mPos.getX(), mPos.getY(), 0.0f);
 
 		onDraw();
 
@@ -82,14 +79,13 @@ namespace nEngine {
 	}
 	
 	
-	// ------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 	void GUIElement::onDraw()
 	{
 
 	}
-
-
-	// ------------------------------------------------------------------
+	
+	// -------------------------------------------------------------------------
 	void GUIElement::computeSize()
 	{
 		if (!this->getParentNode()) {
@@ -101,50 +97,50 @@ namespace nEngine {
 		Vec2 parentSize = parent->getSize();
 		Vec2 parentPos = parent->getPosition();
 
-		mComputedSize = mSize;
-		if (mWidthType == GUI_SIZE_PERCENT) {
-			mComputedSize.setX(parentSize.getX() * mSize.getX() / 100.0f);
+		if (mID == "showPanel") {
+			int a = 5;
 		}
 
-		if (mHeightType == GUI_SIZE_PERCENT) {
-			mComputedSize.setY(parentSize.getY() * mSize.getY() / 100.0f);
-		}
+		mSize.setX(mWidth.getMetric(parentSize.getX()));
+		mSize.setY(mHeight.getMetric(parentSize.getY()));
+		
+		mPos.setX(mPosX.getMetric(parentSize.getX()));
+		mPos.setY(mPosY.getMetric(parentSize.getY()));
 
-
-		mComputedPos = mPos;
 		switch (mHorzAlign) {
 		case GUI_ALIGN_LEFT:
-			mComputedPos.setX(mPos.getX());
+		case GUI_ALIGN_NONE:
+			mPos.setX(parentPos.getX() + mPos.getX());
 			break;
 		case GUI_ALIGN_RIGHT:
-			mComputedPos.setX(parentSize.getX() - mComputedSize.getX() - mPos.getX());
+			mPos.setX(parentPos.getX() + parentSize.getX() - mSize.getX() - mPos.getX());
 			break;
 		case GUI_ALIGN_CENTER:
-			mComputedPos.setX((parentSize.getX() - mComputedSize.getX()) / 2);
+			mPos.setX(parentPos.getX() + (parentSize.getX() - mSize.getX()) / 2);
 			break;
 		default:
+			mPos.setX(parentPos.getX());
 			break;
 		}
 
 		switch (mVertAlign) {
 		case GUI_ALIGN_TOP:
-			mComputedPos.setY(parentPos.getY() + mPos.getY());
+		case GUI_ALIGN_NONE:
+			mPos.setY(parentPos.getY() + mPos.getY());
 			break;
 		case GUI_ALIGN_BOTTOM:
-			mComputedPos.setY(parentSize.getY() - mComputedSize.getY() - mPos.getY());
+			mPos.setY(parentPos.getY() + parentSize.getY() - mSize.getY() - mPos.getY());
 			break;
 		case GUI_ALIGN_CENTER:
-			mComputedPos.setY((parentSize.getY() - mComputedSize.getY()) / 2);
+			mPos.setY(parentPos.getY() + (parentSize.getY() - mSize.getY()) / 2);
 			break;
 		default:
+			mPos.setY(parentPos.getY());
 			break;
 		}
-
-		mComputedPos += parent->getPosition();
 	}
 	
-
-	// ------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 	bool GUIElement::handleEvent(GUIEvent& evt)
 	{
 		if (!mIsVisible)
@@ -191,18 +187,17 @@ namespace nEngine {
 		return captured;
 	}
 	
-	
-	// ------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 	bool GUIElement::isUnderMouse(Vec2 pos)
 	{
-		if (mComputedPos < pos && pos < mComputedPos + mSize) {
+		if (mPos < pos && pos < mPos + mSize) {
 			return true;
 		}
 
 		return false;
 	}
-	
-	// ------------------------------------------------------------------
+
+	// -------------------------------------------------------------------------
 	void GUIElement::connect(GUIEventType type, boost::function<void(GUIEvent&)> func)
 	{
 		if (0 <= type && type < GUI_NUM_EVENTS) {
@@ -213,7 +208,7 @@ namespace nEngine {
 	}
 	
 	
-	// ------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 	void GUIElement::fireEvent(GUIEvent& evt)
 	{
 		for (tEventIter it = mEvents[evt.getType()].begin(); it != mEvents[evt.getType()].end(); ++it) {
@@ -224,7 +219,7 @@ namespace nEngine {
 	}
 
 	
-	// ------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 	void GUIElement::remove()
 	{
 		if (mParent && mParent != this) {
@@ -239,8 +234,189 @@ namespace nEngine {
 	}	
 	
 	// ------------------------------------------------------------------
+	void GUIElement::loadScript(const std::string& source)
+	{
+		DataSource* dataSource = Resources::inst().require<DataSource> (source);
+		GUIScriptReader(dataSource, this).read();
+	}
+	
+	// -------------------------------------------------------------------------
+	GUIAlign getAlignment(const std::string& align)
+	{
+		if (align == "none") {
+			return GUI_ALIGN_NONE;
+		}
+
+		if (align == "left") {
+			return GUI_ALIGN_LEFT;
+		}
+
+		if (align == "top") {
+			return GUI_ALIGN_TOP;
+		}
+
+		if (align == "bottom") {
+			return GUI_ALIGN_BOTTOM;
+		}
+
+		if (align == "right") {
+			return GUI_ALIGN_RIGHT;
+		}
+
+		if (align == "center") {
+			return GUI_ALIGN_CENTER;
+		}
+
+		return GUI_ALIGN_NONE;
+	}
+
+	// -------------------------------------------------------------------------
+	luaDeclareMethod(GUIElement, add)
+	{
+		GUIElement* parent = *(GUIElement**)luaGetInstance(L, 1, "GUIElement");
+		GUIElement* child = *(GUIElement**)luaGetInstance(L, 2, "GUIElement");
+
+		parent->add(child);
+		return 0;
+	}
+		
+	// -------------------------------------------------------------------------
+	luaDeclareMethod(GUIElement, __setter)
+	{
+		GUIElement* elem = *(GUIElement**)luaGetInstance(L, 1, "GUIElement");
+		std::string field(luaL_checkstring(L, 2));
+		
+		if (field == "font") {
+			elem->setFont(luaL_checkstring(L, 3));
+			
+		}
+
+		if (field == "background") {
+			Color* c = *(Color**)luaGetInstance(L, 3, "Color");
+			elem->setBackgroundColor(*c);
+			return 0;
+		}
+
+		return 0;
+	}
+	
+	// -------------------------------------------------------------------------
+	luaDeclareMethod(GUIElement, setAlignment)
+	{
+		GUIElement* elem = *(GUIElement**)luaGetInstance(L, 1, "GUIElement");
+		
+		elem->setAlignment(
+			(GUIAlign)luaL_checkinteger(L, 2),
+			(GUIAlign)luaL_checkinteger(L, 3)
+		);
+
+		return 0;
+	}
+
+	// -------------------------------------------------------------------------
+	luaDeclareMethod(GUIElement, setSize)
+	{
+		GUIElement* elem = *(GUIElement**)luaGetInstance(L, 1, "GUIElement");
+		
+		elem->setSize(
+			GUIMetric(luaL_checkstring(L, 2)), 
+			GUIMetric(luaL_checkstring(L, 3))
+		);
+
+		return 0;
+	}
+	
+
+	// -------------------------------------------------------------------------
+	luaDeclareMethod(GUIElement, setPosition)
+	{
+		GUIElement* elem = *(GUIElement**)luaGetInstance(L, 1, "GUIElement");
+		
+		elem->setPosition(
+			GUIMetric(luaL_checkstring(L, 2)), 
+			GUIMetric(luaL_checkstring(L, 3))
+		);
+
+		return 0;
+	}
+
+	// -------------------------------------------------------------------------
+	luaDeclareMethod(GUIElement, setVisibility)
+	{
+		GUIElement* elem = *(GUIElement**)luaGetInstance(L, 1, "GUIElement");
+		elem->setVisibility(lua_toboolean(L, 2));
+		return 0;
+	}
+	
+	// -------------------------------------------------------------------------
+	luaDeclareMethod(GUIElement, isVisible)
+	{
+		GUIElement* elem = *(GUIElement**)luaGetInstance(L, 1, "GUIElement");
+		lua_pushboolean(L, elem->isVisible());
+		return 1;
+	}
+
+	// -------------------------------------------------------------------------
+	luaDeclareMethod(GUIElement, connect)
+	{
+		GUIElement* elem = *(GUIElement**)luaGetInstance(L, 1, "GUIElement");
+		GUIEventType type = (GUIEventType)luaL_checkint(L, 2);
+		
+		if (!lua_isfunction(L, 3)) {
+			throw Error ("GUIelement", elem->getID(), "[Lua] Not a c function!");
+		}
+
+		lua_pushvalue(L, 3);
+		GUILuaHandler handler(luaL_ref(L, LUA_REGISTRYINDEX));
+		elem->connect(type, handler);
+
+		return 0;
+	}
+	
+	// -------------------------------------------------------------------------
+	luaDeclareMethod(GUIElement, loadScript)
+	{
+		GUIElement* elem = *(GUIElement**)luaGetInstance(L, 1, "GUIElement");
+		elem->loadScript(luaL_checkstring(L, 2));
+		return 0;
+	}
+
+	// -------------------------------------------------------------------------
+	luaBeginMeta(GUIElement)
+		luaMethod(GUIElement, add)
+		luaMethod(GUIElement, setSize)
+		luaMethod(GUIElement, setPosition)
+		luaMethod(GUIElement, setAlignment)
+		luaMethod(GUIElement, setVisibility)
+		luaMethod(GUIElement, isVisible)
+		luaMethod(GUIElement, loadScript)
+		luaMethod(GUIElement, connect)
+		luaMethod(GUIElement, __setter)
+	luaEndMeta()
+	
+	luaBeginMethods(GUIElement)
+		
+	luaEndMethods()
+
+	// -------------------------------------------------------------------------
 	bool luaRegisterGUIElement(lua_State* L)
 	{
+		luaClass(L, GUIElement);
+
+		std::vector<std::pair<std::string, GUIAlign> > alignment;
+		alignment.push_back(std::make_pair("GUI_ALIGN_TOP", GUI_ALIGN_TOP));
+		alignment.push_back(std::make_pair("GUI_ALIGN_BOTTOM", GUI_ALIGN_BOTTOM));
+		alignment.push_back(std::make_pair("GUI_ALIGN_CENTER", GUI_ALIGN_CENTER));
+		alignment.push_back(std::make_pair("GUI_ALIGN_LEFT", GUI_ALIGN_LEFT));
+		alignment.push_back(std::make_pair("GUI_ALIGN_RIGHT", GUI_ALIGN_RIGHT));
+		alignment.push_back(std::make_pair("GUI_ALIGN_NONE", GUI_ALIGN_NONE));
+
+		for (unsigned i = 0; i < alignment.size(); ++i)
+		{
+			lua_pushinteger(L, alignment[i].second);
+			lua_setglobal(L, alignment[i].first.c_str());
+		}
+		
 		return true;
 	}
 };

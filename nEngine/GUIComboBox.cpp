@@ -42,24 +42,24 @@ namespace nEngine {
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		glBegin(GL_QUADS);
 			glVertex2i(0, 0);
-			glVertex2i(mComputedSize.getX(), 0);
-			glVertex2i(mComputedSize.getX(), mComputedSize.getY());
-			glVertex2i(0, mComputedSize.getY());
+			glVertex2i(mSize.getX(), 0);
+			glVertex2i(mSize.getX(), mSize.getY());
+			glVertex2i(0, mSize.getY());
 		glEnd();
 		
 		glColor4f(0.3f, 0.3f, 0.3f, 1.0f);
 		glBegin(GL_LINE_LOOP);
 			glVertex2i(0, 0);
-			glVertex2i(mComputedSize.getX(), 0);
-			glVertex2i(mComputedSize.getX(), mComputedSize.getY());
-			glVertex2i(0, mComputedSize.getY());
+			glVertex2i(mSize.getX(), 0);
+			glVertex2i(mSize.getX(), mSize.getY());
+			glVertex2i(0, mSize.getY());
 			glVertex2i(0, 0);
 		glEnd();
 
 		Font* ft = Resources::inst().get<Font> (mFontName);
 		if (mItems.size() > mSelectedItem) {
 			glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
-			glPrint(ft, 2, (mComputedSize.getY() + ft->getHeight()) / 2, mComputedSize.getX() - 30, mItems[mSelectedItem].second);
+			glPrint(ft, 2, (mSize.getY() + ft->getHeight()) / 2, mSize.getX() - 30, mItems[mSelectedItem].second);
 		}
 
 		Color buttonColor(0.6f, 0.6f, 0.6f, 1.0f);
@@ -68,9 +68,9 @@ namespace nEngine {
 		(buttonColor * ColorMult).glUse();
 		
 		glBegin(GL_TRIANGLES);
-			glVertex2i(mComputedSize.getX() - 30, mComputedSize.getY() / 2 - 4);
-			glVertex2i(mComputedSize.getX() - 6, mComputedSize.getY() / 2 - 4);
-			glVertex2i(mComputedSize.getX() - 18, mComputedSize.getY() / 2 + 8);
+			glVertex2i(mSize.getX() - 30, mSize.getY() / 2 - 4);
+			glVertex2i(mSize.getX() - 6, mSize.getY() / 2 - 4);
+			glVertex2i(mSize.getX() - 18, mSize.getY() / 2 + 8);
 		glEnd();
 
 		if (mExpand) {
@@ -79,34 +79,34 @@ namespace nEngine {
 
 			glColor4f(1.0f, 1.0f, 1.0f, 0.7f);
 			glBegin(GL_QUADS);
-				glVertex2i(0, mComputedSize.getY());
-				glVertex2i(mComputedSize.getX(), mComputedSize.getY());
-				glVertex2i(mComputedSize.getX(), mComputedSize.getY() + mHeight);
-				glVertex2i(0, mComputedSize.getY() + mHeight);
+				glVertex2i(0, mSize.getY());
+				glVertex2i(mSize.getX(), mSize.getY());
+				glVertex2i(mSize.getX(), mSize.getY() + mHeight);
+				glVertex2i(0, mSize.getY() + mHeight);
 			glEnd();
 					
 			if (mOverItem) {
 				glColor4f(0.7f, 0.7f, 0.7f, 1.0f);
 				glBegin(GL_QUADS);
-					glVertex2i(0, mComputedSize.getY() + itemHeight * mHoverItem + 3);
-					glVertex2i(mComputedSize.getX(), mComputedSize.getY() + itemHeight * mHoverItem + 3);
-					glVertex2i(mComputedSize.getX(), mComputedSize.getY() + itemHeight * (mHoverItem + 1) + 3);
-					glVertex2i(0, mComputedSize.getY() + itemHeight * (mHoverItem + 1) + 3);
+					glVertex2i(0, mSize.getY() + itemHeight * mHoverItem + 3);
+					glVertex2i(mSize.getX(), mSize.getY() + itemHeight * mHoverItem + 3);
+					glVertex2i(mSize.getX(), mSize.getY() + itemHeight * (mHoverItem + 1) + 3);
+					glVertex2i(0, mSize.getY() + itemHeight * (mHoverItem + 1) + 3);
 				glEnd();
 			}
 
 			glColor4f(0.3f, 0.3f, 0.3f, 1.0f);
 			glBegin(GL_LINE_LOOP);
-				glVertex2i(0, mComputedSize.getY() + mHeight);
-				glVertex2i(0, mComputedSize.getY());
-				glVertex2i(mComputedSize.getX(), mComputedSize.getY());
-				glVertex2i(mComputedSize.getX(), mComputedSize.getY() + mHeight);
-				glVertex2i(0, mComputedSize.getY() + mHeight);
+				glVertex2i(0, mSize.getY() + mHeight);
+				glVertex2i(0, mSize.getY());
+				glVertex2i(mSize.getX(), mSize.getY());
+				glVertex2i(mSize.getX(), mSize.getY() + mHeight);
+				glVertex2i(0, mSize.getY() + mHeight);
 			glEnd();
 
 			mFontColor.glUse();
 			for (unsigned i = 0; i < mItems.size(); ++i) {
-				glPrint(ft, 2, mComputedSize.getY() + itemHeight * (i + 1), mComputedSize.getX(), mItems[i].second);
+				glPrint(ft, 2, mSize.getY() + itemHeight * (i + 1), mSize.getX(), mItems[i].second);
 			}
 		}
 	}
@@ -120,9 +120,9 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	void GUIComboBox::onMouseMove(GUIEvent& evt)
 	{
-		Vec2 mousePos = evt.getMousePos() - mComputedPos;
-		mousePos.setX(mousePos.getX() - mComputedSize.getX() + 30);
-		mousePos.setY(mousePos.getY() - mComputedSize.getY() / 2);
+		Vec2 mousePos = evt.getMousePos() - mPos;
+		mousePos.setX(mousePos.getX() - mSize.getX() + 30);
+		mousePos.setY(mousePos.getY() - mSize.getY() / 2);
 
 		if (2 <= mousePos.getX() && mousePos.getX() <= 22 && -3 <= mousePos.getY() && mousePos.getY() <= 6) {
 			mExpandOver = true;
@@ -130,11 +130,11 @@ namespace nEngine {
 			mExpandOver = mExpandDown = false;
 		}
 		
-		mousePos = evt.getMousePos() - mComputedPos;
+		mousePos = evt.getMousePos() - mPos;
 
-		if (mExpand && mousePos.getY() >= mComputedSize.getY()) {
+		if (mExpand && mousePos.getY() >= mSize.getY()) {
 			Font* ft = Resources::inst().get<Font> (mFontName);
-			float y = evt.getMousePos().getY() - mComputedPos.getY() - mComputedSize.getY();
+			float y = evt.getMousePos().getY() - mPos.getY() - mSize.getY();
 			mHoverItem = y / (ft->getHeight() + 3);
 			mOverItem = 0 <= mHoverItem && mHoverItem < mItems.size();
 		} else {
@@ -145,9 +145,9 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	void GUIComboBox::onMouseDown(GUIEvent& evt)
 	{
-		Vec2 mousePos = evt.getMousePos() - mComputedPos;
-		mousePos.setX(mousePos.getX() - mComputedSize.getX() + 30);
-		mousePos.setY(mousePos.getY() - mComputedSize.getY() / 2);
+		Vec2 mousePos = evt.getMousePos() - mPos;
+		mousePos.setX(mousePos.getX() - mSize.getX() + 30);
+		mousePos.setY(mousePos.getY() - mSize.getY() / 2);
 
 		mExpandDown = (2 <= mousePos.getX() && mousePos.getX() <= 22 && -3 <= mousePos.getY() && mousePos.getY() <= 6);
 	}
@@ -155,9 +155,9 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	void GUIComboBox::onMouseUp(GUIEvent& evt)
 	{
-		Vec2 mousePos = evt.getMousePos() - mComputedPos;
-		mousePos.setX(mousePos.getX() - mComputedSize.getX() + 30);
-		mousePos.setY(mousePos.getY() - mComputedSize.getY() / 2);
+		Vec2 mousePos = evt.getMousePos() - mPos;
+		mousePos.setX(mousePos.getX() - mSize.getX() + 30);
+		mousePos.setY(mousePos.getY() - mSize.getY() / 2);
 
 		if (2 <= mousePos.getX() && mousePos.getX() <= 22 && -3 <= mousePos.getY() && mousePos.getY() <= 6) {
 			mExpandDown = false;
@@ -179,11 +179,11 @@ namespace nEngine {
 	bool GUIComboBox::isUnderMouse(Vec2 pos)
 	{		
 		if (!mExpand) {
-			return (mComputedPos < pos && pos < mComputedPos + mComputedSize);
+			return (mPos < pos && pos < mPos + mSize);
 		}
 
 		Font* ft = Resources::inst().get<Font> (mFontName);
 		unsigned mHeight = mItems.size() * (ft->getHeight() + 3) + 5;
-		return (mComputedPos < pos && pos < mComputedPos + Vec2(mComputedSize.getX(), mComputedSize.getY() + mHeight));
+		return (mPos < pos && pos < mPos + Vec2(mSize.getX(), mSize.getY() + mHeight));
 	}
 };

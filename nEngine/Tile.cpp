@@ -51,7 +51,7 @@ namespace nEngine {
 	}
 		
 
-	luaNewMethod(Tile, __setter)
+	luaDeclareMethod(Tile, __setter)
 	{
 		Tile* tile = *(Tile**)luaGetInstance(L, 1, "Tile");
 
@@ -81,7 +81,7 @@ namespace nEngine {
 		return 0;
 	}
 
-	luaNewMethod(Tile, __getter)
+	luaDeclareMethod(Tile, __getter)
 	{
 		Tile* tile = *(Tile**)luaGetInstance(L, 1, "Tile");
 

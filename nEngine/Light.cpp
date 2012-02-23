@@ -48,7 +48,7 @@ namespace nEngine {
 	}
 
 	// ------------------------------------------------------------------
-	luaNewMethod(Light, new)
+	luaDeclareMethod(Light, new)
 	{
 		Light* l = new Light(luaL_checkstring(L, 1));
 		luaInstance(L, Light, l);
@@ -56,7 +56,7 @@ namespace nEngine {
 	}
 	
 	// ------------------------------------------------------------------
-	luaNewMethod(Light, __setter)
+	luaDeclareMethod(Light, __setter)
 	{
 		Light* obj = *(Light**)luaGetInstance(L, 1, "Light");
 		std::string field(luaL_checkstring(L, 2));
@@ -82,13 +82,13 @@ namespace nEngine {
 	}
 	
 	// ------------------------------------------------------------------
-	luaNewMethod(Light, __getter)
+	luaDeclareMethod(Light, __getter)
 	{
 		return 0;
 	}
 	
 	// ------------------------------------------------------------------
-	luaNewMethod(Light, setAmbient)
+	luaDeclareMethod(Light, setAmbient)
 	{
 		Light::setAmbient(luaL_checknumber(L, 1));
 		return 0;

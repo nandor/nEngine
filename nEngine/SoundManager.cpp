@@ -110,4 +110,10 @@ namespace nEngine {
 	{
 		return mMasterVolume / mMaxVolume * 100;
 	}
+
+	// ------------------------------------------------------------------
+	bool luaRegisterSoundManager(lua_State* L)
+	{
+		return true;
+	}
 };

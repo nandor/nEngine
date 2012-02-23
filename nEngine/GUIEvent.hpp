@@ -73,6 +73,18 @@ namespace nEngine {
 		int mMouseX, mMouseY;
 		GUIEventType mType;
 	};
+
+	class GUILuaHandler {
+	public:
+		GUILuaHandler(int ref);
+		~GUILuaHandler();
+
+		void operator () (GUIEvent&);
+	private:
+		int mRef;
+	};
+
+	bool luaRegisterGUIEvent(lua_State* L);
 };
 
 #endif /*GUIEVENT_HPP*/

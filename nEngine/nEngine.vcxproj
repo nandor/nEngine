@@ -55,6 +55,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;NENGINE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>nHeaders.hpp</PrecompiledHeaderFile>
       <AdditionalOptions>-D_SCL_SECURE_NO_WARNINGS /Zm1024 %(AdditionalOptions)</AdditionalOptions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -105,10 +106,13 @@
     <ClInclude Include="GUIEvent.hpp" />
     <ClInclude Include="GUIGLCanvas.hpp" />
     <ClInclude Include="GUILabel.hpp" />
+    <ClInclude Include="GUIMetric.hpp" />
     <ClInclude Include="GUIPanel.hpp" />
+    <ClInclude Include="GUIScriptReader.hpp" />
     <ClInclude Include="GUISlider.hpp" />
+    <ClInclude Include="GUIStyledText.hpp" />
     <ClInclude Include="Image.hpp" />
-    <ClInclude Include="JSONObject.hpp" />
+    <ClInclude Include="DataSource.hpp" />
     <ClInclude Include="Light.hpp" />
     <ClInclude Include="Log.hpp" />
     <ClInclude Include="Lua.hpp" />
@@ -118,7 +122,6 @@
     <ClInclude Include="nHeaders.hpp" />
     <ClInclude Include="NPC.hpp" />
     <ClInclude Include="Object.hpp" />
-    <ClInclude Include="ObjectScript.hpp" />
     <ClInclude Include="oggCallbacks.hpp" />
     <ClInclude Include="Particles.hpp" />
     <ClInclude Include="PathFinder.hpp" />
@@ -169,10 +172,13 @@
     <ClCompile Include="GUIEvent.cpp" />
     <ClCompile Include="GUIGLCanvas.cpp" />
     <ClCompile Include="GUILabel.cpp" />
+    <ClCompile Include="GUIMetric.cpp" />
     <ClCompile Include="GUIPanel.cpp" />
+    <ClCompile Include="GUIScriptReader.cpp" />
     <ClCompile Include="GUISlider.cpp" />
+    <ClCompile Include="GUIStyledText.cpp" />
     <ClCompile Include="Image.cpp" />
-    <ClCompile Include="JSONObject.cpp" />
+    <ClCompile Include="DataSource.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="Lua.cpp" />
@@ -181,7 +187,6 @@
     <ClCompile Include="Music.cpp" />
     <ClCompile Include="NPC.cpp" />
     <ClCompile Include="Object.cpp" />
-    <ClCompile Include="ObjectScript.cpp" />
     <ClCompile Include="oggCallbacks.cpp" />
     <ClCompile Include="Particles.cpp" />
     <ClCompile Include="PathFinder.cpp" />
@@ -199,6 +204,13 @@
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="Vec2.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

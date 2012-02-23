@@ -11,7 +11,6 @@
 
 #include "Singleton.hpp"
 #include "GUIElement.hpp"
-
 namespace nEngine {
 	class GUIPanel : public GUIElement {
 	public:
@@ -23,5 +22,7 @@ namespace nEngine {
 		NAPI void onDraw();
 
 	};
+
+	bool luaRegisterGUIPanel(lua_State* L);
 };
 #endif /*GUIPANEL_HPP*/

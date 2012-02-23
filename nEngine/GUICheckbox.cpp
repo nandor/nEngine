@@ -38,8 +38,8 @@ namespace nEngine {
 			std::string string = mCaption;
 
 			unsigned textWidth = ft->getTextWidth(mCaption);
-			if (textWidth >= mComputedSize.getX() - 40) { 
-				unsigned len = 0, length = mComputedSize.getX() - 4 * ft->getCharWidth('.') - 40;
+			if (textWidth >= mSize.getX() - 40) { 
+				unsigned len = 0, length = mSize.getX() - 4 * ft->getCharWidth('.') - 40;
 				textWidth = 0;
 				while (textWidth < length && len < mCaption.length()) {
 					textWidth += ft->getCharWidth(mCaption[len++]);
@@ -50,7 +50,7 @@ namespace nEngine {
 			}
 
 			glPushMatrix();
-			glTranslatef(mComputedSize.getX(), mComputedSize.getY() / 2, 0.0f);
+			glTranslatef(mSize.getX(), mSize.getY() / 2, 0.0f);
 			
 			float ColorDiff = (mMousePressed ? 0.9 : (mMouseOver ? 1.1 : 1.0));
 

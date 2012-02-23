@@ -45,6 +45,8 @@ namespace nEngine {
 		for (unsigned char i = 0; i < 127;i++) {
 			makeDisplayList(i);
 		}
+
+		mCharWidth['\t'] = 4 * mCharWidth[' '];
 	}
 
 	// ------------------------------------------------------------------
@@ -208,7 +210,7 @@ namespace nEngine {
 		return size;
 	}
 	// ------------------------------------------------------------------
-	luaNewMethod(Font, loadFace)
+	luaDeclareMethod(Font, loadFace)
 	{
 		Font::loadFace(std::string(luaL_checkstring(L, 1)));
 		return 0;
@@ -216,7 +218,7 @@ namespace nEngine {
 
 	
 	// ------------------------------------------------------------------
-	luaNewMethod(Font, loadFont)
+	luaDeclareMethod(Font, loadFont)
 	{
 		Resources::inst().addResource(new Font(std::string(luaL_checkstring(L, 1)), luaL_checkinteger(L, 2)));
 		return 0;

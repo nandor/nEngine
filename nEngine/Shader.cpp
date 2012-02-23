@@ -205,7 +205,7 @@ namespace nEngine {
 	
 
 	// ------------------------------------------------------------------
-	luaNewMethod(Shader, new)
+	luaDeclareMethod(Shader, new)
 	{
 		std::string id(luaL_checkstring(L, 1));
 		
@@ -217,7 +217,7 @@ namespace nEngine {
 	
 
 	// ------------------------------------------------------------------
-	luaNewMethod(Shader, load)
+	luaDeclareMethod(Shader, load)
 	{
 		Shader** l = (Shader**)luaGetInstance(L, 1, "Shader");
 
@@ -228,7 +228,7 @@ namespace nEngine {
 	
 
 	// ------------------------------------------------------------------
-	luaNewMethod(Shader, compile)
+	luaDeclareMethod(Shader, compile)
 	{
 		Shader** l = (Shader**)luaGetInstance(L, 1, "Shader");
 

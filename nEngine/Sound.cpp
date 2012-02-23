@@ -41,8 +41,8 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	void Sound::play()
 	{
-		SoundSource* source = nEngine::Resources::inst().require<SoundSource> (mSourceName);
-		
+		alSourceStop(mSource);
+		SoundSource* source = nEngine::Resources::inst().require<SoundSource> (mSourceName);		
 		mStarted = true;
 
 		alSourcei(mSource, AL_BUFFER, source->getBuffer());
@@ -50,6 +50,24 @@ namespace nEngine {
 		
 	}
 	
+	// ------------------------------------------------------------------
+	void Sound::loop()
+	{
+		alSourceStop(mSource);
+		SoundSource* source = nEngine::Resources::inst().require<SoundSource> (mSourceName);
+		mStarted = true;
+
+		alSourcei(mSource, AL_BUFFER, source->getBuffer());
+		alSourcei(mSource, AL_LOOPING, AL_TRUE);
+		alSourcePlay(mSource);
+	}
+	
+	// ------------------------------------------------------------------
+	void Sound::stop()
+	{
+		alSourceStop(mSource);
+	}
+
 	// ------------------------------------------------------------------
 	bool Sound::isPlaying() const
 	{
@@ -62,5 +80,21 @@ namespace nEngine {
 	void Sound::setPosition(Vec2& v)
 	{
 		alSource3f(mSource, AL_POSITION, v.getX(), v.getY(), 0.0f);
+	}
+	
+	// ------------------------------------------------------------------
+	luaBeginMethods(Sound)
+
+	luaEndMethods(Sound)
+
+	luaBeginMeta(Sound)
+
+	luaEndMeta(Sound)
+	
+	// ------------------------------------------------------------------
+	bool luaRegisterSound(lua_State* L)
+	{
+		luaClass(L, Sound);
+		return true;
 	}
 };

@@ -298,10 +298,6 @@ bool MainWindow::Show(bool show)
 void MainWindow::OnResourceSelected(std::pair<std::string, nEngine::ResourceType> item)
 {	
 	switch (item.second) {
-	case nEngine::RESOURCE_JSON:
-		mPropertyEdit->setResourceJSON(item.first);
-		break;
-
 	case nEngine::RESOURCE_SHADER:
 		mPropertyEdit->setResourceShader(item.first);
 		break;

@@ -12,8 +12,9 @@
 #include "types.hpp"
 #include "Color.hpp"
 #include "Vec2.hpp"
-#include "GUIEvent.hpp"
 #include "Util.hpp"
+#include "GUIEvent.hpp"
+#include "GUIMetric.hpp"
 
 namespace nEngine {
 	enum GUIAlign {
@@ -24,12 +25,7 @@ namespace nEngine {
 		GUI_ALIGN_RIGHT,
 		GUI_ALIGN_NONE
 	};
-
-	enum GUISize {
-		GUI_SIZE_PERCENT,
-		GUI_SIZE_PIXEL,
-	};
-
+	
 	/**
 		Base class for the GUI
 	*/
@@ -56,6 +52,15 @@ namespace nEngine {
 		}
 
 		/**
+			Set the id of the element
+			@param id		New id
+		*/
+		NAPI void setID(const std::string& id)
+		{
+			mID = id;
+		}
+
+		/**
 			Get the font name
 			@return			Name of the font
 		*/
@@ -64,7 +69,7 @@ namespace nEngine {
 			return mFontName;
 		}
 
-		/**`
+		/**
 			Set the font name
 			@param name		New font name
 		*/
@@ -117,7 +122,7 @@ namespace nEngine {
 			Get the parent node
 			@return			Pointer to the parent node
 		*/
-		NAPI GUIElement* getParentNode()
+		NAPI GUIElement* getParentNode() const
 		{
 			return mParent;
 		}
@@ -126,18 +131,18 @@ namespace nEngine {
 			Get the size of an element
 			@return			Vec2 containing size
 		*/
-		NAPI Vec2 getSize()
+		NAPI Vec2 getSize() const
 		{
-			return mComputedSize;
+			return mSize;
 		}
 
 		/**
 			Get the computed position of an element
 			@return			Vec2 containing position
 		*/
-		NAPI Vec2 getPosition()
+		NAPI Vec2 getPosition() const
 		{
-			return mComputedPos;
+			return mPos;
 		}
 
 		/**
@@ -157,19 +162,11 @@ namespace nEngine {
 		}
 
 		/**
-			Hide the element
+			Set the visibility of the element
 		*/
-		NAPI void hide()
+		NAPI void setVisibility(bool visibility)
 		{
-			mIsVisible = false;
-		}
-
-		/**
-			Show the element
-		*/
-		NAPI void show()
-		{
-			mIsVisible = true;
+			mIsVisible = visibility;
 		}
 
 		NAPI void setAlignment(GUIAlign horz, GUIAlign vert)
@@ -178,11 +175,20 @@ namespace nEngine {
 			mVertAlign = vert;
 		}
 
-		NAPI void setSize(Vec2 size, GUISize horzSize = GUI_SIZE_PIXEL, GUISize vertSize = GUI_SIZE_PIXEL)
+		NAPI void setSize(GUIMetric& width, GUIMetric& height)
 		{
-			mSize = size;
-			mWidthType = horzSize;
-			mHeightType = vertSize;
+			mWidth = width;
+			mHeight = height;
+		}
+
+		NAPI void setWidth(GUIMetric& width)
+		{
+			mWidth = width;
+		}
+
+		NAPI void setHeight(GUIMetric& height)
+		{
+			mHeight = height;
 		}
 
 		NAPI void applyTo(GUIElement* elem);
@@ -191,9 +197,10 @@ namespace nEngine {
 			Set the position of the element
 			@param pos		Position
 		*/
-		NAPI void setPosition(Vec2 pos)
+		NAPI void setPosition(GUIMetric& x, GUIMetric& y)
 		{
-			mPos = pos;
+			mPosX = x;
+			mPosY = y;
 		}
 
 		NAPI void enable()
@@ -207,6 +214,13 @@ namespace nEngine {
 		}
 
 		NAPI void remove();
+		
+		/**
+			Load a GUI script
+			@param source		Identifier of the data source
+			@param target		Root of the new elements
+		*/
+		NAPI void loadScript(const std::string& source);
 
 	protected:
 		/**
@@ -233,11 +247,17 @@ namespace nEngine {
 		/// Font
 		std::string mFontName;
 		
-		/// Size of the element
-		Vec2 mSize;
+		/// Width of the element
+		GUIMetric mWidth;
 
-		/// Position of the element (relative to parent)
-		Vec2 mPos;
+		/// Height of the element
+		GUIMetric mHeight;
+
+		/// Position on the X axis
+		GUIMetric mPosX;
+
+		/// Position on the Y axis
+		GUIMetric mPosY;
 
 		/// Background Color
 		Color mBackgroundColor;
@@ -279,17 +299,13 @@ namespace nEngine {
 		GUIAlign mHorzAlign;
 		
 		/// Computed position
-		Vec2 mComputedPos;
+		Vec2 mPos;
 
 		/// Computed size
-		Vec2 mComputedSize;
-
-		/// Vertical size type
-		GUISize mWidthType;
-
-		/// Horizontal size type
-		GUISize mHeightType;
+		Vec2 mSize;
 	};
+
+	GUIAlign getAlignment(const std::string& name);
 
 	bool luaRegisterGUIElement(lua_State* L);
 };

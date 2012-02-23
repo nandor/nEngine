@@ -40,13 +40,13 @@ namespace nEngine {
 	}
 
 	// ------------------------------------------------------------------
-	luaNewMethod(SceneNode, __getter)
+	luaDeclareMethod(SceneNode, __getter)
 	{
 		return 0;
 	}
 
 	// ------------------------------------------------------------------
-	luaNewMethod(SceneNode, __setter)
+	luaDeclareMethod(SceneNode, __setter)
 	{
 		SceneNode* obj = *(SceneNode**)luaGetInstance(L, 1, "SceneNode");
 		std::string field(luaL_checkstring(L, 2));

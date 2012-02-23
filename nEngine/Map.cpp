@@ -360,7 +360,7 @@ namespace nEngine {
 
 
 	// ------------------------------------------------------------------
-	luaNewMethod(Map, getSize)
+	luaDeclareMethod(Map, getSize)
 	{
 		Map* v = *(Map**)luaGetInstance(L, 1, "Map");
 		
@@ -370,7 +370,7 @@ namespace nEngine {
 
 	
 	// ------------------------------------------------------------------
-	luaNewMethod(Map, getTile)
+	luaDeclareMethod(Map, getTile)
 	{
 		Map* v = *(Map**)luaGetInstance(L, 1, "Map");
 

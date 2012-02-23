@@ -134,7 +134,7 @@ namespace nEngine {
 	}
 
 	// ------------------------------------------------------------------
-	luaNewMethod(Vec2, new) 
+	luaDeclareMethod(Vec2, new) 
 	{
 		Vec2* v = new Vec2(luaL_checknumber(L, 1), luaL_checknumber(L, 2));
 
@@ -144,7 +144,7 @@ namespace nEngine {
 
 
 	// ------------------------------------------------------------------
-	luaNewMethod(Vec2, __tostring) 
+	luaDeclareMethod(Vec2, __tostring) 
 	{
 		Vec2** v = (Vec2**)luaGetInstance(L, 1, "Vec2");
 
@@ -158,7 +158,7 @@ namespace nEngine {
 
 
 	// ------------------------------------------------------------------
-	luaNewMethod(Vec2, __add)
+	luaDeclareMethod(Vec2, __add)
 	{
 		Vec2* a = *(Vec2**)luaGetInstance(L, 1, "Vec2");
 		Vec2* b = *(Vec2**)luaGetInstance(L, 2, "Vec2");
@@ -171,7 +171,7 @@ namespace nEngine {
 
 
 	// ------------------------------------------------------------------
-	luaNewMethod(Vec2, __eq)
+	luaDeclareMethod(Vec2, __eq)
 	{
 		Vec2* a = *(Vec2**)luaGetInstance(L, 1, "Vec2");
 		Vec2* b = *(Vec2**)luaGetInstance(L, 2, "Vec2");
@@ -181,7 +181,7 @@ namespace nEngine {
 	}
 	
 	// ------------------------------------------------------------------
-	luaNewMethod(Vec2, __unm)
+	luaDeclareMethod(Vec2, __unm)
 	{
 		Vec2* a = *(Vec2**)luaGetInstance(L, 1, "Vec2");
 
@@ -192,7 +192,7 @@ namespace nEngine {
 	}
 	
 	// ------------------------------------------------------------------
-	luaNewMethod(Vec2, __sub)
+	luaDeclareMethod(Vec2, __sub)
 	{
 		Vec2* a = *(Vec2**)luaGetInstance(L, 1, "Vec2");
 		Vec2* b = *(Vec2**)luaGetInstance(L, 2, "Vec2");
@@ -204,7 +204,7 @@ namespace nEngine {
 	}
 
 	// ------------------------------------------------------------------
-	luaNewMethod(Vec2, __gc)
+	luaDeclareMethod(Vec2, __gc)
 	{
 		Vec2* a = *(Vec2**)luaGetInstance(L, 1, "Vec2");
 
@@ -213,7 +213,7 @@ namespace nEngine {
 	}
 	
 	// ------------------------------------------------------------------
-	luaNewMethod(Vec2, __getter)
+	luaDeclareMethod(Vec2, __getter)
 	{
 		Vec2* a = *(Vec2**)luaGetInstance(L, 1, "Vec2");
 
@@ -234,7 +234,7 @@ namespace nEngine {
 	
 
 	// ------------------------------------------------------------------
-	luaNewMethod(Vec2, __setter)
+	luaDeclareMethod(Vec2, __setter)
 	{
 		Vec2* a = *(Vec2**)luaGetInstance(L, 1, "Vec2");
 
@@ -253,7 +253,7 @@ namespace nEngine {
 		return 0;
 	}	
 
-	luaNewMethod(Vec2, length)
+	luaDeclareMethod(Vec2, length)
 	{
 		Vec2* a = *(Vec2**)luaGetInstance(L, 1, "Vec2");
 
