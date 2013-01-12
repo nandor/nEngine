@@ -7,7 +7,7 @@
 */
 
 #include "nHeaders.hpp"
-#include "oggCallbacks.hpp"
+#include "oggReader.hpp"
 #include "Music.hpp"
 
 namespace nEngine {
@@ -154,7 +154,7 @@ namespace nEngine {
 				break;
 			}
 
-			if(result < 0) {
+			if (result < 0) {
 				throw Error ("Music", mSourceName, "Streaming error!");
 			}
 		}

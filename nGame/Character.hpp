@@ -10,7 +10,7 @@
 #include "nEngine/Object.hpp"
 using namespace nEngine;
 
-class Character : public nEngine::Object {
+class Character : public Object {
 public:
 	Character(const std::string& id);
 	~Character();
@@ -18,6 +18,7 @@ public:
 	void draw ();
 	void drawMarker();
 	void update ();
+	void attack (Object* target);
 
 	/**
 		Check if the character is on a certain position
@@ -28,6 +29,9 @@ public:
 	{
 		return false;
 	}
+
+private:
+	int mDamage;
 };
 
 bool luaRegisterCharacter(lua_State* L);

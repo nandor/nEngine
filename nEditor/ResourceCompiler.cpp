@@ -6,7 +6,7 @@
 	(c) 2011 Licker Nandor
 */
 
-#include "nEngine/nHeaders.hpp"
+#include "nEditor.hpp"
 #include "ResourceCompiler.hpp"
 using namespace boost::property_tree;
 
@@ -209,7 +209,7 @@ void ResourceCompiler::sendMessage(int progress, const std::string& msg)
 	evt.SetInt(progress);
 	evt.SetString(msg);	
 
-	mRoot->AddPendingEvent(evt);
+	mRoot->GetEventHandler()->ProcessEvent(evt);
 }
 
 // ------------------------------------------------------------------

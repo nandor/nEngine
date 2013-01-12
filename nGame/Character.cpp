@@ -7,15 +7,15 @@
 */
 
 #include "nEngine/Scene.hpp"
+#include "nEngine/Console.hpp"
 
 #include "Character.hpp"
 using namespace nEngine;
 
-#define CHR_ANIM_TIME 500
-
 // ------------------------------------------------------------------
 Character::Character(const std::string& id)
-	:Object(id, "pete", "Character")
+	:Object(id, "pete", "Character"),
+	 mDamage(15)
 {	 
 	this->setHighlightRange(4);
 	this->setHightlighted(true);
@@ -39,6 +39,7 @@ void Character::draw ()
 	glTranslatef(mPos.getX(), mPos.getY() + 30, z) ;
 
 	Shader::useProgram("character");
+	Shader::setUniformf("uHealth", 1.0f);
 	Shader::setUniformf("uAmbient", Light::getAmbient());
 	Shader::setUniformf("uPosX", mPos.getX());
 	Shader::setUniformf("uPosY", mPos.getY());
@@ -59,6 +60,13 @@ void Character::drawMarker()
 void Character::update()
 {
 	Object::update();
+}
+
+// ------------------------------------------------------------------
+void Character::attack(Object* target)
+{
+	target->setAttacker(this);
+	target->damage(mDamage);
 }
 
 // ------------------------------------------------------------------

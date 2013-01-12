@@ -30,26 +30,26 @@ namespace nEngine {
 
     class Console : public Singleton<Console> {
     public:
-        ~Console();
-        Console ();
+        NAPI Console ();
+        NAPI ~Console();
 
-        void draw();
-        void message(int type, std::string str);
-        void keyPressed(char key);
-        void specialKeyPressed(int key);
+        NAPI void draw();
+        NAPI void message(int type, std::string str);
+        NAPI void keyPressed(char key);
+        NAPI void specialKeyPressed(int key);
 
         bool isVisible() 
 		{
 			return visible;
 		}
 
-        void setVisible(bool _visible);
+        NAPI void setVisible(bool _visible);
 
-        static void luaRegister(lua_State* L);
+        NAPI static void luaRegister(lua_State* L);
 
     private:
 
-        void pushString(int type, std::string str);
+        NAPI void pushString(int type, std::string str);
 
         bool visible;
         int height, scrollUp;
@@ -60,4 +60,5 @@ namespace nEngine {
         typedef std::vector<std::pair<MessageType, std::string> >::iterator line_iter;
     };
 };
+
 #endif /*CONSOLE_HPP*/

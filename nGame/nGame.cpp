@@ -151,7 +151,6 @@ void nGame::onLeftClick(int mouseX, int mouseY)
 
 		mSelectedNPC = (NPC*)selected;
 		mSelectedNPC->setSelection(true);
-		return;
 	} else {
 		if (mSelectedNPC) {
 			mSelectedNPC->setSelection(false);
@@ -187,10 +186,21 @@ void nGame::beginChat()
 void nGame::onKeyUp (int keyCode, char charCode)
 {
 	Application::onKeyUp(keyCode, charCode);
+	Character* c = static_cast<Character*> (Scene::inst().getNode("character"));
 
 	switch (charCode) {
 	case 'T': case 't':
 		beginChat();
+		break;
+	case 'Q': case 'q':
+		if (mSelectedNPC && MapHelper::distance(c->getTile(), mSelectedNPC->getTile()) <= c->getAttackRange()) {
+			c->attack(mSelectedNPC);
+
+			if (mSelectedNPC->isDead()) {
+				Scene::inst().removeNode(mSelectedNPC->getID());
+				mSelectedNPC = NULL;
+			}
+		}
 		break;
 	}
 }

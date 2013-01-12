@@ -6,7 +6,7 @@
 	(c) 2011 Licker Nandor
 */
 
-#include "nEngine/nHeaders.hpp"
+#include "nEditor.hpp"
 #include "Runner.hpp"
 #include "MainWindow.hpp"
 #include "nProj.hpp"
@@ -67,7 +67,7 @@ void Runner::run()
 	// Add current directory
 	params += "--init \"fs://data/" + mProjName + "/init.lua\"";
 
-    STARTUPINFO startupInfo; 
+    STARTUPINFOA startupInfo; 
     PROCESS_INFORMATION processInfo; 
     memset(&startupInfo, 0, sizeof(startupInfo)); 
     memset(&processInfo, 0, sizeof(processInfo)); 
@@ -79,7 +79,7 @@ void Runner::run()
 	
 	wxCommandEvent evt(wxEVT_RUNEND, wxID_ANY);
 
-	if (CreateProcess(executable.c_str(), paramPtr, 0, 0, false, CREATE_DEFAULT_ERROR_MODE, 0, 0, &startupInfo, &processInfo) != false) { 
+	if (CreateProcessA(executable.c_str(), paramPtr, 0, 0, false, CREATE_DEFAULT_ERROR_MODE, 0, 0, &startupInfo, &processInfo) != false) { 
         DWORD dwExitCode = WaitForSingleObject(processInfo.hProcess, INFINITE); 
 		evt.SetInt(1);
 		evt.SetString("Success!");
@@ -92,7 +92,7 @@ void Runner::run()
 		fs::remove_all(dataDir);
 	}
 
-	mRoot->AddPendingEvent(evt);
+	mRoot->GetEventHandler()->ProcessEvent(evt);
 	delete[] paramPtr;	
 }
 

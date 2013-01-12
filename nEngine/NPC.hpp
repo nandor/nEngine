@@ -84,6 +84,18 @@ namespace nEngine {
 
 		/// Is he selected?
 		bool mSelected;
+
+		/// Is he attacking back?
+		bool mCanAttack;
+
+		/// Damage
+		int mDamage;
+
+		/// Attack speed
+		float mAttackSpeed;
+
+		/// Thelast time he attacked someone
+		float mLastAttack;
 	};
 	
 	/**

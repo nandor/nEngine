@@ -6,7 +6,7 @@
 	(c) 2011 Licker Nandor
 */
 
-#include "nEngine/nHeaders.hpp"
+#include "nEditor.hpp"
 #include "nEngine/Lua.hpp"
 #include "nEngine/Application.hpp"
 
@@ -29,7 +29,7 @@ public:
 			wnd->Show();
 
 		} catch (nEngine::Error e) {
-			wxMessageBox(wxT(e.getMessage()), "Error");
+			wxMessageBox(e.getMessage(), "Error");
 			return false;
 		}
 		
@@ -43,4 +43,3 @@ public:
 	}
 };
 
-IMPLEMENT_APP(Application)

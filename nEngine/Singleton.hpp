@@ -12,7 +12,8 @@
 #include "types.hpp"
 
 namespace nEngine {
-	template<typename T> class Singleton {
+	template<typename T> 
+	class Singleton {
 	private:
 	
 		NAPI Singleton(const Singleton<T>&);

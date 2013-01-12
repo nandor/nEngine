@@ -19,6 +19,5 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	} catch (Error error) {
 		MessageBox(NULL, error.getMessage().c_str(), "Unhandled Exception", MB_ICONERROR);
     }
-
     return 0;
 }

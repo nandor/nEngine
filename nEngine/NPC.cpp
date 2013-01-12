@@ -8,6 +8,7 @@
 
 #include "nHeaders.hpp"
 #include "NPC.hpp"
+#include "Console.hpp"
 #include "PathFinder.hpp"
 using namespace boost::property_tree;
 
@@ -18,7 +19,11 @@ namespace nEngine {
 		:Object(id, base, "NPC"),
 		 mWander(false),
 		 mWanderRadius(0),
-		 mSelected(false)
+		 mSelected(false),
+		 mCanAttack(true),
+		 mDamage(20),
+		 mAttackSpeed(3000.0f),
+		 mLastAttack(0.0f)
 	{
 		DataSource* script = getScript();
 		mName = script->getValue <std::string> ("name");
@@ -40,9 +45,17 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	void NPC::update()
 	{
-		Object::update();
+		if (mAttacker) {
+			float time = Timer::inst().getTime();
+			if (time >= mLastAttack + mAttackSpeed) {
+				mLastAttack = time;
+				mAttacker->damage(mDamage);
+			}
+		}
 
-		if (mWander && mMoveQueue.size() <= 0) {
+		Object::update();
+		
+		if (mWander && mMoveQueue.size() <= 0 && !mAttacker) {
 			Vec2 next = PathFinder(Scene::inst().getMap(), mTile).getRandomNeighbour();
 			mMoveQueue.push_back(next);
 		}

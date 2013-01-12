@@ -6,10 +6,7 @@
 	(c) 2011 Licker Nandor
 */
 
-#include "nEngine/Resources.hpp"
-#include "nEngine/Image.hpp"
-#include "nEngine/Map.hpp"
-
+#include "nEditor.hpp"
 #include "TileList.hpp"
 #include "MainWindow.hpp"
 
@@ -65,7 +62,7 @@ void TileList::Refresh()
 		nEngine::File* imgData = nEngine::Resources::inst().require<nEngine::File> (it->second.mImage);
 		wxMemoryInputStream is(imgData->getData(), imgData->getSize());
 
-		wxBitmap image = wxBitmap(wxImage(is, wxBITMAP_TYPE_PNG).Rescale(60, 30, 0));
+		wxBitmap image = wxBitmap(wxImage(is, wxBITMAP_TYPE_PNG).Rescale(60, 30, wxIMAGE_QUALITY_NORMAL));
 
 		imgList->Add(image);
 	}

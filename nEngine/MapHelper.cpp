@@ -37,5 +37,14 @@ namespace nEngine {
 		}
 		return 0;
 	}
+	
+	// ------------------------------------------------------------------
+	NAPI float MapHelper::distance(const Vec2& p1, const Vec2& p2)
+	{
+		float dx = p1.getX() - p2.getX();
+		float dy = p2.getY() - p2.getY();
+
+		return sqrt(dx * dx + dy * dy);
+	}
 
 };

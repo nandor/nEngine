@@ -6,11 +6,8 @@
 	(c) 2011 Licker Nandor
 */
 
-#include <wx/wx.h>
 #include <wx/notebook.h>
 #include <wx/aui/auibook.h>
-
-#include "nEngine/Map.hpp"
 
 #include "nProj.hpp"
 #include "TileList.hpp"
@@ -73,7 +70,6 @@ private:
 
 	void OnCompile(wxCommandEvent& evt);
 	void OnRun(wxCommandEvent& evt);
-	void OnKeyUp(wxKeyEvent& evt);
 
 	void OnCompileMessage(wxCommandEvent& evt);
 	void OnRunMessage(wxCommandEvent& evt);

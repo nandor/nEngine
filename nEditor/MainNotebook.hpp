@@ -11,7 +11,7 @@
 #ifndef MAINNOTEBOOK_HPP
 #define MAINNOTEBOOK_HPP
 
-#include "nEngine/nHeaders.hpp"
+#include "nEditor.hpp"
 
 #include <wx/aui/auibook.h>
 #include <wx/msgdlg.h>

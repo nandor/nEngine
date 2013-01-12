@@ -6,7 +6,7 @@
 	(c) 2011 Licker Nandor
 */
 
-#include "nEngine/nHeaders.hpp"
+#include "nEditor.hpp"
 #include "nEngine/Resources.hpp"
 
 #include "ResourceView.hpp"
@@ -110,7 +110,13 @@ void ResourceView::CreateIcons()
 // ------------------------------------------------------------------
 void ResourceView::Refresh()
 {
+	MainWindow* wnd = (MainWindow*)mRoot;
+
 	this->DeleteChildren(mRootID);
+	
+	if (!wnd->GetProject()) {
+		return;
+	}
 
 	this->AppendItem(mRootID, "init", nEngine::RESOURCE_FILE, nEngine::RESOURCE_FILE, new TreeItemData("init", nEngine::RESOURCE_FILE));
 

@@ -6,14 +6,15 @@
 	(c) 2011 Licker Nandor
 */
 
-#include "Icons/blend.xpm"
-#include "Icons/delete.xpm"
-#include "Icons/place.xpm"
-
-#include "nEngine/nHeaders.hpp"
+#include "nEditor.hpp"
 #include "nEngine/Resources.hpp"
 #include "nEngine/Map.hpp"
 #include "nEngine/Lua.hpp"
+
+#include "Icons/blend.xpm"
+#include "Icons/delete.xpm"
+#include "Icons/place.xpm"
+#include "Icons/tileEdit.xpm"
 
 #include "MainWindow.hpp"
 #include "Runner.hpp"
@@ -33,12 +34,12 @@ enum wxMenuId {
 	TOOLBAR,
 	TOOLBAR_BLEND,
 	TOOLBAR_MOVE,
-	TOOLBAR_PLACE
+	TOOLBAR_PLACE,
+	TOOLBAR_TILE,
 };
 
 BEGIN_EVENT_TABLE(MainWindow, wxFrame)
 	EVT_TOOL_RANGE(TOOLBAR_BLEND, TOOLBAR_PLACE, MainWindow::OnToolbar)
-	EVT_KEY_UP(MainWindow::OnKeyUp)
 	EVT_COMMAND(wxID_ANY, wxEVT_COMPILE, MainWindow::OnCompileMessage)
 	EVT_COMMAND(wxID_ANY, wxEVT_RUNEND, MainWindow::OnRunMessage)
 END_EVENT_TABLE()
@@ -82,7 +83,6 @@ MainWindow::MainWindow(const wxString& title)
 	
 	this->SetSizerAndFit(horzSizer);
 	this->SetSize(768, 456);
-
 }
 
 
@@ -149,6 +149,7 @@ void MainWindow::CreateToolbar()
 	 
 	toolBar->AddTool(TOOLBAR_PLACE, "Place", wxIcon(place_xpm)); 
 	toolBar->AddTool(TOOLBAR_BLEND, "Blend", wxIcon(blend_xpm)); 
+	toolBar->AddTool(TOOLBAR_TILE,  "Edit Tile", wxIcon(tileEdit_xpm)); 
 	toolBar->Realize();
 }
 
@@ -161,20 +162,33 @@ void MainWindow::OnQuit(wxCommandEvent&)
 // ------------------------------------------------------------------
 void MainWindow::OnNew(wxCommandEvent&)
 {
-	try {
-		mMapEdit->SetCurrent();
+	wxDirDialog* newDlg = new wxDirDialog(this,
+		"Chose a folder for the project",
+		"D:\\test project\\");
+ 
+	if (newDlg->ShowModal() == wxID_OK)	{
+		std::string directory = newDlg->GetPath();
 
-		nEngine::Resources::inst()
-			.clearResources()
-			.loadGroup("fs://data/core.zip");
-		
-		mMapEdit->Refresh();
-		mResourceView->Refresh();
-		mResourceView->Refresh();
+		nProj* newProj = NULL;
 
-	} catch (nEngine::Error e) {
-		wxMessageBox(e.getMessage(), "Error");
+		try {
+			newProj = new nProj(directory);
+		} catch (nEngine::Error e) {
+			wxMessageBox(e.getMessage(), "Error");
+		}
+
+		if (newProj != NULL) {
+			mProj = newProj;
+			
+			mMapEdit->Refresh();
+			mResourceView->Refresh();
+			mResourceView->Refresh();
+		}
+
+		SetTitle("nEditor - " + directory);
 	}
+ 
+	newDlg->Destroy();
 }
 
 // ------------------------------------------------------------------
@@ -187,10 +201,10 @@ void MainWindow::OnSave(wxCommandEvent&)
 // ------------------------------------------------------------------
 void MainWindow::OnCompile(wxCommandEvent&)
 {
-	nEngine::File::setenv("path", mProj->getDir() + "/src");
-	mMainNotebook->SaveAll();
-
 	if (mProj) {
+		nEngine::File::setenv("path", mProj->getDir() + "/src");
+		mMainNotebook->SaveAll();
+
 		mProgressDialog = new wxProgressDialog(
 			"Compiling '" + mProj->getName() + "'", 
 			"Starting...",
@@ -222,11 +236,11 @@ void MainWindow::OnCompileMessage(wxCommandEvent& evt)
 {
 	if (mProgressDialog) {
 		int progress = evt.GetInt();
-		mProgressDialog->Update(progress, evt.GetString());
-	
 		if (progress == 100) {
 			delete mProgressDialog;
 			mProgressDialog = NULL;
+		} else {			
+			mProgressDialog->Update(progress, evt.GetString());
 		}
 	}
 }
@@ -286,10 +300,6 @@ bool MainWindow::Show(bool show)
 {
 	wxFrame::Show(true);
 	mMapEdit->InitOpenGL();	
-	mProj = new nProj("C:\\Users\\Nandor\\Documents\\nEditor Projects\\test\\test.nproj", "C:\\Users\\Nandor\\Documents\\nEditor Projects\\test");
-	mMapEdit->Refresh();
-	mResourceView->Refresh();
-	mResourceView->Refresh();
 
 	return true;
 }
@@ -328,19 +338,4 @@ void MainWindow::OpenFileEditor(const std::string& id)
 	
 	FileEditor* fileEditor = new FileEditor(mMainNotebook, toEdit);
 	mMainNotebook->AddFileEditor(fileEditor);
-}
-
-// ------------------------------------------------------------------
-void MainWindow::OnKeyUp(wxKeyEvent& evt)
-{
-	if (evt.GetModifiers() == wxMOD_CONTROL) {
-		switch (evt.GetKeyCode()) {
-		case 'S':
-			mMainNotebook->SaveAll();
-			mProj ? mProj->save() : NULL;
-			break;
-		default:
-			break;
-		}
-	}
 }

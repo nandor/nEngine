@@ -164,9 +164,6 @@
     <ClInclude Include="SoundSource.hpp">
       <Filter>SoundManager</Filter>
     </ClInclude>
-    <ClInclude Include="oggCallbacks.hpp">
-      <Filter>SoundManager</Filter>
-    </ClInclude>
     <ClInclude Include="GUISlider.hpp">
       <Filter>GUI</Filter>
     </ClInclude>
@@ -190,6 +187,9 @@
     </ClInclude>
     <ClInclude Include="GUIStyledText.hpp">
       <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="oggReader.hpp">
+      <Filter>SoundManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -331,9 +331,6 @@
     <ClCompile Include="SoundSource.cpp">
       <Filter>SoundManager</Filter>
     </ClCompile>
-    <ClCompile Include="oggCallbacks.cpp">
-      <Filter>SoundManager</Filter>
-    </ClCompile>
     <ClCompile Include="GUISlider.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
@@ -354,6 +351,9 @@
     </ClCompile>
     <ClCompile Include="GUIStyledText.cpp">
       <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="oggReader.cpp">
+      <Filter>SoundManager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

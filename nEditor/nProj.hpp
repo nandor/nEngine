@@ -16,6 +16,18 @@
 
 class nProj {
 public:
+
+	/**
+		Create a new project
+		@param dir			Location
+	*/
+	nProj(const std::string& dir);
+
+	/**
+		Open an existing project
+		@param str			Location of the project file
+		@param dir			Directory of the project
+	*/
 	nProj(const std::string& str, const std::string& dir);
 	~nProj();
 	

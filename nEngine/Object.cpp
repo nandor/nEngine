@@ -18,7 +18,9 @@ namespace nEngine {
 		 :SceneNode(id, type),
 		  mDrawOn(0, 0),
 		  mPos(0, 0),
-		  mIsMoving(false)
+		  mIsMoving(false),
+		  mAttacker(NULL),
+		  mAttackRange(5.0f)
 	{	
 		mScriptName = obj;
 		DataSource* script = getScript();
@@ -113,6 +115,15 @@ namespace nEngine {
 		mMoveQueue.clear();
 	}
 
+	// ------------------------------------------------------------------
+	void Object::damage(int dmg)
+	{
+		if (!mDamageable) {
+			return;
+		}
+
+		mHealth = std::max(0, mHealth - dmg);
+	}
 
 	// ------------------------------------------------------------------
 	void Object::moveTo (Vec2& target)

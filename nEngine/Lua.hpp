@@ -23,7 +23,6 @@
 		{"__index", nEngine::luaClassIndex},\
 		{"__newindex", nEngine::luaClassNewIndex},\
 
-#define luaMetaMethod(cls, func) {#func, cls ## _ ## func},
 #define luaEndMeta() {NULL, NULL}};
 
 #define luaClass(L, cls)\

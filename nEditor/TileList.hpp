@@ -9,7 +9,6 @@
 #ifndef TILELIST_HPP
 #define TILELIST_HPP
 
-#include <wx/wx.h>
 #include <wx/mstream.h>
 #include <wx/listctrl.h>
 

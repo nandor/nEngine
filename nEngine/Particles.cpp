@@ -272,7 +272,7 @@ namespace nEngine {
 	luaBeginMethods(Particles)
 		luaMethod(Particles, new)
 	luaEndMethods()
-
+ 
 	// ------------------------------------------------------------------
 	bool luaRegisterParticles(lua_State* L)
 	{

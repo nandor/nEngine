@@ -82,9 +82,30 @@ namespace nEngine {
 			mHealth = health;
 		}
 
+		/**
+			Set a pointer to an NPC who is attacking this one
+			@param obj				The attacker
+		*/
+		NAPI void setAttacker(Object* obj)
+		{
+			mAttacker = obj;
+		}
+		
+		NAPI bool isDead()
+		{
+			return mHealth <= 0;
+		}
+
+		NAPI void damage(int dmg);
+
 		NAPI DataSource* getScript();
 
         NAPI virtual Vec2 getPosition();
+
+		float getAttackRange()
+		{
+			return mAttackRange;
+		}
 
     protected:
 		/// Position of the object
@@ -101,6 +122,9 @@ namespace nEngine {
 
 		/// Can the object be damaged?
 		bool mDamageable;
+
+		/// Attack range
+		float mAttackRange;
 
 		/// Maximum health
 		int mMaxHealth;
@@ -131,6 +155,9 @@ namespace nEngine {
 
 		/// Script name
 		std::string mScriptName;
+
+		/// Who is attacked this entity?
+		Object* mAttacker;
 
 		Vec2 anim_init, anim_target;
     };

@@ -128,7 +128,19 @@ namespace nEngine {
 
 		return it->second;
 	}
+	
+	// ------------------------------------------------------------------	
+	void Scene::removeNode(const std::string& id)
+	{
+		tNodeIter it = mNodes.find(id);
 
+		if (it == mNodes.end()) {
+			return;
+		}
+
+		delete it->second;
+		mNodes.erase(it);
+	}
 
 	// ------------------------------------------------------------------
 	Map* Scene::getMap()

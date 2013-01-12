@@ -122,7 +122,7 @@
     <ClInclude Include="nHeaders.hpp" />
     <ClInclude Include="NPC.hpp" />
     <ClInclude Include="Object.hpp" />
-    <ClInclude Include="oggCallbacks.hpp" />
+    <ClInclude Include="oggReader.hpp" />
     <ClInclude Include="Particles.hpp" />
     <ClInclude Include="PathFinder.hpp" />
     <ClInclude Include="Prop.hpp" />
@@ -187,7 +187,7 @@
     <ClCompile Include="Music.cpp" />
     <ClCompile Include="NPC.cpp" />
     <ClCompile Include="Object.cpp" />
-    <ClCompile Include="oggCallbacks.cpp" />
+    <ClCompile Include="oggReader.cpp" />
     <ClCompile Include="Particles.cpp" />
     <ClCompile Include="PathFinder.cpp" />
     <ClCompile Include="Prop.cpp" />

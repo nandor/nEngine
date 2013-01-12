@@ -262,15 +262,15 @@ namespace nEngine {
 	}
 
 	luaBeginMeta(Vec2)
-		luaMetaMethod(Vec2, length)
-		luaMetaMethod(Vec2, __tostring)
-		luaMetaMethod(Vec2, __gc)
-		luaMetaMethod(Vec2, __add)
-		luaMetaMethod(Vec2, __eq)
-		luaMetaMethod(Vec2, __unm)
-		luaMetaMethod(Vec2, __sub)
-		luaMetaMethod(Vec2, __getter)
-		luaMetaMethod(Vec2, __setter)
+		luaMethod(Vec2, length)
+		luaMethod(Vec2, __tostring)
+		luaMethod(Vec2, __gc)
+		luaMethod(Vec2, __add)
+		luaMethod(Vec2, __eq)
+		luaMethod(Vec2, __unm)
+		luaMethod(Vec2, __sub)
+		luaMethod(Vec2, __getter)
+		luaMethod(Vec2, __setter)
 	luaEndMeta()
 
 

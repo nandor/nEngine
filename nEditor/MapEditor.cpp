@@ -6,12 +6,12 @@
 	(c) 2011 Licker Nandor
 */
 
-#include "MapEditor.hpp"
-#include "MainWindow.hpp"
-
-#include "nEngine/nHeaders.hpp"
+#include "nEditor.hpp"
 #include "nEngine/Resources.hpp"
 #include "nEngine/Scene.hpp"
+
+#include "MapEditor.hpp"
+#include "MainWindow.hpp"
 
 #include "Icons/camera.xpm"
 #include "Icons/object.xpm"
@@ -27,12 +27,12 @@ BEGIN_EVENT_TABLE(MapEditor, wxGLCanvas)
 	EVT_LEAVE_WINDOW(MapEditor::OnMouseLeave)
 
 	EVT_PAINT(MapEditor::OnPaint)
-    EVT_ERASE_BACKGROUND(MapEditor::OnEraseBackground)
+    EVT_ERASE_BACKGROUND(MapEditor::OnBackgroundPaint)
 END_EVENT_TABLE()
 
 // ------------------------------------------------------------------
 MapEditor::MapEditor(wxWindow* parent, wxSize& size, wxWindow* root)
-	:wxGLCanvas(parent, wxID_ANY, wxDefaultPosition, size),
+	:wxGLCanvas(parent, wxID_ANY, wxDefaultPosition, size, 0, wxGLCanvasName),
 	 mDragging(false),
 	 mPlacing(false),
 	 mField(NULL)

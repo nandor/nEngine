@@ -238,8 +238,8 @@ namespace nEngine {
 	}
 
 	luaBeginMeta(Shader)
-		luaMetaMethod(Shader, load)
-		luaMetaMethod(Shader, compile)
+		luaMethod(Shader, load)
+		luaMethod(Shader, compile)
 	luaEndMeta()
 
 	luaBeginMethods(Shader)

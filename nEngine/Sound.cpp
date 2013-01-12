@@ -85,11 +85,11 @@ namespace nEngine {
 	// ------------------------------------------------------------------
 	luaBeginMethods(Sound)
 
-	luaEndMethods(Sound)
+	luaEndMethods()
 
 	luaBeginMeta(Sound)
 
-	luaEndMeta(Sound)
+	luaEndMeta()
 	
 	// ------------------------------------------------------------------
 	bool luaRegisterSound(lua_State* L)

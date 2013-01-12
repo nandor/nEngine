@@ -142,6 +142,12 @@ namespace nEngine {
 		*/
 		NAPI SceneNode* selectNode(Vec2& pos);
 
+		/**
+			Remove a node from the scene
+			@param id					ID of the scene node
+		*/
+		NAPI void removeNode(const std::string& id);
+
 	public:
 
 		/// Number of available lights

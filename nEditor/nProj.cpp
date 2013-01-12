@@ -6,13 +6,56 @@
 	(c) 2011 Licker Nandor
 */
 
-#include "nEngine/nHeaders.hpp"
+#include "nEditor.hpp"
 #include "nEngine/Resources.hpp"
 #include "nEngine/Error.hpp"
 #include "nEngine/Map.hpp"
 
 #include "nProj.hpp"
 using namespace boost::property_tree;
+namespace fs = boost::filesystem3;
+
+// ------------------------------------------------------------------
+nProj::nProj(const std::string& dir)
+{
+	fs::path dirPath(dir);
+
+	if (!fs::is_directory(dirPath)) {
+		throw nEngine::Error("Invalid project location!");
+	}
+
+	mName = dirPath.leaf().string();
+	mDir = dir;
+
+	fs::create_directory(dirPath / "src");
+	nEngine::File::setenv("path", dir + "/src");
+
+	boost::property_tree::ptree config;
+	config.put("name", mName);
+
+	// Create source & build dir
+	fs::create_directory(dirPath / "src/");
+	fs::create_directory(dirPath / "build/");
+
+	// Create an init script
+	mInitScript = (dirPath / "src/init.lua").string();
+
+	std::fstream fout(mInitScript, std::ios::out);
+
+	fout << "--[[" << std::endl
+		 << "\t" << mName << " init script " << std::endl
+		 << "]]--" << std::endl;
+
+	fout.close();
+
+	nEngine::File* f = new nEngine::File("init", mInitScript);
+	f->setEditable(true);
+	nEngine::Resources::inst().addResource(f);
+	config.put("init", mInitScript);
+
+	// Write the project file
+	boost::property_tree::write_json((dirPath / (mName + ".json")).string(), config);
+}
 
 // ------------------------------------------------------------------
 nProj::nProj(const std::string& file, const std::string& dir)
@@ -33,7 +76,6 @@ nProj::nProj(const std::string& file, const std::string& dir)
 
 		nEngine::File* f = new nEngine::File("init", mInitScript);
 		f->setEditable(true);
-
 		nEngine::Resources::inst().addResource(f);
 
 		boost::optional<ptree&> packs = mData.get_child_optional("packs");

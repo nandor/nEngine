@@ -8,6 +8,7 @@
 	(c) 2011 Licker Nandor
 */
 
+#include "nEditor.hpp"
 #include "MainNotebook.hpp"
 
 BEGIN_EVENT_TABLE(MainNotebook, wxAuiNotebook)

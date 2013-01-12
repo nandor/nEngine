@@ -73,7 +73,7 @@ namespace nEngine {
             @param tile		Coordinate of the tile
             @return         True/False
         */
-        NAPI bool hasTile (Vec2& tile);
+        NAPI bool hasTile(Vec2& tile);
 
 		/**
 			Check if a tile is on the map

@@ -33,6 +33,9 @@ namespace nEngine {
 		*/
 		NAPI int getDirection(Vec2& p1, Vec2& p2);
 
+
+		NAPI float distance(const Vec2& p1, const Vec2& p2);
+
 		namespace nDirection {
 			enum NDIRECTION {
 				nDirS,

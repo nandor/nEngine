@@ -6,6 +6,7 @@
 	(c) 2011 Licker Nandor
 */
 
+#include "nEditor.hpp"
 #include "nEngine/Shader.hpp"
 #include "nEngine/Resources.hpp"
 

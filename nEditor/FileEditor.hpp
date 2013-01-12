@@ -1,9 +1,7 @@
 /**
 	@file FileEditor.hpp
 	@author Licker Nandor
-
-    @brief Provides resource management for nEngine
-
+	
 	This file is part of nEngine.
 	(c) 2011 Licker Nandor
 */
@@ -11,13 +9,10 @@
 #ifndef FILEEDITOR_HPP
 #define FILEEDITOR_HPP
 
-#include "nEngine/nHeaders.hpp"
-#include "nEngine/File.hpp"
+#include "nEditor.hpp"
+#include <wx/stc/stc.h>
 
-#include <wx/wx.h>
-#include <wx/wxscintilla.h>
-
-class FileEditor : public wxScintilla {
+class FileEditor : public wxStyledTextCtrl {
 public:
 	FileEditor(wxWindow* parent, nEngine::File* file);
 	~FileEditor();
@@ -34,7 +29,7 @@ public:
 private:
 
 	DECLARE_EVENT_TABLE();
-	void OnModified(wxScintillaEvent& evt);
+	void OnModified(wxStyledTextEvent& evt);
 
 private:
 
